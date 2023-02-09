@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dialog, Transition } from '@headlessui/react';

@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable */
 import * as localForage from 'localforage';
 import React from 'react';
@@ -5,7 +7,7 @@ import { Configuration, PublicApi } from '@ory/kratos-client';
 import * as logger from '../../logger';
 // import configData from '../../config.json';
 // import { isElectron } from '../../core/handleElectron';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 // const kratos = new PublicApi(new Configuration({ basePath: configData.base_url }));
 const CryptoJS = require("crypto-js");
 

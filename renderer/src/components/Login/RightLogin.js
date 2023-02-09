@@ -1,3 +1,5 @@
+'use client';
+
 import LogoIcon from '@/icons/logo.svg';
 import GroupIcon from '@/illustrations/group.svg';
 

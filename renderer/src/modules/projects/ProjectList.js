@@ -1,6 +1,8 @@
+'use client';
+
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { Fragment, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import moment from 'moment';
 
 import { Disclosure, Transition, Menu } from '@headlessui/react';
@@ -160,7 +162,7 @@ export default function ProjectList() {
                                 orderBy,
                                 order,
                               ).filter(filterArchive).map((project) => (
-                                <Disclosure key={project.name}>
+                                <Disclosure key={project?.name}>
                                   {({ open }) => (
                                     <>
                                       <tr
@@ -223,7 +225,7 @@ export default function ProjectList() {
                                         leaveFrom="transform scale-100 opacity-100"
                                         leaveTo="transform scale-95 opacity-0"
                                       >
-                                        <Disclosure.Panel as="tr" key={project.name}>
+                                        <Disclosure.Panel as="tr" key={project?.name}>
                                           <td />
                                           <td className="px-6 py-4">
                                             <div className="text-xxs uppercase font-regular text-gray-500 tracking-wider p-1">description</div>
@@ -311,7 +313,7 @@ export default function ProjectList() {
                                 orderBy,
                                 order,
                               ).filter(filterArchive).map((project) => (
-                                <Disclosure key={project.name}>
+                                <Disclosure key={project?.name}>
                                   {({ open }) => (
                                     <>
                                       <tr className="hover:bg-gray-100 focus:outline-none cursor-pointer">
@@ -382,7 +384,7 @@ export default function ProjectList() {
                                         leaveFrom="transform scale-100 opacity-100"
                                         leaveTo="transform scale-95 opacity-0"
                                       >
-                                        <Disclosure.Panel as="tr" key={project.name}>
+                                        <Disclosure.Panel as="tr" key={project?.name}>
                                           <td />
                                           <td className="px-6 py-4">
                                             <div className="text-xxs uppercase font-regular text-gray-500 tracking-wider p-1">description</div>
@@ -390,7 +392,7 @@ export default function ProjectList() {
                                           </td>
                                           <td colSpan="3" className="px-5">
                                             <div className="text-xxs uppercase font-regular text-gray-500 tracking-wider p-1">Project ID</div>
-                                            <div className="text-sm tracking-wide p-1">{project.id[0]}</div>
+                                            <div className="text-sm tracking-wide p-1">{project.name}</div>
                                           </td>
                                           <td className="pl-5">
                                             <Menu as="div">

@@ -1,8 +1,8 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import MenuBar from './MenuBar';
-import SubMenuBar from './SubMenuBar';
+import MenuBar from '../../src/layouts/editor/MenuBar';
+import SubMenuBar from '../../src/layouts/editor/SubMenuBar';
 
 export default function EditorLayout(props) {
   const {

@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable react/jsx-no-useless-fragment */
 import React from 'react';
 import * as localForage from 'localforage';

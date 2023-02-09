@@ -1,7 +1,9 @@
+'use client';
+
 import React, { useEffect } from 'react';
 import * as localForage from 'localforage';
 import moment from 'moment';
-import router from 'next/router';
+import router from 'next/navigation';
 import { updateAgSettings } from '../../../core/projects/updateAgSettings';
 import parseProjectMetaUpdate from '../../../core/projects/parseProjectMetaUpdate';
 // import metaFileReplace from '../../../core/projects/metaFileReplace';

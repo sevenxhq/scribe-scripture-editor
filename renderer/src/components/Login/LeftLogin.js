@@ -1,5 +1,7 @@
+'use client';
+
 import { Dialog, Tab, Transition } from '@headlessui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, {
   Fragment, useContext, useEffect, useState,
 } from 'react';
@@ -185,7 +187,7 @@ const LeftLogin = () => {
         <div className="relative border-gray-200 rounded-t-[10px] lg:w-72 w-44 sm:w-52 overflow-hidden">
           {sortedUsers.filter(filterUsers).slice(0, 5).map((user) => (
             <div
-              key={user}
+              key={user.username}
               className="p-4 py-2 text-sm cursor-pointer bg-[#F9F9F9] hover:bg-primary hover:text-white border-b-[1px] border-[#E3E3E3] font-semibold"
               tabIndex={0}
               role="button"

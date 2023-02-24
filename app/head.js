@@ -1,5 +1,5 @@
 // import i18n from '../src/translations/i18n';
-import '../../styles/nprogress.css';
+import '../styles/nprogress.css';
 
 export default function Head() {
     return (

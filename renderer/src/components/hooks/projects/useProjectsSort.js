@@ -175,7 +175,7 @@ function useProjectsSort() {
     };
 
     const FetchProjects = async () => {
-      if (isElectron()) {
+      // if (isElectron()) {
         localForage.getItem('userProfile').then((user) => {
             if (user === null) {
               router.push('/projects');
@@ -259,35 +259,36 @@ function useProjectsSort() {
             });
         }
     });
-    } else {
-        // const projectName = 'Newcanon based Pro';
-        parseFetchProjects(username).then((res) => {
-          res.forEach((projects) => {
-              if (projects.get('starred') === true) {
-                FetchStarred(
-                projects.get('projectName'),
-                projects.get('language'),
-                projects.get('date'),
-                projects.get('lastview'),
-                projects.get('isArchived'),
-                );
-              } else {
-                  FetchUnstarred(
-                    projects.get('projectName'),
-                    projects.get('language'),
-                    projects.get('date'),
-                    projects.get('lastview'),
-                    projects.get('isArchived'),
-                );
-              }
-          });
-        }).finally(() => {
-            setStarredRow(starrtedData);
-            setStarredProjets(starrtedData);
-            setUnStarredRow(unstarrtedData);
-            setUnStarredProjets(unstarrtedData);
-        });
-       }
+    // }
+    //  else {
+    //     // const projectName = 'Newcanon based Pro';
+    //     parseFetchProjects({username}).then((res) => {
+    //       res.forEach((projects) => {
+    //           if (projects.get('starred') === true) {
+    //             FetchStarred(
+    //             projects.get('projectName'),
+    //             projects.get('language'),
+    //             projects.get('date'),
+    //             projects.get('lastview'),
+    //             projects.get('isArchived'),
+    //             );
+    //           } else {
+    //               FetchUnstarred(
+    //                 projects.get('projectName'),
+    //                 projects.get('language'),
+    //                 projects.get('date'),
+    //                 projects.get('lastview'),
+    //                 projects.get('isArchived'),
+    //             );
+    //           }
+    //       });
+    //     }).finally(() => {
+    //         setStarredRow(starrtedData);
+    //         setStarredProjets(starrtedData);
+    //         setUnStarredRow(unstarrtedData);
+    //         setUnStarredProjets(unstarrtedData);
+    //     });
+    //    }
     };
 
    /**

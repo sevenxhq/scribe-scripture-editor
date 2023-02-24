@@ -12,33 +12,51 @@ const AutoUpdate = () => {
   const [restartButton, setRestartButton] = useState(false);
   const { t } = useTranslation();
   useEffect(() => {
-        localforage.setItem('font-family', global.fonts);
-        const electron = window.require('electron');
-        const { ipcRenderer } = electron;
-          ipcRenderer.send('app_version');
-          ipcRenderer.on('app_version', (event, arg) => {
-            ipcRenderer.removeAllListeners('app_version');
-            localforage.setItem('userPath', arg.appPath);
-            localStorage.setItem('userPath', arg.appPath);
-          });
+    if(isElectron){
+      localforage.setItem('font-family', global.fonts);
+      const electron = window.require('electron');
+      const { ipcRenderer } = electron;
+        ipcRenderer.send('app_version');
+        ipcRenderer.on('app_version', (event, arg) => {
+          ipcRenderer.removeAllListeners('app_version');
+          localforage.setItem('userPath', arg.appPath);
+          localStorage.setItem('userPath', arg.appPath);
+        });
 
-          ipcRenderer.on('update_available', () => {
-            ipcRenderer.removeAllListeners('update_available');
-            setMessage(t('dynamic-msg-auto-update'));
-            setNotification(true);
-          });
+        ipcRenderer.on('update_available', () => {
+          ipcRenderer.removeAllListeners('update_available');
+          setMessage(t('dynamic-msg-auto-update'));
+          setNotification(true);
+        });
 
-          ipcRenderer.on('download-progress', () => {
-            ipcRenderer.removeAllListeners('download-progress');
-            setNotification(true);
-          });
+        ipcRenderer.on('download-progress', () => {
+          ipcRenderer.removeAllListeners('download-progress');
+          setNotification(true);
+        });
 
-          ipcRenderer.on('update_downloaded', () => {
-            ipcRenderer.removeAllListeners('update_downloaded');
-            setMessage(t('dynamic-msg-auto-update-complete'));
-            setRestartButton(true);
-            setNotification(true);
-          });
+        ipcRenderer.on('update_downloaded', () => {
+          ipcRenderer.removeAllListeners('update_downloaded');
+          setMessage(t('dynamic-msg-auto-update-complete'));
+          setRestartButton(true);
+          setNotification(true);
+        });
+    }else {
+      // Main window script
+      document.addEventListener('message', (event) => {
+        if (event.data.type === 'app_version') {
+          const appPath = event.data.appPath;
+          console.log(appPath);
+          localStorage.setItem('userPath', appPath);
+        }
+      });
+  
+      // Iframe script
+      const appVersion = {
+        type: 'app_version',
+        appPath: '/path/to/app',
+      };
+      window.parent.postMessage(appVersion, '*');
+    }
   });
 
   function closeNotification() {

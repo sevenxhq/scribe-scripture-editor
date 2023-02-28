@@ -26,7 +26,7 @@ import Search from './Search';
 import CrossReferences from './CrossReferences';
 // import FootNotes from './FootNotes';
 import FootNoteEditor from './FootNoteEditor';
-import Comments from './Comments';
+// import Comments from './Comments';
 import Bookmarks from '../../components/EditorPage/BookMarks/Bookmarks';
 
 const initialTab = { tabIndex: 4 };
@@ -39,8 +39,8 @@ function reducer(state, action) {
       return { tabIndex: 1 };
     case 'footnotes':
       return { tabIndex: 2 };
-    case 'comments':
-      return { tabIndex: 3 };
+    // case 'comments':
+    //   return { tabIndex: 3 };
     case 'bookmarks':
       return { tabIndex: 4 };
     default:

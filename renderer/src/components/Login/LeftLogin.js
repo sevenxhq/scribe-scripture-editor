@@ -130,7 +130,7 @@ const LeftLogin = () => {
       if (isElectron()) {
         router.push('/projects');
       } else {
-        router.push('/');
+        router.push('/projects');
       }
     }
   };

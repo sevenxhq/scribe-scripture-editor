@@ -20,9 +20,13 @@ const Home = () => {
   const [user, setUser] = useState();
 
   useEffect(()=>{
-    (async function(){
-      const { data:users} = await supabase.from('users_json').select();
-      console.log({users})
+    (async function () {
+      const { data: users } = await supabase.from('users_json').select();
+      const { data: bucketlist } = await supabase.storage.from('autographa-web').list('autographa/users');
+      const { data: userJson } = await supabase.storage.from('autographa-web').download('autographa/users/users.json')
+      const userJsonInfo = JSON.parse(await userJson.text())
+      console.log({ userJsonInfo })
+      console.log({ users })
       await localForage.setItem('users', users[0].users_json, (errLoc) => {
         if (errLoc) {
           logger.error('handleJson.js', 'Failed to load users list to LocalStorage');

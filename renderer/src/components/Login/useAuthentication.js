@@ -37,6 +37,7 @@ function useAuthentication() {
     });
   };
   const generateToken = (user) => {
+    console.log('user in generate token', user);
     logger.debug('useAuthentication.js', 'In generateToken to generate a Token for the loggedIn user');
     const header = '{"alg":"HS256","typ":"JWT"}';
     const sessionData = {

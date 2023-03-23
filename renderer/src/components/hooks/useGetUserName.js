@@ -13,6 +13,8 @@ export const useGetUserName = (_username) => {
                     const value = await localforage.getItem('userProfile');
                     setUsername(value?.username);
                 }
+                const value = await localforage.getItem('userProfile');
+                setUsername(value?.user?.user_metadata?.username);
             } catch (error) {
                 logger.error('useGetUserName.js', error);
             }

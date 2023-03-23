@@ -17,7 +17,6 @@ const LeftLogin = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState({});
-
   const router = useRouter();
 
   const [users, setUsers] = useState([]);
@@ -97,6 +96,7 @@ const LeftLogin = () => {
     localForage.setItem('appMode', 'offline');
     logger.debug('Login.js', 'In handleSubmit');
     if (isElectron()) {
+      router.push('/projects');
       // router.push('/main');
       // The below code is commented for UI dev purpose.
       if (handleValidation(values)) {
@@ -127,10 +127,31 @@ const LeftLogin = () => {
       }
     } else {
       // eslint-disable-next-line no-lonely-if
-      if (isElectron()) {
-        router.push('/projects');
-      } else {
-        router.push('/projects');
+      if (handleValidation(values)) {
+        logger.debug(
+          'LeftLogin.js',
+          'Triggers handleLogin to check whether the user is existing or not',
+        );
+        const user = await handleLogin(users, values);
+        if (user) {
+          logger.debug(
+            'LeftLogin.js',
+            'Triggers generateToken to generate a Token for the user',
+          );
+          generateToken(user);
+        } else {
+          logger.debug(
+            'LeftLogin.js',
+            'Triggers createUser for creating a new user',
+          );
+          const user = await createUser(values);
+          logger.debug(
+            'LeftLogin.js',
+            'Triggers generateToken to generate a Token for the user',
+          );
+          generateToken(user);
+          router.push('/projects');
+        }
       }
     }
   };
@@ -148,6 +169,7 @@ const LeftLogin = () => {
     return classes.filter(Boolean).join(' ');
   }
 
+  console.log({ values });
   function archiveUser(users, selectedUser) {
     const archivedUsers = users.map((user) => {
       if (user.username === selectedUser.username) {
@@ -177,6 +199,7 @@ const LeftLogin = () => {
     }
     return false;
   };
+
   return (
     <div className="flex flex-col pt-64 pl-10 md:pt-64 sm:pl-12 md:pl-20 sm:pt-56 w-full">
       <h2 className="text-2xl font-sans font-bold">Welcome!</h2>
@@ -206,12 +229,12 @@ const LeftLogin = () => {
               onClick={openModal}
               className={`
                                      ${isOpen ? '' : 'text-opacity-90'
-              } text-white bg-black w-48 text-xs lg:w-72 sm:w-52 py-[12px] flex items-center justify-center text-md font-bold rounded-b-[10px] sm:text-sm`}
+                } text-white bg-black w-48 text-xs lg:w-72 sm:w-52 py-[12px] flex items-center justify-center text-md font-bold rounded-b-[10px] sm:text-sm`}
             >
               View More
             </button>
           </div>
-)}
+        )}
         <Transition
           appear
           show={isOpen}
@@ -256,8 +279,8 @@ const LeftLogin = () => {
                         </Tab>
                         <Tab
                           className={({ selected }) => classNames(
-                          'w-full text-md items-center justify-center outline-none font-bold py-4 leading-5 rounded-t-lg',
-                          selected
+                            'w-full text-md items-center justify-center outline-none font-bold py-4 leading-5 rounded-t-lg',
+                            selected
                               ? ' text-error  bg-gray-200 '
                               : 'text-gray-400 hover:text-gray-500 border-b bg-white ',
                           )}
@@ -288,7 +311,7 @@ const LeftLogin = () => {
                                 </button>
 
                               </div>
-                          ))}
+                            ))}
                           </div>
                         </Tab.Panel>
                         <Tab.Panel className="relative overflow-y-auto h-[60vh] p-5 ">
@@ -311,7 +334,7 @@ const LeftLogin = () => {
                                 </button>
 
                               </div>
-                          ))}
+                            ))}
                           </div>
                         </Tab.Panel>
                       </Tab.Panels>

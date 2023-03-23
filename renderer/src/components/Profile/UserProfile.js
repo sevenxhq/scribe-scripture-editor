@@ -10,15 +10,24 @@ import {
 import { classNames } from '@/util/classNames';
 import { AuthenticationContext } from '@/components/Login/AuthenticationContextProvider';
 import { useGetUserName } from '@/components/hooks/useGetUserName';
+import { isElectron } from '@/core/handleElectron';
+import { useRouter } from 'next/navigation';
+import supabase from '../../../../supabase';
 
 const UserProfile = (_username) => {
   const { action: { logout } } = React.useContext(AuthenticationContext);
   const { t } = useTranslation();
   const profile = [t('label-your-profile')];
   const userPic = true;
+  const router = useRouter();
 
   // get username from custom hook
   const { username } = useGetUserName(_username);
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    error ? console.log({ error }) : router.push('/');
+  };
 
   return (
     <div>
@@ -76,15 +85,15 @@ const UserProfile = (_username) => {
                           href="/profile"
                           id="profile"
                           className={classNames(
-                          active ? 'bg-gray-100' : '',
-                          'block px-4 py-2 text-sm text-gray-700',
-                        )}
+                            active ? 'bg-gray-100' : '',
+                            'block px-4 py-2 text-sm text-gray-700',
+                          )}
                         >
 
                           {item}
 
                         </Link>
-)
+                      )
                     )}
                   </Menu.Item>
                 ))}
@@ -94,19 +103,19 @@ const UserProfile = (_username) => {
                       <Link
                         href="/"
                         id="signout"
-                        onClick={() => logout()}
+                        onClick={() => (isElectron ? logout() : signOut())}
                         role="button"
                         tabIndex={0}
                         className={classNames(
-                        active ? 'bg-gray-100' : '',
-                        'block px-4 py-2 text-sm text-gray-700',
-                      )}
+                          active ? 'bg-gray-100' : '',
+                          'block px-4 py-2 text-sm text-gray-700',
+                        )}
                       >
 
                         {t('btn-signout')}
 
                       </Link>
-)
+                    )
 
                   )}
                 </Menu.Item>

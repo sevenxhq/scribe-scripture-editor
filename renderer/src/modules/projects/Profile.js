@@ -14,6 +14,7 @@ import { isElectron } from '../../core/handleElectron';
 import { saveProfile } from '../../core/projects/handleProfile';
 import CustomList from './CustomList';
 import * as logger from '../../logger';
+import supabase from '../../../../supabase';
 
 const languages = [
   { title: 'English', code: 'en' },
@@ -77,12 +78,24 @@ export default function UserProfile() {
     selectedregion: '',
     organization: '',
   });
+  console.log(values);
   const [appLang, setAppLang] = React.useState(languages[0]);
   const [snackBar, setOpenSnackBar] = React.useState(false);
   const [snackText, setSnackText] = React.useState('');
   const [notify, setNotify] = React.useState();
   const { t } = useTranslation();
   // const [enabled, setEnabled] = React.useState(false);
+
+  const updateUser = async (values) => {
+    const { data, error } = await supabase.auth.updateUser({
+      data: values,
+    });
+    if (data) {
+      console.log('update user', data);
+    } else {
+      console.error('update error', error);
+    }
+  };
 
   React.useEffect(() => {
     if (!username && isElectron()) {
@@ -100,6 +113,9 @@ export default function UserProfile() {
           setAppMode(value);
         });
     }
+    localForage.getItem('userProfile').then((value) => {
+      setUsername(value.user.user_metadata.username);
+    });
   }, [username, values, appMode]);
 
   React.useEffect(() => {
@@ -116,6 +132,8 @@ export default function UserProfile() {
       i18n.changeLanguage(appLang.code);
     }
     const status = await saveProfile(values);
+    updateUser(values);
+
     setNotify(status[0].type);
     setSnackText(status[0].value);
     setOpenSnackBar(true);

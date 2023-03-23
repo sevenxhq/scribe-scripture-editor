@@ -1,4 +1,5 @@
 import * as localForage from 'localforage';
+import supabase from '../../../../supabase';
 import * as logger from '../../logger';
 
 const path = require('path');
@@ -16,7 +17,7 @@ export const loadUsers = async () => {
   const path = require('path');
   const file = path.join(newpath, 'autographa', 'users', 'users.json');
   if (fs.existsSync(file)) {
-  localForage.removeItem('userProfile');
+    localForage.removeItem('userProfile');
     fs.readFile(file, 'utf8', (err, data) => {
       if (err) {
         logger.error('handleJson.js', 'Failed to read the data from file');
@@ -107,5 +108,80 @@ export const handleJson = async (values, fs) => {
     logger.error('handleJson.js', 'Failed to create and write to the file');
     error.fetchFile = true;
     return error;
+  }
+};
+
+export const handleSupabaseJson = async (values) => {
+  error = { userExist: false, fetchFile: false };
+
+  if (await supabase.storage.from('autographa-web').list().then((result) => result.error)) {
+    logger.error('handleJson.js', 'Failed to access the storage');
+    error.fetchFile = true;
+    return error;
+  }
+
+  if (await supabase.storage.from('autographa-web').download('users.json').then((result) => result.error)) {
+    const array = [];
+    array.push(values);
+    try {
+      await supabase.storage.from('autographa-web').upload('users.json', JSON.stringify(array), {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+      logger.debug('handleJson.js', 'Successfully created and written to the file');
+      // Add new user to localForage:
+      localForage.setItem('users', array, (err) => {
+        if (err) {
+          logger.error('handleJson.js', 'Failed to Create a file and add user to LocalForage');
+        }
+        logger.debug('handleJson.js', 'Created a file and added user to LocalForage');
+      });
+      logger.debug('handleJson.js', 'Exiting from handleJson');
+      return error;
+    } catch (err) {
+      logger.error('handleJson.js', 'Failed to create and write to the file');
+      error.fetchFile = true;
+      return error;
+    }
+  } else {
+    const { data, error } = await supabase.storage.from('autographa-web').download('users.json');
+    if (error) {
+      logger.error('handleJson.js', 'Failed to read the data from file');
+      error.fetchFile = true;
+      return error;
+    }
+
+    logger.debug('handleJson.js', 'Successfully read the data from file');
+    const json = JSON.parse(data);
+    if (uniqueUser(json, values.username)) {
+      error.userExist = true;
+      return error;
+    }
+    json.push(values);
+    try {
+      await supabase.storage.from('autographa-web').upload('users.json', JSON.stringify(json), {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+      logger.debug('handleJson.js', 'Successfully added new user to the existing list in file');
+      await supabase.storage
+        .from('autographa-web')
+        .createDirectory(`${values.username}/projects`, { upsert: true });
+
+      logger.debug('handleJson.js', 'Successfully created directories for new user');
+      // Add new user to localForage:
+      localForage.setItem('users', json, (errLoc) => {
+        if (errLoc) {
+          logger.error('handleJson.js', 'Failed to add new user to existing list');
+        }
+        logger.debug('handleJson.js', 'Added new user to existing list');
+      });
+      return error;
+    } catch (errCatch) {
+      logger.error('handleJson.js', 'Failed to add new user to the file');
+      return error;
+    }
   }
 };

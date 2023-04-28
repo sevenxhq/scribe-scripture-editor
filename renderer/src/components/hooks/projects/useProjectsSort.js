@@ -50,7 +50,7 @@ function useProjectsSort() {
     const copy = property === 'starred'
       ? starredrow.splice(selectedIndex, 1)
       : unstarredrow.splice(selectedIndex, 1);
-      const projectArrayTemp = [];
+    const projectArrayTemp = [];
     if (isElectron()) {
       let currentUser;
       await localForage.getItem('userProfile').then((value) => {
@@ -86,17 +86,17 @@ function useProjectsSort() {
         });
       }).finally(() => {
         localForage.setItem('projectmeta', projectArrayTemp[0])
-        .then(() => {
-          projectArrayTemp[0].projects.forEach((_project) => {
-            if (_project.identification.name.en === name) {
-              const id = Object.keys(_project.identification.primary.ag);
-              const projectName = `${name}_${id}`;
-              logger.debug('useProjectsSort.js', `Updating star/unstar in AG settings for ${name}`);
-              updateAgSettings(currentUser, projectName, _project);
-            }
+          .then(() => {
+            projectArrayTemp[0].projects.forEach((_project) => {
+              if (_project.identification.name.en === name) {
+                const id = Object.keys(_project.identification.primary.ag);
+                const projectName = `${name}_${id}`;
+                logger.debug('useProjectsSort.js', `Updating star/unstar in AG settings for ${name}`);
+                updateAgSettings(currentUser, projectName, _project);
+              }
+            });
+            // metaFileReplace({ userData: projectArrayTemp[0] });
           });
-          // metaFileReplace({ userData: projectArrayTemp[0] });
-        });
       });
     } else {
       parseProjectMetaUpdate({
@@ -131,7 +131,7 @@ function useProjectsSort() {
   };
 
   // eslint-disable-next-line
-    useEffect(() => {
+  useEffect(() => {
     if (temparray) {
       active === 'starred'
         ? unstarredrow.push(temparray)
@@ -142,51 +142,51 @@ function useProjectsSort() {
     }
     handleRequestSortUnstarred('asc', 'view');
     // eslint-disable-next-line
-      }, [temparray, active]);
+  }, [temparray, active]);
 
-    const createData = (name, language, date, view, description, id, type, isArchived) => ({
-      name, language, date, view, description, id, type, isArchived,
-    });
+  const createData = (name, language, date, view, description, id, type, isArchived) => ({
+    name, language, date, view, description, id, type, isArchived,
+  });
 
-    const FetchStarred = (ProjectName, Language, createdAt, LastView, ProjectDescription, id, type, isArchived) => {
-      starrtedData.push(createData(
-        ProjectName,
-        Language,
-        createdAt,
-        LastView,
-        ProjectDescription,
-        id,
-        type,
-        isArchived,
-      ));
-    };
+  const FetchStarred = (ProjectName, Language, createdAt, LastView, ProjectDescription, id, type, isArchived) => {
+    starrtedData.push(createData(
+      ProjectName,
+      Language,
+      createdAt,
+      LastView,
+      ProjectDescription,
+      id,
+      type,
+      isArchived,
+    ));
+  };
 
-    const FetchUnstarred = (ProjectName, Language, createdAt, LastView, ProjectDescription, id, type, isArchived) => {
-      unstarrtedData.push(createData(
-        ProjectName,
-        Language,
-        createdAt,
-        LastView,
-        ProjectDescription,
-        id,
-        type,
-        isArchived,
-      ));
-    };
+  const FetchUnstarred = (ProjectName, Language, createdAt, LastView, ProjectDescription, id, type, isArchived) => {
+    unstarrtedData.push(createData(
+      ProjectName,
+      Language,
+      createdAt,
+      LastView,
+      ProjectDescription,
+      id,
+      type,
+      isArchived,
+    ));
+  };
 
-    const FetchProjects = async () => {
-      // if (isElectron()) {
-        localForage.getItem('userProfile').then((user) => {
-            if (user === null) {
-              router.push('/projects');
-        } else {
-          logger.debug('useProjectsSort.js', 'Fetching the projects');
-            const projectsData = fetchProjectsMeta({ currentUser: user?.username });
-            projectsData.then((value) => {
-              if (value) {
-                localForage.setItem('projectmeta', value)
-                .then(() => {
-                  localForage.getItem('projectmeta')
+  const FetchProjects = async () => {
+    // if (isElectron()) {
+    localForage.getItem('userProfile').then((user) => {
+      if (user === null) {
+        router.push('/projects');
+      } else {
+        logger.debug('useProjectsSort.js', 'Fetching the projects');
+        const projectsData = fetchProjectsMeta({ currentUser: user?.username });
+        projectsData.then((value) => {
+          if (value) {
+            localForage.setItem('projectmeta', value)
+              .then(() => {
+                localForage.getItem('projectmeta')
                   .then((value) => {
                     if (value) {
                       value.projects.forEach((_project) => {
@@ -228,7 +228,7 @@ function useProjectsSort() {
                             created,
                             flavorType,
                             isArchived,
-                            );
+                          );
                         } else {
                           FetchUnstarred(
                             _project.identification.name.en,
@@ -239,7 +239,7 @@ function useProjectsSort() {
                             created,
                             flavorType,
                             isArchived,
-                            );
+                          );
                         }
                       });
                     }
@@ -249,15 +249,15 @@ function useProjectsSort() {
                     setUnStarredRow(unstarrtedData);
                     setUnStarredProjets(unstarrtedData);
                   });
-                })
-                .catch((err) => {
-                  logger.error('useProjectsSort.js', 'Failed to fetch project list');
-                  // we got an error
-                  throw err;
-                });
-              }
-            });
-        }
+              })
+              .catch((err) => {
+                logger.error('useProjectsSort.js', 'Failed to fetch project list');
+                // we got an error
+                throw err;
+              });
+          }
+        });
+      }
     });
     // }
     //  else {
@@ -289,93 +289,99 @@ function useProjectsSort() {
     //         setUnStarredProjets(unstarrtedData);
     //     });
     //    }
-    };
+  };
 
-   /**
-    * Updates the project's archive status in the localForage database.
-    * @param name - the name of the project
-    */
-    const archiveProject = async (project, name) => {
-      const userProfile = await localForage.getItem('userProfile');
-      const currentUser = userProfile?.username;
+  /**
+   * Updates the project's archive status in the localForage database.
+   * @param name - the name of the project
+   */
+  const archiveProject = async (project, name) => {
+    // if (isElectron) {
+    //   const userProfile = await localForage.getItem('userProfile');
+    //   const currentUser = userProfile?.username;
 
-      const projects = await localForage.getItem('projectmeta');
+    //   const projects = await localForage.getItem('projectmeta');
 
-      const projectArrayTemp = JSON.parse(JSON.stringify(projects));
+    //   const projectArrayTemp = JSON.parse(JSON.stringify(projects));
 
-      projectArrayTemp.projects.forEach((_project) => {
-        if (_project.identification.name.en === name) {
-          let dirName;
-          switch (_project.type.flavorType.flavor.name) {
-            case 'textTranslation': {
-              dirName = 'textTranslation';
-              break;
-            }
-            case 'textStories': {
-              dirName = 'textStories';
-              break;
-            }
-            case 'audioTranslation': {
-              dirName = 'audioTranslation';
-              break;
-            }
-            default:
-              break;
-          }
-          const status = _project.project[dirName].isArchived;
-          const selectedProject = _project;
-          selectedProject.project[dirName].isArchived = !status;
-          selectedProject.project[dirName].lastSeen = moment().format();
-        }
-      });
+    //   projectArrayTemp.projects.forEach((_project) => {
+    //     if (_project.identification.name.en === name) {
+    //       let dirName;
+    //       switch (_project.type.flavorType.flavor.name) {
+    //         case 'textTranslation': {
+    //           dirName = 'textTranslation';
+    //           break;
+    //         }
+    //         case 'textStories': {
+    //           dirName = 'textStories';
+    //           break;
+    //         }
+    //         case 'audioTranslation': {
+    //           dirName = 'audioTranslation';
+    //           break;
+    //         }
+    //         default:
+    //           break;
+    //       }
+    //       const status = _project.project[dirName].isArchived;
+    //       const selectedProject = _project;
+    //       selectedProject.project[dirName].isArchived = !status;
+    //       selectedProject.project[dirName].lastSeen = moment().format();
+    //     }
+    //   });
 
-      await localForage.setItem('projectmeta', projectArrayTemp);
+    //   await localForage.setItem('projectmeta', projectArrayTemp);
 
-      projectArrayTemp.projects.forEach((_project) => {
-        if (_project.identification.name.en === name) {
-          const id = Object.keys(_project.identification.primary.ag);
-          const projectName = `${name}_${id}`;
-          logger.debug('useProjectsSort.js', `Updating archive/restore in AG settings for ${name}`);
-          updateAgSettings(currentUser, projectName, _project);
-        }
-      });
-      await FetchProjects();
-    };
+    //   projectArrayTemp.projects.forEach((_project) => {
+    //     if (_project.identification.name.en === name) {
+    //       const id = Object.keys(_project.identification.primary.ag);
+    //       const projectName = `${name}_${id}`;
+    //       logger.debug('useProjectsSort.js', `Updating archive/restore in AG settings for ${name}`);
+    //       updateAgSettings(currentUser, projectName, _project);
+    //     }
+    //   });
+    //   await FetchProjects();
+    // } else {
+    console.log('project to be archived', project);
+    // }
+    const archivedProject = { ...project, isArchived: !project.isArchived };
+    await localForage.setItem('archivedProject', archivedProject);
+  };
 
-    React.useEffect(() => {
-      FetchProjects();
-      // eslint-disable-next-line
-    }, []);
+  React.useEffect(() => {
+    FetchProjects();
+    // eslint-disable-next-line
+  }, []);
 
-    const response = {
-      state: {
-        starredrow,
-        unstarredrow,
-        orderUnstarred,
-        orderByUnstarred,
-        starredProjects,
-        unstarredProjects,
-        selectedProject,
-        notifications,
-        activeNotificationCount,
-      },
-      actions: {
-        handleClickStarred,
-        handleDelete,
-        handleRequestSortUnstarred,
-        archiveProject,
-        setStarredRow,
-        setUnStarredRow,
-        settemparray,
-        setactive,
-        setOrderUnstarred,
-        setOrderByUnstarred,
-        FetchProjects,
-        setSelectedProject,
-        setNotifications,
-        setActiveNotificationCount,
-      },
-    };
+  const response = {
+    state: {
+      starredrow,
+      unstarredrow,
+      orderUnstarred,
+      orderByUnstarred,
+      starredProjects,
+      unstarredProjects,
+      selectedProject,
+      notifications,
+      activeNotificationCount,
+    },
+    actions: {
+      handleClickStarred,
+      handleDelete,
+      handleRequestSortUnstarred,
+      archiveProject,
+      setStarredRow,
+      setUnStarredRow,
+      settemparray,
+      setactive,
+      setOrderUnstarred,
+      setOrderByUnstarred,
+      FetchProjects,
+      setSelectedProject,
+      setNotifications,
+      setActiveNotificationCount,
+    },
+  };
   return response;
 }
 export default useProjectsSort;

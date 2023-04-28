@@ -20,7 +20,7 @@ import { getComparator, stableSort } from '@/components/ProjectsPage/Projects/So
 
 import ExportProjectPopUp from '@/layouts/projects/Export/ExportProjectPopUp';
 import ProjectContextProvider from '@/components/context/ProjectContext';
-import * as localForage from 'localforage';
+import JSZip from 'jszip';
 import SearchTags from './SearchTags';
 import NewProject from './NewProject';
 import * as logger from '../../logger';
@@ -57,10 +57,56 @@ export default function ProjectList() {
   const [callEditProject, setCallEditProject] = useState(false);
   const [openPopUp, setOpenPopUp] = useState(false);
   const [currentProject, setCurrentProject] = useState();
-  const openExportPopUp = (project) => {
+
+  const openExportPopUp = async (project) => {
+    console.log("Exporting project...");
     setCurrentProject(project);
-    setOpenPopUp(true);
+    // setOpenPopUp(true);
+    const name = project.identification?.name?.en ?? '';
+    const id = Object.keys(project.identification?.primary?.ag ?? {})[0] ?? '';
+    const projectName = `${name}_${id}`;
+    const folderPath = `autographa/users/samuel/projects/${projectName}/ingredients`;
+    const { data: files, error } = await supabase.storage
+      .from('autographa-web')
+      .list(folderPath);
+
+    if (error) {
+      console.error('Error fetching ingredient files', error);
+    }
+
+    const zip = new JSZip(); // Create a new JSZip instance
+    for (const file of files) {
+      const { data, error } = await supabase.storage
+        .from('autographa-web')
+        .download(`${folderPath}/${file.name}`);
+
+      const { data: metadata } = await supabase.storage
+      .from('autographa-web')
+      .download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
+
+      const arrayBuffer = await data.arrayBuffer(); // Convert Blob to ArrayBuffer
+      const content = new TextDecoder('utf-8').decode(arrayBuffer);
+      // Add the file to the ZIP archive inside an 'ingredients' folder
+      zip.folder('ingredients').file(file.name, content);
+      zip.file('metadata.json', metadata);
+      if (error) {
+        console.error('Zip error occurred', error);
+        return;
+      }
+    }
+
+    // Generate the ZIP archive and trigger a download of the file
+    const content = await zip.generateAsync({ type: 'blob' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = `${projectName.replace('/', '-')}_ingredients.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+
+
+
   const closeExportPopUp = () => {
     setOpenPopUp(false);
   };
@@ -71,21 +117,22 @@ export default function ProjectList() {
   };
 
   const handleSelectProject = (event, projectName, projectId) => {
-    logger.debug('ProjectList.js', 'In handleSelectProject');
-    setSelectedProject(projectName);
-    localforage.setItem('currentProject', `${projectName}_${projectId}`);
-    router.push('/home');
-    localforage.getItem('notification').then((value) => {
-      const temp = [...value];
-      temp.push({
-        title: 'Project',
-        text: `successfully loaded ${projectName} files`,
-        type: 'success',
-        time: moment().format(),
-        hidden: true,
-      });
-      setNotifications(temp);
-    }).then(() => setActiveNotificationCount(activeNotificationCount + 1));
+    // logger.debug('ProjectList.js', 'In handleSelectProject');
+    // setSelectedProject(projectName);
+    // localforage.setItem('currentProject', `${projectName}_${projectId}`);
+    // router.push('/home');
+    // localforage.getItem('notification').then((value) => {
+    //   const temp = [...value];
+    //   temp.push({
+    //     title: 'Project',
+    //     text: `successfully loaded ${projectName} files`,
+    //     type: 'success',
+    //     time: moment().format(),
+    //     hidden: true,
+    //   });
+    //   setNotifications(temp);
+    // }).then(() => setActiveNotificationCount(activeNotificationCount + 1));
+    console.log({ projectName, projectId });
   };
 
   const editproject = async (project) => {
@@ -119,7 +166,7 @@ export default function ProjectList() {
   };
 
   function filterArchive(project) {
-    if (project.isArchived === showArchived || project.isArchived === undefined) {
+    if (project.isArchived === showArchived || (project.isArchived === undefined && showArchived === false)) {
       return true;
     }
     return false;
@@ -144,14 +191,67 @@ export default function ProjectList() {
     Promise.all(projectPromises).then((projectsArray) => {
       const filteredProjects = projectsArray.filter((p) => p !== null);
       setProjects(filteredProjects);
+      localforage.setItem('projectmeta', filteredProjects);
     });
+  };
+
+  const archiveProj = async (project) => {
+    const name = project.identification?.name?.en ?? '';
+    const id = Object.keys(project.identification?.primary?.ag ?? {})[0] ?? '';
+    const projectName = `${name}_${id}`;
+    const path = `autographa/users/samuel/projects/${projectName}/metadata.json`;
+
+    // Download the existing metadata JSON from Supabase storage
+    const { data, error } = await supabase.storage.from('autographa-web').download(path);
+    if (error) {
+      logger.error('Failed to download project metadata:', error.message);
+      return;
+    }
+
+    // Parse the metadata JSON as an object
+    const metadata = JSON.parse(await data.text());
+
+    // Update the metadata object by adding or flipping the isArchived field
+    if (metadata.isArchived === undefined) {
+      metadata.isArchived = true;
+    } else {
+      metadata.isArchived = !metadata.isArchived;
+    }
+
+    // Convert the updated metadata object to a JSON string
+    const updatedMetadata = JSON.stringify(metadata);
+
+    // Upload the updated metadata JSON back to Supabase storage
+    const { data: archivefile, error: uploadError } = await supabase.storage.from('autographa-web').update(path, updatedMetadata, {
+      cacheControl: '3600',
+      upsert: true,
+    });
+    if (uploadError) {
+      console.error('Failed to upload updated project metadata:', uploadError.message);
+      return;
+    }
+    console.log('archived!', archivefile);
+    await getProjects();
   };
 
   useEffect(() => {
     getProjects();
   }, []);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  console.log({ projects });
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const filteredData = projects?.filter((object) => {
+    const name = object.identification.name;
+    if (name && name.en) {
+      return name.en.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    return false;
+  });
+
+  // console.log({ projects, showArchived });
   return (
     <>
       {callEditProject === false
@@ -164,11 +264,12 @@ export default function ProjectList() {
               setShowArchived={setShowArchived}
               header={(
                 <SearchTags
-                  contentList1={starredProjects}
-                  contentList2={unstarredProjects}
+                  contentList1={projects}
+                  contentList2={projects}
                   filterList={filterList}
                   onfilerRequest1={setStarredRow}
                   onfilerRequest2={setUnStarredRow}
+                  onSearch={handleSearch}
                 />
               )}
             >
@@ -186,7 +287,7 @@ export default function ProjectList() {
                               onRequestSort={handleRequestSort}
                             />
                             <tbody className="bg-white divide-y divide-gray-200">
-                              {projects && projects.map((project) => (
+                              {projects && filteredData.filter(filterArchive).map((project) => (
                                 <Disclosure key={project?.identification?.name?.en}>
                                   {({ open }) => (
                                     <>
@@ -305,10 +406,10 @@ export default function ProjectList() {
                                                           className={`${active ? 'bg-primary text-white' : 'text-gray-900'
                                                             } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
                                                           onClick={() => {
-                                                            archiveProject(project, project?.identification?.name?.en);
+                                                            archiveProj(project);
                                                           }}
                                                         >
-                                                          Archive
+                                                          {project.isArchived ? 'Restore' : 'Archive'}
                                                         </button>
                                                       )}
                                                     </Menu.Item>

@@ -2,7 +2,6 @@
 // import { Providers } from './providers';
 import Home from '../renderer/src/Home';
 
-
 const index = () => (
   <Home />
 );

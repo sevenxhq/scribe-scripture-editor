@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
+import { isElectron } from '@/core/handleElectron';
 
 export default function SearchTags({
   defaultQuery,
@@ -11,6 +12,7 @@ export default function SearchTags({
   filterList,
   onfilerRequest1,
   onfilerRequest2,
+  onSearch,
 }) {
   const { t } = useTranslation();
   const [query, setQuery] = React.useState(defaultQuery);
@@ -32,9 +34,13 @@ export default function SearchTags({
     }
   }, [excludeColumns]);
 
-  // handle change event of search input
+  // handle change event of search input on electron
   const handleChange = (value) => {
     setQuery(value);
+  };
+
+  const handleWebSearch = (value) => {
+    onSearch(value.target.value);
   };
 
   React.useEffect(() => {
@@ -59,7 +65,7 @@ export default function SearchTags({
         id="search_box"
         autoComplete="given-name"
         placeholder={t('label-search')}
-        onChange={(e) => handleChange(e.target.value)}
+        onChange={(e) => (handleWebSearch(e))}
         className="pl-10 bg-gray-100 w-full block rounded-full shadow-sm sm:text-sm focus:ring-gray-500 focus:border-primary border-gray-300"
       />
 

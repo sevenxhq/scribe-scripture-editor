@@ -20,11 +20,11 @@ const Home = () => {
   useEffect(() => {
     (async function () {
       const { data: users } = await supabase.from('users_json').select();
-      const { data: bucketlist } = await supabase.storage.from('autographa-web').list('autographa/users');
-      const { data: userJson } = await supabase.storage.from('autographa-web').download('autographa/users/newUsers.json');
+      const { data: bucketlist, error: scribeError } = await supabase.storage.from('scribe').list('scribe');
+      const { data: userJson } = await supabase.storage.from('autographa-web').download('autographa/users/users.json');
+
       const userJsonInfo = JSON.parse(await userJson.text());
-      console.log({ userJsonInfo });
-      console.log({ users });
+      console.log({ userJsonInfo, bucketlist, scribeError });
       await localForage.setItem('users', userJsonInfo, (errLoc) => {
         if (errLoc) {
           logger.error('handleJson.js', 'Failed to load users list to LocalStorage');

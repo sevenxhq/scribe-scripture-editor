@@ -26,7 +26,7 @@ project,
 call,
 update,
 ) => {
-  logger.debug('createTranslationSB.js', 'In createTranslationSB');
+  console.log('createTranslationSB.js', { username, projectFields, selectedScope, language, id, project, call, update });
   const localizedNames = {};
   return new Promise((resolve) => {
     let json = {};

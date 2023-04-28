@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import * as localforage from 'localforage';
 import { isElectron } from '../../core/handleElectron';
 import * as logger from '../../logger';
-import saveProjectsMeta from '../../core/projects/saveProjetcsMeta';
+import { saveProjectsMeta, saveSupabaseProjectsMeta } from '../../core/projects/saveProjetcsMeta';
 import { environment } from '../../../environment';
 
 const path = require('path');
@@ -249,6 +249,31 @@ const ProjectContextProvider = ({ children }) => {
       return status;
     };
 
+    const createSupabaseProject = async (call, project, update, projectType) => {
+      // createProjectCommonUtils();
+      // common props pass for all project type
+      const projectMetaObj = {
+        newProjectFields,
+        language,
+        copyright,
+        importedFiles,
+        call,
+        project,
+        update,
+        projectType,
+      };
+      if (projectType !== 'OBS') {
+        // createProjectTranslationUtils();
+        const temp_obj = {
+          versificationScheme: versificationScheme.title,
+          canonSpecification,
+        };
+        Object.assign(projectMetaObj, temp_obj);
+      }
+      logger.debug('ProjectContext.js', 'Calling saveSupabaseProjectsMeta with required props');
+      const status = await saveSupabaseProjectsMeta(projectMetaObj);
+      return status;
+    }
     const resetProjectStates = () => {
       const initialState = {
         language: '',
@@ -304,6 +329,7 @@ const ProjectContextProvider = ({ children }) => {
             setSideTabTitle,
             setSelectedProject,
             createProject,
+            createSupabaseProject,
             setLanguage,
             setScrollLock,
             setUsername,

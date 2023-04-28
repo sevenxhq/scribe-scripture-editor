@@ -23,6 +23,8 @@ import * as logger from '../../logger';
 import ImportPopUp from './ImportPopUp';
 import CustomList from './CustomList';
 import burrito from '../../lib/BurritoTemplete.json';
+import supabase from '../../../../supabase';
+import LoadingScreen from '@/components/Loading/LoadingScreen';
 // eslint-disable-next-line no-unused-vars
 const solutions = [
   {
@@ -57,39 +59,40 @@ function TargetLanguageTag(props) {
 function BibleHeaderTagDropDown(headerDropDown, handleDropDown, call) {
   return (
     call === 'new'
-    ? (
-      <PopoverProjectType
-        items={solutions}
-        handleDropDown={handleDropDown}
-      >
+      ? (
+        <PopoverProjectType
+          items={solutions}
+          handleDropDown={handleDropDown}
+        >
+          <button
+            type="button"
+            aria-label="open-popover"
+            className="flex justify-center items-center px-3 py-2 text-white ml-5
+          font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
+          >
+            <div className="">{headerDropDown}</div>
+            <ChevronDownIcon
+              className="w-5 h-5 ml-2"
+              aria-hidden="true"
+            />
+          </button>
+        </PopoverProjectType>
+      )
+      : (
         <button
           type="button"
-          aria-label="open-popover"
           className="flex justify-center items-center px-3 py-2 text-white ml-5
           font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
         >
           <div className="">{headerDropDown}</div>
-          <ChevronDownIcon
-            className="w-5 h-5 ml-2"
-            aria-hidden="true"
-          />
         </button>
-      </PopoverProjectType>
-    )
-    : (
-      <button
-        type="button"
-        className="flex justify-center items-center px-3 py-2 text-white ml-5
-          font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
-      >
-        <div className="">{headerDropDown}</div>
-      </button>
-    )
+      )
 
   );
 }
 
 export default function NewProject({ call, project, closeEdit }) {
+  console.log({ call, project, closeEdit });
   const {
     states: {
       newProjectFields,
@@ -101,6 +104,7 @@ export default function NewProject({ call, project, closeEdit }) {
       createProject,
       setNewProjectFields,
       setLanguages,
+      createSupabaseProject,
     },
   } = React.useContext(ProjectContext);
   const { t } = useTranslation();
@@ -214,6 +218,36 @@ export default function NewProject({ call, project, closeEdit }) {
       setLoading(false);
     }
   };
+
+  const createWebProject = async () => {
+    setLoading(true);
+    if (newProjectFields.projectName && newProjectFields.abbreviation) {
+      const value = await createSupabaseProject(call, metadata, false, headerDropDown);
+      console.log({ value });
+      value && setLoading(false);
+      
+      // const { data: createdProject, error } = await supabase
+      //   .storage
+      //   .from('autographa-web')
+      //   .upload(`autographa/users/samuel/projects/${newProjectFields.projectName}/metadata.json`, JSON.stringify(newProjectFields), {
+      //     cacheControl: '3600',
+      //     upsert: true
+      //   });
+      // if (createdProject) {
+      //   setLoading(false);
+      //   console.log('new proj created', createdProject);
+      // }
+      // if (error) {
+      //   console.log(error);
+      // }
+    }
+    else {
+      setNotify('warning');
+      setSnackText(t('dynamic-msg-fill-all-fields'));
+      setOpenSnackBar(true);
+      setLoading(false);
+    }
+  }
   const updateBurritoVersion = () => {
     setOpenModal(false);
     logger.warn('NewProject.js', 'Calling createTheProject function with burrito update');
@@ -263,7 +297,7 @@ export default function NewProject({ call, project, closeEdit }) {
     if (call === 'edit') {
       loadData(project);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call]);
 
   return (
@@ -273,13 +307,8 @@ export default function NewProject({ call, project, closeEdit }) {
     >
       {loading === true
         ? (
-          <div className="h-full items-center justify-center flex">
-            <svg className="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          </div>
-          )
+          <LoadingScreen />
+        )
         : (
           <div className=" rounded-md border shadow-sm mt-4 ml-5 mr-5 mb-5">
             <div className="grid grid-cols-1 lg:grid-cols-3 m-10 gap-5">
@@ -339,12 +368,12 @@ export default function NewProject({ call, project, closeEdit }) {
                   <div>
                     {headerDropDown !== 'Audio'
                       && (
-                      <div className="absolute">
-                        <TargetLanguageTag>
-                          {language.scriptDirection ? language.scriptDirection : 'LTR'}
-                        </TargetLanguageTag>
-                      </div>
-                    )}
+                        <div className="absolute">
+                          <TargetLanguageTag>
+                            {language.scriptDirection ? language.scriptDirection : 'LTR'}
+                          </TargetLanguageTag>
+                        </div>
+                      )}
                     <h4 className="text-xs font-base mb-2 text-primary  tracking-wide leading-4  font-light">
                       {t('label-target-language')}
                       <span className="text-error">*</span>
@@ -383,7 +412,7 @@ export default function NewProject({ call, project, closeEdit }) {
                         type="button"
                         aria-label="create"
                         className="w-40 h-10 my-5 bg-success leading-loose rounded shadow text-xs font-base text-white tracking-wide font-light uppercase"
-                        onClick={() => validate()}
+                        onClick={() => createWebProject()}
                       >
                         {t('btn-create-project')}
                       </button>
@@ -412,7 +441,7 @@ export default function NewProject({ call, project, closeEdit }) {
               </div>
             </div>
           </div>
-      )}
+        )}
       <SnackBar
         openSnackBar={snackBar}
         snackText={snackText}

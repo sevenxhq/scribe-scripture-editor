@@ -24,7 +24,8 @@ import JSZip from 'jszip';
 import SearchTags from './SearchTags';
 import NewProject from './NewProject';
 import * as logger from '../../logger';
-import supabase from '../../../../supabase';
+import { supabaseStorage } from '../../../../supabase';
+import LoadingScreen from '@/components/Loading/LoadingScreen';
 
 export default function ProjectList() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function ProjectList() {
       unstarredrow,
       starredProjects,
       unstarredProjects,
+      loading,
       activeNotificationCount,
     },
     action: {
@@ -49,6 +51,7 @@ export default function ProjectList() {
       handleClickStarred,
       archiveProject,
       setSelectedProject,
+      setLoading,
       setNotifications,
       setActiveNotificationCount,
       FetchProjects,
@@ -60,15 +63,14 @@ export default function ProjectList() {
 
   const openExportPopUp = async (project) => {
     console.log("Exporting project...");
+    setLoading(true);
     setCurrentProject(project);
     // setOpenPopUp(true);
     const name = project.identification?.name?.en ?? '';
     const id = Object.keys(project.identification?.primary?.ag ?? {})[0] ?? '';
     const projectName = `${name}_${id}`;
     const folderPath = `autographa/users/samuel/projects/${projectName}/ingredients`;
-    const { data: files, error } = await supabase.storage
-      .from('autographa-web')
-      .list(folderPath);
+    const { data: files, error } = await supabaseStorage().list(folderPath);
 
     if (error) {
       console.error('Error fetching ingredient files', error);
@@ -76,13 +78,11 @@ export default function ProjectList() {
 
     const zip = new JSZip(); // Create a new JSZip instance
     for (const file of files) {
-      const { data, error } = await supabase.storage
-        .from('autographa-web')
+      const { data, error } = await supabaseStorage()
         .download(`${folderPath}/${file.name}`);
 
-      const { data: metadata } = await supabase.storage
-      .from('autographa-web')
-      .download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
+      const { data: metadata } = await supabaseStorage()
+        .download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
 
       const arrayBuffer = await data.arrayBuffer(); // Convert Blob to ArrayBuffer
       const content = new TextDecoder('utf-8').decode(arrayBuffer);
@@ -103,9 +103,8 @@ export default function ProjectList() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setLoading(false);
   };
-
-
 
   const closeExportPopUp = () => {
     setOpenPopUp(false);
@@ -117,21 +116,21 @@ export default function ProjectList() {
   };
 
   const handleSelectProject = (event, projectName, projectId) => {
-    // logger.debug('ProjectList.js', 'In handleSelectProject');
-    // setSelectedProject(projectName);
-    // localforage.setItem('currentProject', `${projectName}_${projectId}`);
-    // router.push('/home');
-    // localforage.getItem('notification').then((value) => {
-    //   const temp = [...value];
-    //   temp.push({
-    //     title: 'Project',
-    //     text: `successfully loaded ${projectName} files`,
-    //     type: 'success',
-    //     time: moment().format(),
-    //     hidden: true,
-    //   });
-    //   setNotifications(temp);
-    // }).then(() => setActiveNotificationCount(activeNotificationCount + 1));
+    logger.debug('ProjectList.js', 'In handleSelectProject');
+    setSelectedProject(projectName);
+    localforage.setItem('currentProject', `${projectName}_${projectId}`);
+    router.push('/home');
+    localforage.getItem('notification').then((value) => {
+      const temp = [...value];
+      temp.push({
+        title: 'Project',
+        text: `successfully loaded ${projectName} files`,
+        type: 'success',
+        time: moment().format(),
+        hidden: true,
+      });
+      setNotifications(temp);
+    }).then(() => setActiveNotificationCount(activeNotificationCount + 1));
     console.log({ projectName, projectId });
   };
 
@@ -174,11 +173,10 @@ export default function ProjectList() {
 
   const getProjects = async () => {
     const path = 'autographa/users/samuel/projects';
-    const { data: allProjects } = await supabase.storage.from('autographa-web').list(path);
+    const { data: allProjects } = await supabaseStorage().list(path);
     const projectPromises = allProjects.map(async (proj) => {
       const projectName = proj.name;
-      const { data, error } = await supabase.storage
-        .from('autographa-web')
+      const { data, error } = await supabaseStorage()
         .download(`${path}/${projectName}/metadata.json`);
       if (error) {
         logger.error('ProjectList.js', 'Failed to fetch projects from Supabase');
@@ -191,7 +189,7 @@ export default function ProjectList() {
     Promise.all(projectPromises).then((projectsArray) => {
       const filteredProjects = projectsArray.filter((p) => p !== null);
       setProjects(filteredProjects);
-      localforage.setItem('projectmeta', filteredProjects);
+      localforage.setItem('projectmeta', { projects: filteredProjects });
     });
   };
 
@@ -202,7 +200,7 @@ export default function ProjectList() {
     const path = `autographa/users/samuel/projects/${projectName}/metadata.json`;
 
     // Download the existing metadata JSON from Supabase storage
-    const { data, error } = await supabase.storage.from('autographa-web').download(path);
+    const { data, error } = await supabaseStorage().download(path);
     if (error) {
       logger.error('Failed to download project metadata:', error.message);
       return;
@@ -222,7 +220,7 @@ export default function ProjectList() {
     const updatedMetadata = JSON.stringify(metadata);
 
     // Upload the updated metadata JSON back to Supabase storage
-    const { data: archivefile, error: uploadError } = await supabase.storage.from('autographa-web').update(path, updatedMetadata, {
+    const { data: archivefile, error: uploadError } = await supabaseStorage().update(path, updatedMetadata, {
       cacheControl: '3600',
       upsert: true,
     });
@@ -251,10 +249,9 @@ export default function ProjectList() {
     return false;
   });
 
-  // console.log({ projects, showArchived });
   return (
     <>
-      {callEditProject === false
+      {loading ? <LoadingScreen /> : callEditProject === false
         ? (
           <>
             <ProjectsLayout
@@ -309,7 +306,7 @@ export default function ProjectList() {
                                             <div className="ml-0">
                                               <div
                                                 onClick={
-                                                  (event) => handleSelectProject(event, project.identification.name.en, '727b08fc-71bf-5f67-88d0-c21fcd89f06c')
+                                                  (event) => handleSelectProject(event, project.identification.name.en, Object?.keys(project?.identification?.primary?.ag)[0])
                                                 }
                                                 role="button"
                                                 aria-label="unstar-project-name"

@@ -1,5 +1,5 @@
 import * as localForage from 'localforage';
-import supabase from '../../../../supabase';
+import supabase, { supabaseStorage } from '../../../../supabase';
 import * as logger from '../../logger';
 
 const path = require('path');
@@ -114,17 +114,17 @@ export const handleJson = async (values, fs) => {
 export const handleSupabaseJson = async (values) => {
   error = { userExist: false, fetchFile: false };
 
-  if (await supabase.storage.from('autographa-web').list().then((result) => result.error)) {
+  if (await supabaseStorage().list().then((result) => result.error)) {
     logger.error('handleJson.js', 'Failed to access the storage');
     error.fetchFile = true;
     return error;
   }
 
-  if (await supabase.storage.from('autographa-web').download('users.json').then((result) => result.error)) {
+  if (await supabaseStorage().download('users.json').then((result) => result.error)) {
     const array = [];
     array.push(values);
     try {
-      await supabase.storage.from('autographa-web').upload('users.json', JSON.stringify(array), {
+      await supabaseStorage().upload('users.json', JSON.stringify(array), {
         cacheControl: '3600',
         upsert: true,
       });
@@ -145,7 +145,7 @@ export const handleSupabaseJson = async (values) => {
       return error;
     }
   } else {
-    const { data, error } = await supabase.storage.from('autographa-web').download('users.json');
+    const { data, error } = await supabaseStorage().download('users.json');
     if (error) {
       logger.error('handleJson.js', 'Failed to read the data from file');
       error.fetchFile = true;
@@ -160,14 +160,13 @@ export const handleSupabaseJson = async (values) => {
     }
     json.push(values);
     try {
-      await supabase.storage.from('autographa-web').upload('users.json', JSON.stringify(json), {
+      await supabaseStorage().upload('users.json', JSON.stringify(json), {
         cacheControl: '3600',
         upsert: true,
       });
 
       logger.debug('handleJson.js', 'Successfully added new user to the existing list in file');
-      await supabase.storage
-        .from('autographa-web')
+      await supabaseStorage()
         .createDirectory(`${values.username}/projects`, { upsert: true });
 
       logger.debug('handleJson.js', 'Successfully created directories for new user');

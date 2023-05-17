@@ -10,7 +10,7 @@ import ReferenceContextProvider from './components/context/ReferenceContext';
 import * as logger from './logger';
 import ProjectList from './modules/projects/ProjectList';
 import AutographaContextProvider from './components/context/AutographaContext';
-import supabase from '../../supabase';
+import supabase, { supabaseStorage } from '../../supabase';
 
 const Home = () => {
   const { states, action } = useContext(AuthenticationContext);
@@ -21,7 +21,7 @@ const Home = () => {
     (async function () {
       const { data: users } = await supabase.from('users_json').select();
       const { data: bucketlist, error: scribeError } = await supabase.storage.from('scribe').list('scribe');
-      const { data: userJson } = await supabase.storage.from('autographa-web').download('autographa/users/users.json');
+      const { data: userJson } = await supabaseStorage().download('autographa/users/users.json');
 
       const userJsonInfo = JSON.parse(await userJson.text());
       console.log({ userJsonInfo, bucketlist, scribeError });

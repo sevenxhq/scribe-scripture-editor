@@ -26,6 +26,7 @@ call,
 update,
 ) => {
   logger.debug('createObsSB.js', 'In createObsSB');
+  console.log('createObsSB.js', 'creating obs sb');
   return new Promise((resolve) => {
     let json = {};
     if (call === 'edit') {
@@ -64,6 +65,7 @@ update,
       json.copyright.licenses[0].ingredient = 'license.md';
     }
     logger.debug('createObsSB.js', 'Created the Translation SB');
+    console.log('createObsSB.js', 'Created the Translation SB');
     resolve(json);
   });
 };

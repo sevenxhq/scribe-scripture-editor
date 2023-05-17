@@ -20,6 +20,7 @@ function useProjectsSort() {
   const [active, setactive] = React.useState('');
   const [orderUnstarred, setOrderUnstarred] = React.useState('asc');
   const [orderByUnstarred, setOrderByUnstarred] = React.useState('name');
+  const [loading, setLoading] = React.useState(false);
   const [starredProjects, setStarredProjets] = React.useState();
   const [unstarredProjects, setUnStarredProjets] = React.useState();
   const [selectedProject, setSelectedProject] = React.useState('');
@@ -361,6 +362,7 @@ function useProjectsSort() {
       orderByUnstarred,
       starredProjects,
       unstarredProjects,
+      loading,
       selectedProject,
       notifications,
       activeNotificationCount,
@@ -374,6 +376,7 @@ function useProjectsSort() {
       setUnStarredRow,
       settemparray,
       setactive,
+      setLoading,
       setOrderUnstarred,
       setOrderByUnstarred,
       FetchProjects,

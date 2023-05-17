@@ -3,13 +3,13 @@ import * as localforage from 'localforage';
 import { v5 as uuidv5 } from 'uuid';
 import { createAudioVersification } from '@/util/createAudioVersification';
 import { createVersificationUSFM } from '../../util/createVersificationUSFM';
-import { createObsContent } from '../../util/createObsContent';
+import { createObsContent, createWebObsContent } from '../../util/createObsContent';
 import createTranslationSB from '../burrito/createTranslationSB';
 import createObsSB from '../burrito/createObsSB';
 import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import createAudioSB from '../burrito/createAudioSB';
-import supabase from '../../../../supabase';
+import supabase, { supabaseStorage } from '../../../../supabase';
 
 const bookAvailable = (list, id) => list.some((obj) => obj === id);
 const checker = (arr, target) => target.every((v) => arr.includes(v));
@@ -336,7 +336,6 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
   console.log({ projectMetaObj });
 
   const currentUser = 'samuel';
-  const filePath = `autographa/users/samuel/projects/${projectMetaObj.newProjectFields.projectName}/metadata.json`;
   const metadata = {
     ...projectMetaObj,
     lastUpdated: new Date().toISOString(),
@@ -416,7 +415,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
       console.log('saveProjectsMeta.js', 'Creating a burrito file.');
       const filePath = `autographa/users/samuel/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`;
       console.log({ burritoFile });
-      const { data: createdProject, error } = await supabase.storage.from('autographa-web').upload(filePath, JSON.stringify(burritoFile), {
+      const { data: createdProject, error } = await supabaseStorage().upload(filePath, JSON.stringify(burritoFile), {
         cacheControl: '3600',
         upsert: true,
         // contentType: 'application/json',
@@ -430,18 +429,82 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
       return { type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') };
     }
   }
-  await translationBurritoChecksAndCreation();
-  // const { data: createdProject, error } = await supabase.storage.from('autographa-web')
-  //   .upload(filePath, JSON.stringify(metadata), {
-  //     cacheControl: '3600',
-  //     upsert: true,
-  //     contentType: 'application/json',
-  //   });
-  // if (error) {
-  //   console.log(error);
-  //   return { type: 'error', value: 'Unable to save project metadata.' };
-  // }
-  // if (createdProject) {
-  //   return { type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') };
-  // }
+
+  const obsBurritoChecksAndCreation = async () => {
+    logger.debug('saveProjectsMeta.js', 'In OBS Burrito Checks And Creation');
+    let id;
+    if (projectMetaObj.call === 'new') {
+      logger.debug('saveProjectsMeta.js', 'Creating a key for the Project');
+      const key = currentUser + projectMetaObj.newProjectFields.projectName + moment().format();
+      id = uuidv5(key, environment.uuidToken);
+    } else {
+      logger.debug('saveProjectsMeta.js', 'Fetching the key from the existing Project');
+      // from existing metadata
+      id = Object.keys(projectMetaObj.project?.identification?.primary?.ag);
+    }
+    const filePath = `autographa/users/samuel/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`;
+    // Create New burrito
+    // ingredient has the list of created files in the form of SB Ingredients
+    logger.debug('saveProjectsMeta.js', 'Calling createObsContent for generating md files.');
+    await createWebObsContent(
+      currentUser,
+      projectMetaObj.newProjectFields,
+      projectMetaObj.language.scriptDirection,
+      id,
+      projectMetaObj.project,
+      projectMetaObj.importedFiles,
+      projectMetaObj.copyright,
+      projectMetaObj.call,
+    ).then(async (ingredient) => {
+      logger.debug('saveProjectsMeta.js', 'Calling createTranslationSB for creating burrito.');
+      const burritoFile = await createObsSB(
+        currentUser,
+        projectMetaObj.newProjectFields,
+        projectMetaObj.language.title,
+        projectMetaObj.copyright,
+        id,
+        projectMetaObj.project,
+        projectMetaObj.call,
+        projectMetaObj.update,
+      );
+      if (projectMetaObj.call === 'edit') {
+        burritoFile.ingredients = { ...projectMetaObj.project.ingredients, ...ingredient };
+      } else {
+        burritoFile.ingredients = ingredient;
+      }
+      logger.debug('saveProjectsMeta.js', 'Creating a burrito file.');
+      const { data: obsFile, error: obsError } = await supabaseStorage().upload(
+        filePath,
+        JSON.stringify(burritoFile), {
+        cacheControl: '3600',
+        upsert: true,
+        // contentType: 'application/json',
+      });
+      if (obsError) {
+        console.log('saveProjectsMeta.js', obsError);
+        return { type: 'error', value: 'Unable to create or update burrito file.' };
+      }
+      console.log('saveProjectsMeta.js', obsFile);
+      return { type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') };
+
+    })
+  };
+
+  switch (projectMetaObj.projectType) {
+    case 'Translation':
+      await translationBurritoChecksAndCreation();
+      break;
+
+    case 'OBS':
+      await obsBurritoChecksAndCreation();
+      // console.log('saveProjectsMeta.js', 'OBS project creation is not supported yet.')
+      break;
+
+    case 'Audio':
+      await audioBurritoChecksAndCreation();
+      break;
+
+    default:
+      break;
+  }
 };

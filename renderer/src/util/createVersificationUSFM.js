@@ -5,7 +5,7 @@ import * as logger from '../logger';
 import grammar from 'usfm-grammar';
 import path from 'path';
 import md5 from 'md5';
-import supabase from '../../../supabase';
+import supabase, { supabaseStorage } from '../../../supabase';
 
 // const grammar = require('usfm-grammar');
 // const path = require('path');
@@ -45,8 +45,7 @@ export const createVersificationUSFM = (
 
   const supabasePath = `autographa/users/samuel/projects/${project.projectName}_${id}/ingredients`;
   const uploadFileToSupabase = async (filePath, fileContent) => {
-    const { data: file, error } = await supabase.storage
-      .from('autographa-web')
+    const { data: file, error } = await supabaseStorage()
       .upload(filePath, new Blob([fileContent], { type: 'text/plain' }));
 
     if (error) {

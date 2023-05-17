@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import ProjectsLayout from '@/layouts/projects/Layout';
 import AdvancedSettingsDropdown from '@/components/ProjectsPage/CreateProject/AdvancedSettingsDropdown';
 import { ProjectContext } from '@/components/context/ProjectContext';
+import { AutographaContext } from '@/components/context/AutographaContext';
 import TargetLanguagePopover from '@/components/ProjectsPage/CreateProject/TargetLanguagePopover';
 import PopoverProjectType from '@/layouts/editor/PopoverProjectType';
 import { SnackBar } from '@/components/SnackBar';
@@ -23,7 +24,6 @@ import * as logger from '../../logger';
 import ImportPopUp from './ImportPopUp';
 import CustomList from './CustomList';
 import burrito from '../../lib/BurritoTemplete.json';
-import supabase from '../../../../supabase';
 import LoadingScreen from '@/components/Loading/LoadingScreen';
 // eslint-disable-next-line no-unused-vars
 const solutions = [
@@ -90,9 +90,7 @@ function BibleHeaderTagDropDown(headerDropDown, handleDropDown, call) {
 
   );
 }
-
 export default function NewProject({ call, project, closeEdit }) {
-  console.log({ call, project, closeEdit });
   const {
     states: {
       newProjectFields,
@@ -107,13 +105,21 @@ export default function NewProject({ call, project, closeEdit }) {
       createSupabaseProject,
     },
   } = React.useContext(ProjectContext);
+
+  const {
+    states: {
+      loading
+    },
+    action: {
+      setLoading
+    },
+  } = React.useContext(AutographaContext);
   const { t } = useTranslation();
   const { action: { validateField, isLengthValidated, isTextValidated } } = useValidator();
   const router = useRouter();
   const [snackBar, setOpenSnackBar] = React.useState(false);
   const [snackText, setSnackText] = React.useState('');
   const [notify, setNotify] = React.useState();
-  const [loading, setLoading] = React.useState(false);
   const [metadata, setMetadata] = React.useState();
   const [openModal, setOpenModal] = React.useState(false);
   const [error, setError] = React.useState({
@@ -155,6 +161,7 @@ export default function NewProject({ call, project, closeEdit }) {
     }
   };
   const createTheProject = (update) => {
+    setLoading(true);
     logger.debug('NewProject.js', 'Creating new project.');
     const value = createProject(call, metadata, update, headerDropDown);
     value.then((status) => {
@@ -225,21 +232,7 @@ export default function NewProject({ call, project, closeEdit }) {
       const value = await createSupabaseProject(call, metadata, false, headerDropDown);
       console.log({ value });
       value && setLoading(false);
-      
-      // const { data: createdProject, error } = await supabase
-      //   .storage
-      //   .from('autographa-web')
-      //   .upload(`autographa/users/samuel/projects/${newProjectFields.projectName}/metadata.json`, JSON.stringify(newProjectFields), {
-      //     cacheControl: '3600',
-      //     upsert: true
-      //   });
-      // if (createdProject) {
-      //   setLoading(false);
-      //   console.log('new proj created', createdProject);
-      // }
-      // if (error) {
-      //   console.log(error);
-      // }
+      router.push('/projects');
     }
     else {
       setNotify('warning');

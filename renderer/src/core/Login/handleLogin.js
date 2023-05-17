@@ -2,7 +2,7 @@ import * as localforage from 'localforage';
 import { environment } from '../../../environment';
 import { handleJson, handleSupabaseJson } from './handleJson';
 import * as logger from '../../logger';
-import supabase from '../../../../supabase';
+import supabase, { supabaseStorage } from '../../../../supabase';
 import { isElectron } from '../handleElectron';
 
 const advanceSettings = require('../../lib/AdvanceSettings.json');
@@ -50,8 +50,7 @@ const createSupabaseSettingJson = async (path) => {
 
 const addNewUser = async (newUser) => {
   // Fetch the current array of users from the Supabase storage file
-  const { data, error } = await supabase.storage
-    .from('autographa-web')
+  const { data, error } = await supabaseStorage()
     .download('autographa/users/newUsers.json');
 
   if (error) {

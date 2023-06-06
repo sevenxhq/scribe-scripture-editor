@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable react/jsx-no-useless-fragment */
 import dynamic from 'next/dynamic';
 import { useContext, useEffect, useState } from 'react';

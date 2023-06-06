@@ -9,12 +9,12 @@ export default function EditorLayout(props) {
 	const { children } = props;
 
 	return (
-		<>
-			<MenuBar />
-			<SubMenuBar />
+  <>
+    <MenuBar />
+    <SubMenuBar />
 
-			<main className='bg-gray-50-x'>{children}</main>
-		</>
+    <main className="bg-gray-50-x">{children}</main>
+  </>
 	);
 }
 

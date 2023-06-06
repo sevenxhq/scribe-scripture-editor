@@ -1,10 +1,14 @@
+import { supabaseStorage } from '../../../../supabase';
+import { isElectron } from '../handleElectron';
+
 export const readRefMeta = async ({
   projectsDir,
 }) => {
+  if (isElectron()) {
     const fs = window.require('fs');
     const path = require('path');
     return new Promise((resolve) => {
-        if (fs.existsSync(projectsDir)) {
+      if (fs.existsSync(projectsDir)) {
         const files = fs.readdirSync(projectsDir);
         const _files = [];
         // read dir to find references bundles
@@ -15,6 +19,23 @@ export const readRefMeta = async ({
             resolve(_files);
           }
         });
-        }
+      }
     });
+  }
+  try {
+    const { data: files, error } = await supabaseStorage()
+      .list(projectsDir);
+
+    if (error) {
+      console.error('Error fetching files:', error);
+      return [];
+    }
+
+    const directoryFiles = files.filter((file) => file.type === 'directory');
+    const directoryNames = directoryFiles.map((file) => file.name);
+    return directoryNames;
+  } catch (error) {
+    console.error('Error reading reference metadata:', error);
+    return [];
+  }
 };

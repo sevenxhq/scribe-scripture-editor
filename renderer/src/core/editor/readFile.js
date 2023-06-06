@@ -9,11 +9,28 @@ export const readFile = async ({
     const projectsPath = path.join(newpath, 'autographa', 'users', username, 'projects', projectname, filename);
     return new Promise((resolve) => {
         if (fs.existsSync(projectsPath)) {
-           const fileContent = fs.readFileSync(
+            const fileContent = fs.readFileSync(
                 path.join(projectsPath),
                 'utf8',
-              );
-              resolve(fileContent);
+            );
+            resolve(fileContent);
+        }
+    });
+};
+
+export const readWebFile = async ({
+    username,
+    projectname,
+    filename,
+}) => {
+    const projectsPath = `autographa/users/${username}/projects/${projectname}/${filename}`;
+    return new Promise((resolve) => {
+        if (projectsPath) {
+            const fileContent = fs.readFileSync(
+                path.join(projectsPath),
+                'utf8',
+            );
+            resolve(fileContent);
         }
     });
 };

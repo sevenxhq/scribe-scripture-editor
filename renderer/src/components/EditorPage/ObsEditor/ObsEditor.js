@@ -5,7 +5,7 @@ import localforage from 'localforage';
 import { isElectron } from '@/core/handleElectron';
 import { readRefMeta } from '@/core/reference/readRefMeta';
 import { readRefBurrito } from '@/core/reference/readRefBurrito';
-import { readFile } from '@/core/editor/readFile';
+import { readFile, readWebFile } from '@/core/editor/readFile';
 import Editor from '@/modules/editor/Editor';
 import { ReferenceContext } from '@/components/context/ReferenceContext';
 import writeToFile from '@/core/editor/writeToFile';
@@ -17,6 +17,7 @@ import { supabaseStorage } from '../../../../../supabase';
 
 export const getDetails = () => new Promise((resolve) => {
   logger.debug('ObsEditor.js', 'In getDetails() for fetching the burrito file of current project');
+  console.log('ObsEditor.js', 'In getDetails() for fetching the burrito file of current project');
   localforage.getItem('userProfile').then((value) => {
     const username = value?.username;
     localforage.getItem('currentProject').then((projectName) => {
@@ -31,13 +32,15 @@ export const getDetails = () => new Promise((resolve) => {
   });
 });
 
-export const getWebDetails = async () => {
+export const getWebDetails = () => new Promise((resolve) => {
   const username = 'samuel';
-  const projectName = await localforage.getItem('currentProject');
-  const { data: metadata } = await supabaseStorage()
-    .download(`autographa/users/${username}/projects/${projectName}/metadata.json`);
-  console.log('metadata', metadata);
-}
+  localforage.getItem('currentProject').then(async (projectName) => {
+    const { data: metadata } = await supabaseStorage()
+      .download(`autographa/users/${username}/projects/${projectName}/metadata.json`);
+    const projectsDir = `autographa/users/${username}/projects/${projectName}/`;
+    resolve({ projectName, username, metaPath: metadata, projectsDir });
+  });
+});
 
 const ObsEditor = () => {
   const [mdData, setMdData] = useState();
@@ -46,6 +49,7 @@ const ObsEditor = () => {
 
   const updateStory = (story) => {
     logger.debug('ObsEditor.js', 'In updateStory for upadting the story to the backend md file');
+    console.log('ObsEditor.js', 'In updateStory for upadting the story to the backend md file');
     setMdData(story);
     let title; let body = ''; let end;
     story.forEach((s) => {
@@ -61,7 +65,7 @@ const ObsEditor = () => {
       }
     });
     const storyStr = title + body + end;
-    getDetails().then((value) => {
+    getWebDetails().then((value) => {
       const bookID = obsNavigation.toString().padStart(2, 0);
       writeToFile({
         username: value.username,
@@ -73,7 +77,7 @@ const ObsEditor = () => {
   };
   // this function is used to fetch the content from the given story number
   const readContent = useCallback(() => {
-    getDetails()
+    getWebDetails()
       .then(({
         projectName, username, projectsDir, metaPath, path,
       }) => {
@@ -114,9 +118,10 @@ const ObsEditor = () => {
                       });
                     });
                     logger.debug('ObsEditor.js', 'Reading the md file for selected OBS story');
+                    console.log('ObsEditor.js', 'Reading the md file for selected OBS story');
                     const bookID = obsNavigation?.toString().padStart(2, 0);
                     if (key === path.join(dirName, `${bookID}.md`)) {
-                      readFile({
+                      readWebFile({
                         projectname: projectName,
                         filename: key,
                         username,
@@ -128,6 +133,7 @@ const ObsEditor = () => {
                           // eslint-disable-next-line react/prop-types
                           const allLines = data.split(/\r\n|\n/);
                           logger.debug('ObsEditor.js', 'Spliting the stories line by line and storing into an array.');
+                          console.log('ObsEditor.js', 'Spliting the stories line by line and storing into an array.');
                           // Reading line by line
                           allLines.forEach((line) => {
                             // To avoid the values after footer, we have added id=0
@@ -200,6 +206,7 @@ const ObsEditor = () => {
                             }
                           });
                           logger.debug('ObsEditor.js', 'Story for selected navigation is been set to the array for Editor');
+                          console.log('ObsEditor.js', 'Story for selected navigation is been set to the array for Editor');
                           setMdData(stories);
                         }
                       });
@@ -220,7 +227,7 @@ const ObsEditor = () => {
   return (
     <Editor callFrom="obs">
       {mdData
-      && <EditorPanel obsStory={mdData} storyUpdate={updateStory} />}
+        && <EditorPanel obsStory={mdData} storyUpdate={updateStory} />}
     </Editor>
   );
 };

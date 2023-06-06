@@ -3,10 +3,10 @@ import dynamic from 'next/dynamic';
 import localforage from 'localforage';
 import ObsEditor from '@/components/EditorPage/ObsEditor/ObsEditor';
 import AudioEditor from '@/components/EditorPage/AudioEditor/AudioEditor';
+import { isElectron } from '@/core/handleElectron';
 import SectionPlaceholder1 from './SectionPlaceholder1';
 import SectionPlaceholder2 from './SectionPlaceholder2';
 import XelahEditor from '../../components/EditorPage/Scribex/XelahEditor';
-import { isElectron } from '@/core/handleElectron';
 import { supabaseStorage } from '../../../../supabase';
 
 const MainPlayer = dynamic(
@@ -15,7 +15,14 @@ const MainPlayer = dynamic(
 );
 const SectionContainer = () => {
   const [editor, setEditor] = useState();
-  useEffect(async () => {
+  const setSupabaseEditor = async () => {
+    const projectName = await localforage.getItem('currentProject');
+    const { data } = await supabaseStorage().download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
+    const metadata = JSON.parse(await data.text());
+    setEditor(metadata.type.flavorType.flavor.name);
+  };
+
+  useEffect(() => {
     if (!editor && isElectron()) {
       localforage.getItem('userProfile').then((value) => {
         const username = value?.username;
@@ -30,11 +37,8 @@ const SectionContainer = () => {
         });
       });
     }
-    const projectName = await localforage.getItem('currentProject');
-    const { data: userJson } = await supabaseStorage().download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
-    const metadata = JSON.parse(await userJson.text());
-    setEditor(metadata.type.flavorType.flavor.name);
-  }, []);
+    setSupabaseEditor();
+  }, [editor]);
 
   return (
     <>

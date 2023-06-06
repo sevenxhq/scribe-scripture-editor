@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useContext, useEffect } from 'react';
 import { BookmarkIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +17,8 @@ import AboutModal from './AboutModal';
 import MenuDropdown from '../../components/MenuDropdown/MenuDropdown';
 import menuStyles from './MenuBar.module.css';
 import styles from './SubMenuBar.module.css';
+import { supabaseStorage } from '../../../../supabase';
+import { isElectron } from '@/core/handleElectron';
 
 const activate = () => {
   // console.log('rename');
@@ -67,9 +71,10 @@ export default function SubMenuBar() {
       renderElement: <MenuDropdown />,
       callback: activate,
     },
-    ];
+  ];
 
   const handleResource = () => {
+    console.log('handleResource', layout, row);
     if (layout === 0) {
       setOpenResource1(false);
     }
@@ -112,22 +117,37 @@ export default function SubMenuBar() {
   function openModal(isOpen) {
     setOpen(isOpen);
   }
-  // This below code is for identifying the type of resource to remove Bookmarks from OBS
+
   const [resourceType, setResourceType] = useState();
+
+  async function supabaseResourceType() {
+    const projectName = await localforage.getItem('currentProject');
+    const { data, error } = await supabaseStorage().download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
+    if (error) {
+      console.log('SubMenuBar.js', error);
+    }
+    const metadata = JSON.parse(await data.text());
+    setResourceType(metadata.type.flavorType.flavor.name);
+  }
+  // This below code is for identifying the type of resource to remove Bookmarks from OBS
   useEffect(() => {
-    localforage.getItem('userProfile').then((value) => {
-      const username = value?.username;
-      localforage.getItem('currentProject').then((projectName) => {
-        const path = require('path');
-        const fs = window.require('fs');
-        const newpath = localStorage.getItem('userPath');
-        const metaPath = path.join(newpath, 'autographa', 'users', username, 'projects', projectName, 'metadata.json');
-        const data = fs.readFileSync(metaPath, 'utf-8');
-        const metadata = JSON.parse(data);
-        setResourceType(metadata.type.flavorType.flavor.name);
+    if (isElectron()) {
+      localforage.getItem('userProfile').then((value) => {
+        const username = value?.username;
+        localforage.getItem('currentProject').then((projectName) => {
+          const path = require('path');
+          const fs = window.require('fs');
+          const newpath = localStorage.getItem('userPath');
+          const metaPath = path.join(newpath, 'autographa', 'users', username, 'projects', projectName, 'metadata.json');
+          const data = fs.readFileSync(metaPath, 'utf-8');
+          const metadata = JSON.parse(data);
+          setResourceType(metadata.type.flavorType.flavor.name);
+        });
       });
-    });
-  });
+    } else {
+      supabaseResourceType();
+    }
+  }, []);
 
   return (
     <>

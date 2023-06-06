@@ -33,7 +33,7 @@ export default function ReferenceContextProvider({ children }) {
   const [openResourcePopUp, setOpenResourcePopUp] = React.useState(false);
   const [selectedFont, setSelectedFont] = React.useState('sans-serif');
   const [fontSize, setFontsize] = React.useState(1);
-  const [layout, setLayout] = useState(0);
+  const [layout, setLayout] = useState(1);
   const [row, setRow] = useState(0);
   const [refernceLoading, setRefernceLoading] = useState({
     status: false,

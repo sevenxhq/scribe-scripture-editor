@@ -63,6 +63,7 @@ export default function EditorSection({
   function removeResource() {
     setOpenModal(true);
   }
+  console.log({layout, openResource1, openResource2, openResource3, openResource4});
 
   const removeSection = () => {
     setRemovingSection(row);
@@ -108,7 +109,7 @@ export default function EditorSection({
         setLayout(0);
       }
     }
-  });
+  }, [openResource1, openResource2, openResource3, openResource4]);
 
   const showResourcesPanel = () => {
     setOpenResourcePopUp(true);

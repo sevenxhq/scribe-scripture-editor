@@ -11,3 +11,5 @@ export const supabaseStorage = () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   ).storage.from('autographa-web');
 }
+
+export const filePath = 'autographa/users/samuel'

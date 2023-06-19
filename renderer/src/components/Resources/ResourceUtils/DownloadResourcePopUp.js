@@ -17,7 +17,7 @@ import { AutographaContext } from '@/components/context/AutographaContext';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import CustomMultiComboBox from './CustomMultiComboBox';
 import langJson from '../../../lib/lang/langNames.json';
-import { handleDownloadResources } from './createDownloadedResourceSB';
+import { handleDownloadResources, handleDownloadWebResources } from './createDownloadedResourceSB';
 import * as logger from '../../../logger';
 
 const subjectTypeArray = {
@@ -166,6 +166,7 @@ function DownloadResourcePopUp({ selectResource, isOpenDonwloadPopUp, setIsOpenD
     });
     const fetchedData = await fetch(url);
     const fetchedDataJson = await fetchedData.json();
+    console.log({ fetchedDataJson });
     logger.debug('DownloadResourcePopUp.js', 'generating language based resources after fetch');
     try {
       fetchedDataJson.data.forEach((element) => {
@@ -224,6 +225,7 @@ function DownloadResourcePopUp({ selectResource, isOpenDonwloadPopUp, setIsOpenD
   };
 
   const handleDownload = async (obj) => {
+    console.log('download started', { obj, resourceData });
     const temp_resource = resourceData;
     if (obj.selection === 'full') {
       // eslint-disable-next-line array-callback-return
@@ -243,12 +245,13 @@ function DownloadResourcePopUp({ selectResource, isOpenDonwloadPopUp, setIsOpenD
       ...temp_resource,
     }));
 
-    logger.debug('DownloadResourcePopUp.js', 'in handle download - call for download selected');
+    console.log('DownloadResourcePopUp.js', 'in handle download - call for download selected');
     // check total count to download
     const selectedResourceCount = Object.keys(resourceData).reduce((acc, key) => {
       const checkedData = resourceData[key].filter((data) => data.isChecked);
       return acc + checkedData.length;
     }, 0);
+    console.log('DownloadResourcePopUp.js', selectedResourceCount, totalDownload);
     try {
       if (selectedResourceCount > 0) {
         if (downloadStarted) {
@@ -260,7 +263,7 @@ function DownloadResourcePopUp({ selectResource, isOpenDonwloadPopUp, setIsOpenD
         // console.log('resource download started ---', selectedResourceCount);
         setDownloadStarted(true);
         const action = { setDownloadCount };
-        await handleDownloadResources(resourceData, selectResource, action)
+        await handleDownloadWebResources(resourceData, selectResource, action)
           .then(async (resolveResp) => {
             if (selectedResourceCount === resolveResp?.existing) {
               setOpenSnackBar(true);

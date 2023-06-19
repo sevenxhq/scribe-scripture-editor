@@ -20,6 +20,14 @@ export const readRefBurrito = async ({
             }
         });
     }
-    const { data: burrito } = await supabaseStorage().download(metaPath);
-    return burrito;
+    return new Promise((resolve) => {
+        const { data: files, error } = supabaseStorage()
+            .download(metaPath);
+        if (error) {
+            console.error('Error fetching files:', error);
+            return;
+        }
+        console.log('readIngreadients.js', 'Returning the metadata (burrito)');
+        resolve((files));
+    });
 };

@@ -24,15 +24,17 @@ export const readRefMeta = async ({
   }
   try {
     const { data: files, error } = await supabaseStorage()
-      .list(projectsDir);
+      .list('autographa/users/samuel/resources', {
+        limit: 100,
+        offset: 0,
+      });
 
     if (error) {
       console.error('Error fetching files:', error);
       return [];
     }
-
-    const directoryFiles = files.filter((file) => file.type === 'directory');
-    const directoryNames = directoryFiles.map((file) => file.name);
+    console.log('readRefMeta.js , folders in resources', files);
+    const directoryNames = files.map((file) => file.name);
     return directoryNames;
   } catch (error) {
     console.error('Error reading reference metadata:', error);

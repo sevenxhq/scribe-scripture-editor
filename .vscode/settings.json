@@ -1,29 +1,35 @@
 {
-	"[javascript]": {
-		"editor.formatOnSave": false
-	},
-	"editor.rulers": [100],
-	"editor.fontLigatures": true,
-	"prettier.tabWidth": 4,
-	"eslint.alwaysShowStatus": true,
-	"prettier.disableLanguages": ["js"],
-	"prettier.useTabs": true,
-	"editor.formatOnSave": true,
-	"editor.multiCursorModifier": "alt",
-	"editor.renderWhitespace": "none",
-	"editor.renderControlCharacters": true,
-	"prettier.arrowParens": "always",
-	"prettier.jsxBracketSameLine": true,
-	"prettier.jsxSingleQuote": true,
-	"prettier.singleQuote": true,
-	"prettier.trailingComma": "all",
-	"javascript.implicitProjectConfig.experimentalDecorators": true,
-	"javascript.updateImportsOnFileMove.enabled": "always",
-	"explorer.confirmDelete": false,
-	"eslint.codeAction.disableRuleComment": {},
-	"eslint.codeAction.showDocumentation": {},
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
-	},
-  "eslint.workingDirectories": []
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "editor.rulers": [
+    100
+  ],
+  "editor.fontLigatures": true,
+  "prettier.tabWidth": 4,
+  "eslint.alwaysShowStatus": true,
+  "prettier.disableLanguages": [
+    "js"
+  ],
+  "prettier.useTabs": true,
+  "editor.formatOnSave": true,
+  "editor.multiCursorModifier": "alt",
+  "editor.renderWhitespace": "none",
+  "editor.renderControlCharacters": true,
+  "prettier.arrowParens": "always",
+  "prettier.jsxBracketSameLine": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "all",
+  "javascript.implicitProjectConfig.experimentalDecorators": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "explorer.confirmDelete": false,
+  "eslint.codeAction.disableRuleComment": {},
+  "eslint.codeAction.showDocumentation": {},
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.workingDirectories": [],
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

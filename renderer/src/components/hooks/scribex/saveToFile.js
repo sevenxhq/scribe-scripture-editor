@@ -1,5 +1,6 @@
 import localforage from 'localforage';
 // import { readRefMeta } from '../../../core/reference/readRefMeta';
+import { isElectron } from '@/core/handleElectron';
 import { readRefBurrito } from '../../../core/reference/readRefBurrito';
 import writeToFile from '../../../core/editor/writeToFile';
 
@@ -12,7 +13,7 @@ export const saveToFile = async (usfmText, bookCode) => {
     const path = require('path');
     const newpath = localStorage.getItem('userPath');
     // const projectsDir = path.join(newpath, 'autographa', 'users', userName, 'projects', projectName);
-    const metaPath = path.join(newpath, 'autographa', 'users', userName, 'projects', projectName, 'metadata.json');
+    const metaPath = isElectron() ? path.join(newpath, 'autographa', 'users', userName, 'projects', projectName, 'metadata.json') : `autographa/users/samuel/projects/${projectName}/metadata.json`;
     // const refs = await readRefMeta({ projectsDir })
     const metaData = JSON.parse(await readRefBurrito({ metaPath }));
     Object.entries(metaData.ingredients).forEach(async ([key, _ingredients]) => {

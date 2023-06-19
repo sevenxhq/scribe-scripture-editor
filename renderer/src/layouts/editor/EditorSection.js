@@ -63,7 +63,7 @@ export default function EditorSection({
   function removeResource() {
     setOpenModal(true);
   }
-  console.log({layout, openResource1, openResource2, openResource3, openResource4});
+  console.log({ referenceResources });
 
   const removeSection = () => {
     setRemovingSection(row);

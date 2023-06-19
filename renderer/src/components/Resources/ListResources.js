@@ -143,7 +143,7 @@ export const ListResources = ({
       setRenderApp(false);
     }
   }, [renderApp]);
-
+  console.log({ renderApp });
   return (
     <div className="h-full">
       {selectResource

@@ -1,5 +1,6 @@
 import { readResourceMetadata } from '@/components/Resources/ResourceUtils/readResourceMetadata';
 import { isElectron } from '@/core/handleElectron';
+import { createDirectory } from './ResourceUtils/DownloadCreateSBforHelps';
 
 export default async function readLocalResources(username, setSubMenuItems) {
   if (isElectron()) {
@@ -21,6 +22,10 @@ export default async function readLocalResources(username, setSubMenuItems) {
     });
     readResourceMetadata(commonResourceDir, commonResourceMetaPath, setSubMenuItems, parseData);
   }
+  console.log('readLocalResources', setSubMenuItems);
   const parseData = [];
-  readResourceMetadata(setSubMenuItems, parseData);
+  const projectsDir = 'autographa/users/samuel/resources';
+  const userResourceMetaPath = 'autographa/users/samuel/resources';
+  createDirectory(userResourceMetaPath);
+  readResourceMetadata(projectsDir, userResourceMetaPath, setSubMenuItems, parseData);
 }

@@ -38,7 +38,9 @@ export const getWebDetails = () => new Promise((resolve) => {
     const { data: metadata } = await supabaseStorage()
       .download(`autographa/users/${username}/projects/${projectName}/metadata.json`);
     const projectsDir = `autographa/users/${username}/projects/${projectName}/`;
-    resolve({ projectName, username, metaPath: metadata, projectsDir });
+    resolve({
+      projectName, username, metaPath: metadata, projectsDir,
+    });
   });
 });
 

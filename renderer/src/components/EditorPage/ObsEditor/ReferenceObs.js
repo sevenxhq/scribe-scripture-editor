@@ -61,7 +61,7 @@ const { t } = useTranslation();
       { isLoading === false ? (
         <>
           {
-            stories.map((story, index) => (
+            stories?.map((story, index) => (
               <div
                 key={story.id}
                 className={`flex gap-5 mb-5 items-center justify-center ${story.id === selectedStory && 'bg-light'}`}

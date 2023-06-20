@@ -41,30 +41,65 @@ const loadData = (fs, file, projectName, username) => {
   return 'No Content';
 };
 
+function readBlob(blob) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+
+		reader.onload = () => {
+			const content = reader.result;
+			resolve(content);
+		};
+
+		reader.onerror = () => {
+			reader.abort();
+			reject(new Error('Error reading blob.'));
+		};
+
+		reader.readAsText(blob, 'utf-8');
+	});
+}
+
+async function readBlobAsync(blob) {
+	try {
+		const content = await readBlob(blob);
+		console.log('Blob content:', content);
+    return content
+		// Do something with the content
+	} catch (error) {
+		console.error('Error reading blob:', error);
+	}
+}
+
 const loadWebData = async (file, projectName, username) => {
-  const filePath = `autographa/users/samuel/resources/${projectName}`;
+  console.log({ file, projectName})
+  const filePath = `autographa/users/samuel/resources/${projectName}/content/${file}.md`;
   const { data } = await supabaseStorage().download(filePath);
-  if (data) {
-    const _data = JSON.parse(data);
-    let i = 0;
-    let j = 1;
-    let dirName;
-    while (i < j) {
-      const firstKey = Object.keys(_data.ingredients).filter((data) =>
-        data.endsWith(`${file}.md`),
-      )[0];
-      const folderName = firstKey.split(/[(\\)?(/)?]/gm).slice(0);
-      dirName = folderName[0];
-      const { data: stats } = await supabaseStorage().from(filePath);
-      if (!stats) {
-        j += 1;
-      }
-      i += 1;
-    }
-    const { data: content } = await supabaseStorage(
-      `${filePath}/${dirName}/${file}.md`,
-    );
-    return content;
+  console.log("downloaded directory",data)
+  const parsedData = readBlobAsync(data)
+  // if (data) {
+  //   const _data = JSON.parse(data);
+  //   let i = 0;
+  //   let j = 1;
+  //   let dirName;
+  //   while (i < j) {
+  //     const firstKey = Object.keys(_data.ingredients).filter((data) =>
+  //       data.endsWith(`${file}.md`),
+  //     )[0];
+  //     const folderName = firstKey.split(/[(\\)?(/)?]/gm).slice(0);
+  //     dirName = folderName[0];
+  //     const { data: stats } = await supabaseStorage().from(filePath);
+  //     if (!stats) {
+  //       j += 1;
+  //     }
+  //     i += 1;
+  //   }
+  //   const { data: content } = await supabaseStorage(
+  //     `${filePath}/${dirName}/${file}.md`,
+  //   );
+  //   return content;
+  // }
+  if (parsedData) {
+		return parsedData;
   }
   return 'No Content';
 };
@@ -182,6 +217,7 @@ const webCore = async (num, projectName) => {
       num.toString().padStart(2, '0'),
       projectName,
     );
+    console.log("webcore",{data})
     if (!data) {
       return stories;
     }
@@ -268,4 +304,4 @@ const webCore = async (num, projectName) => {
   return stories;
 };
 
-export default { core, webCore };
+export { core, webCore };

@@ -22,7 +22,6 @@ export default async function readLocalResources(username, setSubMenuItems) {
     });
     readResourceMetadata(commonResourceDir, commonResourceMetaPath, setSubMenuItems, parseData);
   }
-  console.log('readLocalResources', setSubMenuItems);
   const parseData = [];
   const projectsDir = 'autographa/users/samuel/resources';
   const userResourceMetaPath = 'autographa/users/samuel/resources';

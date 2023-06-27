@@ -2,22 +2,22 @@ import {
   useState, useEffect, useContext, useCallback,
 } from 'react';
 import localforage from 'localforage';
-import { isElectron } from '@/core/handleElectron';
+// import { isElectron } from '@/core/handleElectron';
 import { readRefMeta } from '@/core/reference/readRefMeta';
 import { readRefBurrito } from '@/core/reference/readRefBurrito';
-import { readFile, readWebFile } from '@/core/editor/readFile';
+import { readWebFile } from '@/core/editor/readFile';
 import Editor from '@/modules/editor/Editor';
 import { ReferenceContext } from '@/components/context/ReferenceContext';
 import writeToFile from '@/core/editor/writeToFile';
 import { saveReferenceResource } from '@/core/projects/updateAgSettings';
 import moment from 'moment';
+import { isElectron } from '@/core/handleElectron';
 import EditorPanel from './EditorPanel';
 import * as logger from '../../../logger';
-import { supabaseStorage } from '../../../../../supabase';
+// import { supabaseStorage } from '../../../../../supabase';
 
 export const getDetails = () => new Promise((resolve) => {
   logger.debug('ObsEditor.js', 'In getDetails() for fetching the burrito file of current project');
-  console.log('ObsEditor.js', 'In getDetails() for fetching the burrito file of current project');
   localforage.getItem('userProfile').then((value) => {
     const username = value?.username;
     localforage.getItem('currentProject').then((projectName) => {
@@ -35,11 +35,10 @@ export const getDetails = () => new Promise((resolve) => {
 export const getWebDetails = () => new Promise((resolve) => {
   const username = 'samuel';
   localforage.getItem('currentProject').then(async (projectName) => {
-    const { data: metadata } = await supabaseStorage()
-      .download(`autographa/users/${username}/projects/${projectName}/metadata.json`);
-    const projectsDir = `autographa/users/${username}/projects/${projectName}/`;
+    const metaPath = `autographa/users/${username}/projects/${projectName}/metadata.json`;
+    const projectsDir = `autographa/users/${username}/projects/${projectName}`;
     resolve({
-      projectName, username, metaPath: metadata, projectsDir,
+      projectName, username, metaPath, projectsDir,
     });
   });
 });
@@ -51,7 +50,7 @@ const ObsEditor = () => {
 
   const updateStory = (story) => {
     logger.debug('ObsEditor.js', 'In updateStory for upadting the story to the backend md file');
-    console.log('ObsEditor.js', 'In updateStory for upadting the story to the backend md file');
+    console.log('ObsEditor.js', 'In updateStory for upadting the story to the backend md file', directoryName, story);
     setMdData(story);
     let title; let body = ''; let end;
     story.forEach((s) => {
@@ -72,7 +71,7 @@ const ObsEditor = () => {
       writeToFile({
         username: value.username,
         projectname: value.projectName,
-        filename: (value.path).join(directoryName, `${bookID}.md`),
+        filename: isElectron() ? (value.path).join(directoryName, `${bookID}.md`) : `${directoryName}/${bookID}.md`,
         data: storyStr,
       });
     });
@@ -81,7 +80,7 @@ const ObsEditor = () => {
   const readContent = useCallback(() => {
     getWebDetails()
       .then(({
-        projectName, username, projectsDir, metaPath, path,
+        projectName, username, projectsDir, metaPath,
       }) => {
         readRefMeta({
           projectsDir,
@@ -92,8 +91,7 @@ const ObsEditor = () => {
               metaPath,
             }).then((data) => {
               if (data) {
-                const _data = JSON.parse(data);
-                Object.entries(_data.ingredients).forEach(
+                Object.entries(data.ingredients).forEach(
                   ([key]) => {
                     const folderName = key.split(/[(\\)?(/)?]/gm).slice(0);
                     const dirName = folderName[0];
@@ -120,9 +118,8 @@ const ObsEditor = () => {
                       });
                     });
                     logger.debug('ObsEditor.js', 'Reading the md file for selected OBS story');
-                    console.log('ObsEditor.js', 'Reading the md file for selected OBS story');
                     const bookID = obsNavigation?.toString().padStart(2, 0);
-                    if (key === path.join(dirName, `${bookID}.md`)) {
+                    if (key === (`${dirName}/${bookID}.md`)) {
                       readWebFile({
                         projectname: projectName,
                         filename: key,
@@ -135,7 +132,6 @@ const ObsEditor = () => {
                           // eslint-disable-next-line react/prop-types
                           const allLines = data.split(/\r\n|\n/);
                           logger.debug('ObsEditor.js', 'Spliting the stories line by line and storing into an array.');
-                          console.log('ObsEditor.js', 'Spliting the stories line by line and storing into an array.');
                           // Reading line by line
                           allLines.forEach((line) => {
                             // To avoid the values after footer, we have added id=0
@@ -207,7 +203,6 @@ const ObsEditor = () => {
                               }
                             }
                           });
-                          logger.debug('ObsEditor.js', 'Story for selected navigation is been set to the array for Editor');
                           console.log('ObsEditor.js', 'Story for selected navigation is been set to the array for Editor');
                           setMdData(stories);
                         }

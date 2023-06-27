@@ -59,7 +59,7 @@ const { t } = useTranslation();
   return (
     <div>
       { isLoading === false ? (
-        <>
+        <div>
           {
             stories?.map((story, index) => (
               <div
@@ -102,7 +102,7 @@ const { t } = useTranslation();
               </div>
             ))
           }
-        </>
+        </div>
         ) : (
           <LoadingScreen />
         )}

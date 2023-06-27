@@ -1,28 +1,48 @@
 import localforage from 'localforage';
 import * as logger from '../../logger';
 import { environment } from '../../../environment';
+import { isElectron } from '../handleElectron';
+import { supabaseStorage } from '../../../../supabase';
 
 export const updateAgSettings = async (username, projectName, data) => {
-  logger.debug('updateAgSettings.js', 'In updateAgSettings');
-  const newpath = localStorage.getItem('userPath');
-  const fs = window.require('fs');
-  const path = require('path');
-  const result = Object.keys(data.ingredients).filter((key) => key.includes('ag-settings.json'));
-  const folder = path.join(newpath, 'autographa', 'users', username, 'projects', projectName, result[0]);
-  const settings = await fs.readFileSync(folder, 'utf8');
-  const setting = JSON.parse(settings);
-  if (settings.version !== environment.AG_SETTING_VERSION) {
-    setting.version = environment.AG_SETTING_VERSION;
-    if (!setting.sync && !setting.sync?.services) {
-      setting.sync = { services: { door43: [] } };
-    } else {
-    setting.sync.services.door43 = setting?.sync?.services?.door43 ? setting?.sync?.services?.door43 : [];
+  if (isElectron()) {
+    logger.debug('updateAgSettings.js', 'In updateAgSettings');
+    const newpath = localStorage.getItem('userPath');
+    const fs = window.require('fs');
+    const path = require('path');
+    const result = Object.keys(data.ingredients).filter((key) => key.includes('ag-settings.json'));
+    const folder = path.join(newpath, 'autographa', 'users', username, 'projects', projectName, result[0]);
+    const settings = await fs.readFileSync(folder, 'utf8');
+    const setting = JSON.parse(settings);
+    if (settings.version !== environment.AG_SETTING_VERSION) {
+      setting.version = environment.AG_SETTING_VERSION;
+      if (!setting.sync && !setting.sync?.services) {
+        setting.sync = { services: { door43: [] } };
+      } else {
+        setting.sync.services.door43 = setting?.sync?.services?.door43 ? setting?.sync?.services?.door43 : [];
+      }
+    }
+    setting.project[data.type.flavorType.flavor.name] = data.project[data.type.flavorType.flavor.name];
+    logger.debug('updateAgSettings.js', 'Updating the ag-settings.json');
+    await fs.writeFileSync(folder, JSON.stringify(setting));
   }
-}
-  setting.project[data.type.flavorType.flavor.name] = data.project[data.type.flavorType.flavor.name];
-  logger.debug('updateAgSettings.js', 'Updating the ag-settings.json');
-  await fs.writeFileSync(folder, JSON.stringify(setting));
+  const result = Object.keys(data.ingredients).filter((key) => key.includes('ag-settings.json'));
+  const folder = `autographa/users/samuel/projects/${projectName}/${result[0]}`;
+  const { data: setting } = await supabaseStorage().download(folder);
+  const settings = JSON.parse(await setting.text());
+  if (settings.version !== environment.AG_SETTING_VERSION) {
+    settings.version = environment.AG_SETTING_VERSION;
+    if (!settings.sync && !settings.sync?.services) {
+      settings.sync = { services: { door43: [] } };
+    } else {
+      settings.sync.services.door43 = settings?.sync?.services?.door43 ? settings?.sync?.services?.door43 : [];
+    }
+  }
+  settings.project[data.type.flavorType.flavor.name] = data.project[data.type.flavorType.flavor.name];
+  console.log('updateAgSettings.js', 'Updating the ag-settings.json');
+  await supabaseStorage().upload(folder, JSON.stringify(settings));
 };
+
 export const saveReferenceResource = () => {
   logger.debug('updateAgSettings.js', 'In saveReferenceResource for saving the reference data');
   localforage.getItem('currentProject').then((projectName) => {

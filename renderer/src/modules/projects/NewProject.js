@@ -14,6 +14,7 @@ import PopoverProjectType from '@/layouts/editor/PopoverProjectType';
 import { SnackBar } from '@/components/SnackBar';
 import useValidator from '@/components/hooks/useValidator';
 import ConfirmationModal from '@/layouts/editor/ConfirmationModal';
+import LoadingScreen from '@/components/Loading/LoadingScreen';
 import LayoutIcon from '@/icons/basil/Outline/Interface/Layout.svg';
 import BullhornIcon from '@/icons/basil/Outline/Communication/Bullhorn.svg';
 // import ProcessorIcon from '@/icons/basil/Outline/Devices/Processor.svg';
@@ -24,7 +25,6 @@ import * as logger from '../../logger';
 import ImportPopUp from './ImportPopUp';
 import CustomList from './CustomList';
 import burrito from '../../lib/BurritoTemplete.json';
-import LoadingScreen from '@/components/Loading/LoadingScreen';
 // eslint-disable-next-line no-unused-vars
 const solutions = [
   {
@@ -108,10 +108,10 @@ export default function NewProject({ call, project, closeEdit }) {
 
   const {
     states: {
-      loading
+      loading,
     },
     action: {
-      setLoading
+      setLoading,
     },
   } = React.useContext(AutographaContext);
   const { t } = useTranslation();
@@ -233,14 +233,13 @@ export default function NewProject({ call, project, closeEdit }) {
       console.log({ value });
       value && setLoading(false);
       router.push('/projects');
-    }
-    else {
+    } else {
       setNotify('warning');
       setSnackText(t('dynamic-msg-fill-all-fields'));
       setOpenSnackBar(true);
       setLoading(false);
     }
-  }
+  };
   const updateBurritoVersion = () => {
     setOpenModal(false);
     logger.warn('NewProject.js', 'Calling createTheProject function with burrito update');

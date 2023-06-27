@@ -9,7 +9,7 @@ import createObsSB from '../burrito/createObsSB';
 import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import createAudioSB from '../burrito/createAudioSB';
-import supabase, { supabaseStorage } from '../../../../supabase';
+import { supabaseStorage } from '../../../../supabase';
 
 const bookAvailable = (list, id) => list.some((obj) => obj === id);
 const checker = (arr, target) => target.every((v) => arr.includes(v));
@@ -342,7 +342,6 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
   };
   let checkCanon = false;
   const translationBurritoChecksAndCreation = async () => {
-
     if (!projectMetaObj.importedFiles || projectMetaObj.importedFiles.length === 0) {
       console.log('saveProjectsMeta.js', 'No imported files found.');
     }
@@ -364,7 +363,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
     if (checkCanon === false) {
       let id;
       let scope;
-      if (projectMetaObj.call === "new") {
+      if (projectMetaObj.call === 'new') {
         console.log('saveProjectsMeta.js', 'Creating a key for the Project');
         const key = currentUser + projectMetaObj.newProjectFields.projectName + moment().format();
         id = uuidv5(key, environment.uuidToken);
@@ -428,7 +427,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
       console.log('saveProjectsMeta.js', createdProject);
       return { type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') };
     }
-  }
+  };
 
   const obsBurritoChecksAndCreation = async () => {
     logger.debug('saveProjectsMeta.js', 'In OBS Burrito Checks And Creation');
@@ -475,19 +474,21 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
       logger.debug('saveProjectsMeta.js', 'Creating a burrito file.');
       const { data: obsFile, error: obsError } = await supabaseStorage().upload(
         filePath,
-        JSON.stringify(burritoFile), {
+        JSON.stringify(burritoFile),
+
+{
         cacheControl: '3600',
         upsert: true,
         // contentType: 'application/json',
-      });
+      },
+);
       if (obsError) {
         console.log('saveProjectsMeta.js', obsError);
         return { type: 'error', value: 'Unable to create or update burrito file.' };
       }
       console.log('saveProjectsMeta.js', obsFile);
       return { type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') };
-
-    })
+    });
   };
 
   switch (projectMetaObj.projectType) {

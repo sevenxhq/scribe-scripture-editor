@@ -21,9 +21,7 @@ const loadData = (fs, file, projectName, username) => {
     let j = 1;
     let dirName;
     while (i < j) {
-      const firstKey = Object.keys(_data.ingredients).filter((data) =>
-        data.endsWith(`${file}.md`),
-      )[0];
+      const firstKey = Object.keys(_data.ingredients).filter((data) => data.endsWith(`${file}.md`))[0];
       const folderName = firstKey.split(/[(\\)?(/)?]/gm).slice(0);
       dirName = folderName[0];
       const stats = fs.statSync(path.join(filePath, dirName));
@@ -41,41 +39,38 @@ const loadData = (fs, file, projectName, username) => {
   return 'No Content';
 };
 
-function readBlob(blob) {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
+export function readBlob(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-		reader.onload = () => {
-			const content = reader.result;
-			resolve(content);
-		};
+    reader.onload = () => {
+      const content = reader.result;
+      resolve(content);
+    };
 
-		reader.onerror = () => {
-			reader.abort();
-			reject(new Error('Error reading blob.'));
-		};
+    reader.onerror = () => {
+      reader.abort();
+      reject(new Error('Error reading blob.'));
+    };
 
-		reader.readAsText(blob, 'utf-8');
-	});
+    reader.readAsText(blob, 'utf-8');
+  });
 }
 
-async function readBlobAsync(blob) {
-	try {
-		const content = await readBlob(blob);
-		console.log('Blob content:', content);
-    return content
-		// Do something with the content
-	} catch (error) {
-		console.error('Error reading blob:', error);
-	}
+export async function readBlobAsync(blob) {
+  try {
+    const content = await readBlob(blob);
+    return content;
+    // Do something with the content
+  } catch (error) {
+    console.error('Error reading blob:', error);
+  }
 }
 
-const loadWebData = async (file, projectName, username) => {
-  console.log({ file, projectName})
+const loadWebData = async (file, projectName) => {
   const filePath = `autographa/users/samuel/resources/${projectName}/content/${file}.md`;
   const { data } = await supabaseStorage().download(filePath);
-  console.log("downloaded directory",data)
-  const parsedData = readBlobAsync(data)
+  const parsedData = readBlobAsync(data);
   // if (data) {
   //   const _data = JSON.parse(data);
   //   let i = 0;
@@ -99,7 +94,7 @@ const loadWebData = async (file, projectName, username) => {
   //   return content;
   // }
   if (parsedData) {
-		return parsedData;
+    return parsedData;
   }
   return 'No Content';
 };
@@ -132,8 +127,8 @@ const core = (fs, num, projectName, username) => {
         // Fetching the footer
         const objIndex = stories.findIndex((obj) => obj.id === id);
         if (
-          objIndex !== -1 &&
-          Object.prototype.hasOwnProperty.call(
+          objIndex !== -1
+          && Object.prototype.hasOwnProperty.call(
             stories[objIndex],
             'img',
           )
@@ -176,8 +171,8 @@ const core = (fs, num, projectName, username) => {
         // Fetching the IMG url
         const objIndex = stories.findIndex((obj) => obj.id === id);
         if (
-          objIndex !== -1 &&
-          Object.prototype.hasOwnProperty.call(
+          objIndex !== -1
+          && Object.prototype.hasOwnProperty.call(
             stories[objIndex],
             'img',
           )
@@ -217,7 +212,7 @@ const webCore = async (num, projectName) => {
       num.toString().padStart(2, '0'),
       projectName,
     );
-    console.log("webcore",{data})
+    console.log('webcore', { data });
     if (!data) {
       return stories;
     }
@@ -235,8 +230,8 @@ const webCore = async (num, projectName) => {
         } else if (line.match(/^(\s)*_/gm) || footer === true) {
           const objIndex = stories.findIndex((obj) => obj.id === id);
           if (
-            objIndex !== -1 &&
-            Object.prototype.hasOwnProperty.call(
+            objIndex !== -1
+            && Object.prototype.hasOwnProperty.call(
               stories[objIndex],
               'img',
             )
@@ -272,8 +267,8 @@ const webCore = async (num, projectName) => {
         } else if (line.match(/^(\s)*!/gm)) {
           const objIndex = stories.findIndex((obj) => obj.id === id);
           if (
-            objIndex !== -1 &&
-            Object.prototype.hasOwnProperty.call(
+            objIndex !== -1
+            && Object.prototype.hasOwnProperty.call(
               stories[objIndex],
               'img',
             )

@@ -14,7 +14,7 @@ import { saveReferenceResource } from '@/core/projects/updateAgSettings';
 import NavigationObs from '@/components/EditorPage/ObsEditor/NavigationObs';
 import ReferenceObs from '@/components/EditorPage/ObsEditor/ReferenceObs';
 import { isElectron } from '@/core/handleElectron';
-import core from '@/components/EditorPage/ObsEditor/core';
+import { core } from '@/components/EditorPage/ObsEditor/core';
 import ReferenceAudio from '@/components/EditorPage/Reference/Audio/ReferenceAudio';
 import isBackendProjectExist from '@/core/projects/existProjectInBackEnd';
 import { SnackBar } from '@/components/SnackBar';

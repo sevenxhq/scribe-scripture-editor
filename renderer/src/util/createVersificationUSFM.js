@@ -1,10 +1,10 @@
 import moment from 'moment';
-import { environment } from '../../environment';
-import * as logger from '../logger';
 
 import grammar from 'usfm-grammar';
 import path from 'path';
 import md5 from 'md5';
+import * as logger from '../logger';
+import { environment } from '../../environment';
 import supabase, { supabaseStorage } from '../../../supabase';
 
 // const grammar = require('usfm-grammar');
@@ -26,7 +26,9 @@ export const createVersificationUSFM = (
   projectType,
 ) => {
   logger.debug('createVersificationUSFM.js', 'In createVersificationUSFM');
-  console.log('createVersificationUSFM.js', 'In createVersificationUSFM', { username, project, versification, books, direction, id, importedFiles, currentBurrito, call, projectType });
+  console.log('createVersificationUSFM.js', 'In createVersificationUSFM', {
+ username, project, versification, books, direction, id, importedFiles, currentBurrito, call, projectType,
+});
   // const newpath = localStorage.getItem('userPath');
   // let folder = path.join(newpath, 'autographa', 'users', username, 'projects', `${project.projectName}_${id}`);
   // if (projectType === 'Audio') {
@@ -45,14 +47,14 @@ export const createVersificationUSFM = (
 
   const supabasePath = `autographa/users/samuel/projects/${project.projectName}_${id}/ingredients`;
   const uploadFileToSupabase = async (filePath, fileContent) => {
+    console.log('uploadFileToSupabase', filePath, fileContent);
     const { data: file, error } = await supabaseStorage()
       .upload(filePath, new Blob([fileContent], { type: 'text/plain' }));
 
     if (error) {
       console.error('Error uploading file to Supabase:', error);
       throw error;
-    }
-    else {
+    } else {
       console.log('File uploaded successfully to Supabase', file);
     }
   };
@@ -206,7 +208,7 @@ export const createVersificationUSFM = (
           //   role: 'x-autographa',
           // };
           logger.debug('createVersificationUSFM.js', 'Returning the ingredients data');
-          console.log('createVersificationUSFM.js', 'Returning the ingredients data');
+          console.log('createVersificationUSFM.js', { ingredients });
           resolve(ingredients);
         }
       });

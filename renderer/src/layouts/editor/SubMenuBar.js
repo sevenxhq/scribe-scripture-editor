@@ -11,6 +11,7 @@ import CustomNofications from '@/components/Notification/CustomNofications';
 // import { handleAutoSync } from '@/components/Sync/Gitea/EditorAutoSync';
 import AutoSync from '@/components/Sync/Gitea/EditorAutoSync';
 import localforage from 'localforage';
+import { isElectron } from '@/core/handleElectron';
 import Font from '@/icons/font.svg';
 import ColumnsIcon from '@/icons/basil/Outline/Interface/Columns.svg';
 import AboutModal from './AboutModal';
@@ -18,7 +19,6 @@ import MenuDropdown from '../../components/MenuDropdown/MenuDropdown';
 import menuStyles from './MenuBar.module.css';
 import styles from './SubMenuBar.module.css';
 import { supabaseStorage } from '../../../../supabase';
-import { isElectron } from '@/core/handleElectron';
 
 const activate = () => {
   // console.log('rename');
@@ -122,6 +122,7 @@ export default function SubMenuBar() {
 
   async function supabaseResourceType() {
     const projectName = await localforage.getItem('currentProject');
+    console.log('projectName', projectName);
     const { data, error } = await supabaseStorage().download(`autographa/users/samuel/projects/${projectName}/metadata.json`);
     if (error) {
       console.log('SubMenuBar.js', error);

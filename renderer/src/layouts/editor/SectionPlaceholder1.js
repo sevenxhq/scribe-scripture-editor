@@ -13,8 +13,8 @@ import CustomNavigation from '@/components/EditorPage/Navigation/CustomNavigatio
 import { saveReferenceResource } from '@/core/projects/updateAgSettings';
 import NavigationObs from '@/components/EditorPage/ObsEditor/NavigationObs';
 import ReferenceObs from '@/components/EditorPage/ObsEditor/ReferenceObs';
-import { isElectron } from '@/core/handleElectron';
-import {core,webCore} from '@/components/EditorPage/ObsEditor/core';
+// import { isElectron } from '@/core/handleElectron';
+import { webCore } from '@/components/EditorPage/ObsEditor/core';
 import ReferenceAudio from '@/components/EditorPage/Reference/Audio/ReferenceAudio';
 import isBackendProjectExist from '@/core/projects/existProjectInBackEnd';
 import { SnackBar } from '@/components/SnackBar';
@@ -413,23 +413,20 @@ const SectionPlaceholder1 = ({ editor }) => {
   );
   useEffect(() => {
     const readObs = async () => { // Set OBS stories
-    // if (isElectron()) {
-    //   localforage.getItem('userProfile').then((user) => {
-        // const fs = window.require('fs');
-        if (_obsNavigation1 && referenceColumnOneData1.refName && referenceColumnOneData1.selectedResource === 'obs') {
-          setStories1(await webCore( _obsNavigation1, referenceColumnOneData1.refName));
-          // const supData = await webCore( _obsNavigation1, referenceColumnOneData1.refName);
-          // console.log('supData', supData);
-        }
-        if (_obsNavigation2 && referenceColumnOneData2.refName && referenceColumnOneData2.selectedResource === 'obs') {
-          setStories2(await webCore(_obsNavigation2, referenceColumnOneData2.refName),
-          // const supData2 =webCore(_obsNavigation2, referenceColumnOneData2.refName
-			);
-        }
-      // });} 
-  }
+      // if (isElectron()) {
+      //   localforage.getItem('userProfile').then((user) => {
+      // const fs = window.require('fs');
+      if (_obsNavigation1 && referenceColumnOneData1.refName && referenceColumnOneData1.selectedResource === 'obs') {
+        setStories1(await webCore(_obsNavigation1, referenceColumnOneData1.refName));
+        // const supData = await webCore( _obsNavigation1, referenceColumnOneData1.refName);
+        // console.log('supData', supData);
+      }
+      if (_obsNavigation2 && referenceColumnOneData2.refName && referenceColumnOneData2.selectedResource === 'obs') {
+        setStories2(await webCore(_obsNavigation2, referenceColumnOneData2.refName));
+      }
+    };
     readObs();
-}, [_obsNavigation1, _obsNavigation2, referenceColumnOneData1, referenceColumnOneData2]);
+  }, [_obsNavigation1, _obsNavigation2, referenceColumnOneData1, referenceColumnOneData2]);
   return (
     <>
       {(layout > 0 && layout <= 2) && (

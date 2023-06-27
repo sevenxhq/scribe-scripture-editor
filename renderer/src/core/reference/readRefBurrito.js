@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 import { supabaseStorage } from '../../../../supabase';
 import * as logger from '../../logger';
 import { isElectron } from '../handleElectron';
@@ -20,14 +21,15 @@ export const readRefBurrito = async ({
             }
         });
     }
-    return new Promise((resolve) => {
-        const { data: files, error } = supabaseStorage()
+    return new Promise(async (resolve) => {
+        const { data: files, error } = await supabaseStorage()
             .download(metaPath);
         if (error) {
             console.error('Error fetching files:', error);
             return;
         }
-        console.log('readIngreadients.js', 'Returning the metadata (burrito)');
-        resolve((files));
+        const _files = JSON.parse(await files.text());
+        console.log('files', _files);
+        resolve(_files);
     });
 };

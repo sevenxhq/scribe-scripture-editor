@@ -1,13 +1,11 @@
 import * as localforage from 'localforage';
 import { environment } from '../../../environment';
-import { handleJson, handleSupabaseJson } from './handleJson';
+import { handleJson } from './handleJson';
 import * as logger from '../../logger';
-import supabase, { supabaseStorage } from '../../../../supabase';
+import { supabaseStorage } from '../../../../supabase';
 import { isElectron } from '../handleElectron';
 
-const advanceSettings = require('../../lib/AdvanceSettings.json');
-
-const createSupabaseSettingJson = async (path) => {
+export const createSupabaseSettingJson = async (path) => {
   const json = {
     version: environment.AG_USER_SETTING_VERSION,
     history: {
@@ -35,23 +33,21 @@ const createSupabaseSettingJson = async (path) => {
     },
     sync: { services: { door43: [] } },
   };
-  const { data, error } = await supabase
-    .storage
-    .from('autographa-web')
+  const { data, error } = await supabaseStorage()
     .upload(path, JSON.stringify(json), {
       cacheControl: '3600',
       upsert: false,
     });
-    if (data) {
-      console.log('success, ag-user.json', data);
-    }
-    console.log({ error });
+  if (data) {
+    console.log('success, ag-user.json', data);
+  }
+  console.log({ error });
 };
 
 const addNewUser = async (newUser) => {
   // Fetch the current array of users from the Supabase storage file
   const { data, error } = await supabaseStorage()
-    .download('autographa/users/newUsers.json');
+    .download('autographa/users/users.json');
 
   if (error) {
     console.error(error);
@@ -63,10 +59,8 @@ const addNewUser = async (newUser) => {
   // Add the new user to the current array of users
   await currentUsers.push(newUser);
   // Update the array of users in the Supabase storage file with the new array
-  const { data: updatedData, error: updateError } = await supabase
-    .storage
-    .from('autographa-web')
-    .update('autographa/users/newUsers.json', JSON.stringify(currentUsers), {
+  const { data: updatedData, error: updateError } = supabaseStorage()
+    .update('autographa/users/users.json', JSON.stringify(currentUsers), {
       cacheControl: '3600',
       // Overwrite file if it exis
       upsert: true,
@@ -82,87 +76,13 @@ const addNewUser = async (newUser) => {
   }
 };
 
-const createSupabaseUser = async (values) => {
-  const newpath = 'autographa/users';
-  logger.debug('handleJson.js', 'Inside handleJson');
-
-  // Check if the file exists
-  const { data: fileExists, error: fileExistsError } = await supabase
-    .storage
-    .from('autographa-web')
-    .list(`${newpath}/users.json`);
-
-  if (fileExistsError) {
-    logger.error('handleJson.js', 'Failed to check if file exists');
-    return { userExist: false, fetchFile: true };
-  }
-
-  let users = [];
-  const error = { userExist: false, fetchFile: false };
-
-  if (fileExists.length > 0) {
-    // Fetch the file contents
-    const { data: fileData, error: fileDataError } = await supabase
-      .storage
-      .from('autographa-web')
-      .download(`${newpath}/users.json`);
-
-    if (fileDataError) {
-      logger.error('handleJson.js', 'Failed to read the data from file');
-      error.fetchFile = true;
-      return error;
-    }
-    logger.debug('handleJson.js', 'Successfully read the data from file');
-    users = JSON.parse(fileData);
-  }
-
-  // Add new user to the existing list in file
-  users.push(values);
-
-  // Write updated contents to the file
-  const { error: writeError } = await supabase
-    .storage
-    .from('autographa-web')
-    .upload(`${newpath}/users.json`, JSON.stringify(users));
-
-  if (writeError) {
-    logger.error('handleJson.js', 'Failed to write data to file');
-    return error;
-  }
-
-  logger.debug('handleJson.js', 'Successfully added new user to the existing list in file');
-
-  // Create directories for new user
-  const { error: mkdirError } = await supabase
-    .storage
-    .from('autographa-web')
-    .createBucket(`${newpath}/${values.username}/projects`);
-
-  if (mkdirError) {
-    logger.error('handleJson.js', 'Failed to create directories for new user');
-    return error;
-  }
-
-  logger.debug('handleJson.js', 'Successfully created directories for new user');
-
-  // Add new user to localForage
-  const { error: localForageError } = await localforage.setItem('users', users);
-
-  if (localForageError) {
-    logger.error('handleJson.js', 'Failed to add new user to existing list');
-    return error;
-  }
-
-  logger.debug('handleJson.js', 'Added new user to existing list');
-  return error;
-};
 export const createUser = async (values, fs) => {
   logger.debug('handleLogin.js', 'In createUser to create a new user');
   const obj = {
-    username: values.username,
+    username: isElectron() ? values.username : values.user_metadata.username,
     firstname: '',
     lastname: '',
-    email: '',
+    email: values.email,
     organization: '',
     selectedregion: '',
     lastSeen: new Date(),
@@ -195,17 +115,14 @@ export const writeToFile = (users) => {
 };
 
 const writeToSupabase = async (users) => {
-  console.log('file deleted', users);
+  const { data, error } = await supabaseStorage()
+    .upload('autographa/users/users.json', JSON.stringify(users));
 
-  // const { data, error } = await supabase.storage
-  //   .from('autographa-web')
-  //   .upload(file, JSON.stringify(users));
-
-  // if (error) {
-  //   console.error('Error saving users to Supabase Storage', error);
-  // } else {
-  //   console.log('Users saved to Supabase Storage', data);
-  // }
+  if (error) {
+    console.error('Error saving users to Supabase Storage', error);
+  } else {
+    console.log('Users saved to Supabase Storage', data);
+  }
 };
 
 /**

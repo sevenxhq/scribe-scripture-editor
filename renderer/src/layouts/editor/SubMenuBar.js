@@ -12,10 +12,7 @@ import Font from '@/icons/font.svg';
 import ColumnsIcon from '@/icons/basil/Outline/Interface/Columns.svg';
 import MenuDropdown from '../../components/MenuDropdown/MenuDropdown';
 import menuStyles from './MenuBar.module.css';
-import styles from './SubMenuBar.module.css';
 import packageInfo from '../../../../package.json';
-
-import SyncPopup from './SyncPopup';
 
 const activate = () => {
   // console.log('rename');

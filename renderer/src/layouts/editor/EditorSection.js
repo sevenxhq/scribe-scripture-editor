@@ -261,7 +261,7 @@ export default function EditorSection({
 
         <div
           style={{ fontFamily: 'sans-serif', fontSize: `${fontSize}rem`, direction: `${projectScriptureDir?.toUpperCase() === 'RTL' ? 'rtl' : 'ltr'}` }}
-          className="prose-sm text-xl h-full overflow-auto scrollbars-width"
+          className="prose-sm p-4 text-xl h-full overflow-auto scrollbars-width"
         >
           {
             (loadResource === false)

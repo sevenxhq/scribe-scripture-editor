@@ -7,8 +7,10 @@ import {
 import {
   XMarkIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
 } from '@heroicons/react/24/solid';
 
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import styles from '../Navigation/reference/SelectReference.module.css';
 
 const SelectFile = ({ openChapter, onChapterSelect }) => (
@@ -65,11 +67,16 @@ export default function NavigationObs({ onChangeNumber, number }) {
     <>
       <div className="flex">
         <div className="bg-primary text-white py-2 uppercase tracking-wider text-xs font-semibold">
-          <span className="px-3">
-            Story
-            {' '}
-            {number}
+          <span
+            className="focus:outline-none bg-white py-4 bg-opacity-10"
+            onClick={selectBook}
+            role="button"
+            tabIndex="-1"
+            aria-label="obs-navigation"
+          >
+            <ChevronLeftIcon className="focus:outline-none inline h-4 w-4 mx-1 text-white" aria-hidden="true" />
           </span>
+          <span className="px-3">{number}</span>
           <span
             className="focus:outline-none bg-white py-4 bg-opacity-10"
             onClick={selectBook}
@@ -78,6 +85,14 @@ export default function NavigationObs({ onChangeNumber, number }) {
             aria-label="obs-navigation"
           >
             <ChevronDownIcon className="focus:outline-none inline h-4 w-4 mx-1 text-white" aria-hidden="true" />
+          </span>
+          <span
+            className="focus:outline-none bg-white py-4 bg-opacity-10"
+            role="button"
+            tabIndex="-1"
+            aria-label="obs-navigation"
+          >
+            <ChevronRightIcon className="focus:outline-none inline h-4 w-4 mx-1 text-white" aria-hidden="true" />
           </span>
         </div>
       </div>

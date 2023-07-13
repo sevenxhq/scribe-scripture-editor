@@ -25,6 +25,5 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": true
 	},
-	"eslint.workingDirectories": [],
-	"editor.tabSize": 2
+	"eslint.workingDirectories": []
 }

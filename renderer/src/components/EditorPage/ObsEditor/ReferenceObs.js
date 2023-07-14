@@ -12,10 +12,10 @@ const style = {
 		fontStyle: 'italic',
 	},
 };
-const ReferenceObs = ({ stories }) => {
+const ReferenceObs = ({ stories,font }) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const {
-		state: { selectedStory, selectedFont, fontSize },
+		state: { selectedStory, fontSize },
 		actions: { setSelectedStory },
 	} = useContext(ReferenceContext);
 
@@ -85,7 +85,7 @@ const ReferenceObs = ({ stories }) => {
 							) && (
 								<>
 									<div className='col-span-4 relative h-full border-0'>
-										<span className='w-4 h-4 bg-white border-gray-600 border-2 rounded-full flex justify-center text-xxs text-gray-600 items-center p-3 absolute top-8 left-1 z-50'>
+										<span className='w-4 h-4 bg-white border-gray-600 border-2 rounded-full flex justify-center text-xxs text-gray-600 items-center p-3 absolute top-8 left-1'>
 											{index
 												.toString()
 												.split('')
@@ -101,7 +101,7 @@ const ReferenceObs = ({ stories }) => {
 										className='col-span-8 text-xxs text-gray-600 text-justify py-2'
 										style={{
 											fontFamily:
-												selectedFont || 'sans-serif',
+												font || 'sans-serif',
 											fontSize: `${fontSize}rem`,
 											lineHeight:
 												fontSize > 1.3 ? 1.5 : '',

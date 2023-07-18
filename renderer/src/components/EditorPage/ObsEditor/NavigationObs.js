@@ -76,7 +76,11 @@ export default function NavigationObs({ onChangeNumber, number }) {
           >
             <ChevronLeftIcon className="focus:outline-none inline h-4 w-4 mx-1 text-white" aria-hidden="true" />
           </span>
-          <span className="px-3">{number}</span>
+          <span className="px-3">
+            Story
+            {' '}
+            {number}
+          </span>
           <span
             className="focus:outline-none bg-white py-4 bg-opacity-10"
             onClick={selectBook}

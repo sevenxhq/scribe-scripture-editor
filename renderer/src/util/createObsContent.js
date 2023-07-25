@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 import moment from 'moment';
 import { environment } from '../../environment';
 import * as logger from '../logger';

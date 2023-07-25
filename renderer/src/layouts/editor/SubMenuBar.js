@@ -9,11 +9,13 @@ import CustomNofications from '@/components/Notification/CustomNofications';
 import localforage from 'localforage';
 import EditorSync from '@/components/Sync/Gitea/EditorSync/EditorSync';
 // import useNetwork from '@/components/hooks/useNetowrk';
+import { isElectron } from '@/core/handleElectron';
 import Font from '@/icons/font.svg';
 import ColumnsIcon from '@/icons/basil/Outline/Interface/Columns.svg';
 import MenuDropdown from '../../components/MenuDropdown/MenuDropdown';
 import menuStyles from './MenuBar.module.css';
 import packageInfo from '../../../../package.json';
+import { newPath, supabaseStorage } from '../../../../supabase';
 // import WifiIcon from '@/icons/wifi.svg';
 
 const activate = () => {
@@ -32,6 +34,9 @@ export default function SubMenuBar() {
     state: {
       layout,
       row,
+      // openResource1,
+      // openResource3,
+
     },
     actions: {
       setOpenResource1,
@@ -67,7 +72,7 @@ export default function SubMenuBar() {
       renderElement: <MenuDropdown />,
       callback: activate,
     },
-    ];
+  ];
 
   const handleResource = () => {
     if (layout === 0) {
@@ -91,21 +96,37 @@ export default function SubMenuBar() {
 
   // This below code is for identifying the type of resource to remove Bookmarks from OBS
   const [resourceType, setResourceType] = useState();
-  useEffect(() => {
-    localforage.getItem('userProfile').then((value) => {
-      const username = value?.username;
-      localforage.getItem('currentProject').then((projectName) => {
-        const path = require('path');
-        const fs = window.require('fs');
-        const newpath = localStorage.getItem('userPath');
-        const metaPath = path.join(newpath, packageInfo.name, 'users', username, 'projects', projectName, 'metadata.json');
-        const data = fs.readFileSync(metaPath, 'utf-8');
-        const metadata = JSON.parse(data);
-        setResourceType(metadata.type.flavorType.flavor.name);
-      });
-    });
-  });
 
+  async function supabaseResourceType() {
+    const projectName = await localforage.getItem('currentProject');
+    const userProfile = await localforage.getItem('userProfile');
+    const email = userProfile.user.email;
+    const { data, error } = await supabaseStorage().download(`${newPath}/${email}/projects/${projectName}/metadata.json`);
+    if (error) {
+      console.log('SubMenuBar.js', error);
+    }
+    const metadata = JSON.parse(await data.text());
+    setResourceType(metadata.type.flavorType.flavor.name);
+  }
+
+  useEffect(() => {
+    if (isElectron()) {
+      localforage.getItem('userProfile').then((value) => {
+        const username = value?.username;
+        localforage.getItem('currentProject').then((projectName) => {
+          const path = require('path');
+          const fs = window.require('fs');
+          const newpath = localStorage.getItem('userPath');
+          const metaPath = path.join(newpath, packageInfo.name, 'users', username, 'projects', projectName, 'metadata.json');
+          const data = fs.readFileSync(metaPath, 'utf-8');
+          const metadata = JSON.parse(data);
+          setResourceType(metadata.type.flavorType.flavor.name);
+        });
+      });
+    } else {
+      supabaseResourceType();
+    }
+  });
   return (
     <>
 

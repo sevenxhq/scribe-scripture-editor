@@ -1,9 +1,10 @@
 import ProtectedRoute from '@/components/Protected';
-import Sync from '@/modules/projects/Sync';
+// import Sync from '@/modules/projects/Sync';
 
 const sync = () => (
   <ProtectedRoute>
-    <Sync />
+    Sync page
+    {/* <Sync /> */}
   </ProtectedRoute>
 );
 

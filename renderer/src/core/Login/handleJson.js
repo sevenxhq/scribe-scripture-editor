@@ -1,6 +1,7 @@
 import * as localForage from 'localforage';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
+import { createDirectory, supabaseStorage } from '../../../../supabase';
 
 const path = require('path');
 
@@ -105,6 +106,55 @@ export const handleJson = async (values, fs) => {
     return error;
   } catch (err) {
     logger.error('handleJson.js', 'Failed to create and write to the file');
+    error.fetchFile = true;
+    return error;
+  }
+};
+
+export const handleJsonWeb = async (values) => {
+  const newPath = 'scribe/users';
+  error = { userExist: false, fetchFile: false };
+  await createDirectory(newPath);
+  const { data: file } = await supabaseStorage().list(`${newPath}/users.json`);
+  if (file.length > 0) {
+    const { data, error: err } = await supabaseStorage().download(`${newPath}/users.json`);
+    if (err) {
+      console.log('handleJson.js', 'Failed to read the data from file', err);
+      error.userExist = true;
+      return error;
+    }
+    if (data) {
+      let json = [];
+      json = JSON.parse(await data.text());
+      if (uniqueUser(json, values.email)) {
+        error.userExist = true;
+        return error;
+      }
+      json.push(values);
+      await supabaseStorage().upload(`${newPath}/users.json`, JSON.stringify(json), {
+        upsert: true,
+      });
+      console.log('handleJson.js', 'Successfully added new user to the existing list in file');
+      await createDirectory(`${newPath}/${values.email}/projects`);
+      localForage.setItem('users', json);
+      console.log('handleJson.js', 'Successfully created directories for new user');
+      return error;
+    }
+  }
+  const array = [];
+  array.push(values);
+  try {
+    await supabaseStorage().upload(`${newPath}/users.json`, JSON.stringify(array), {
+      upsert: true,
+    });
+    await createDirectory(`${newPath}/${values.email}/projects`);
+    console.log('handleJson.js', 'Successfully created and written to the file');
+    // Add new user to localForage:
+    localForage.setItem('users', array);
+    console.log('handleJson.js', 'Created a file and added user to LocalForage');
+    return error;
+  } catch (err) {
+    console.log('handleJson.js', 'Failed to create and write to the file');
     error.fetchFile = true;
     return error;
   }

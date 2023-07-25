@@ -1,5 +1,5 @@
 import * as localforage from 'localforage';
-import { handleJson } from './handleJson';
+import { handleJson, handleJsonWeb } from './handleJson';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
 
@@ -18,6 +18,20 @@ export const createUser = (values, fs) => {
   return handleJson(obj, fs).then(() => obj);
 };
 
+export const createWebUser = async (values) => {
+  logger.debug('handleLogin.js', 'In createWebUser to create a new user');
+  const obj = {
+    email: values?.email,
+    firstname: '',
+    lastname: '',
+    organization: '',
+    selectedregion: '',
+    lastSeen: new Date(),
+    isArchived: false,
+  };
+  console.log('passed obj', { obj });
+  return handleJsonWeb(obj).then(() => obj);
+};
 /**
  * It writes the users to a file.
  * @param users - [{

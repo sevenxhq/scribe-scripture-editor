@@ -5,7 +5,7 @@ import * as localforage from 'localforage';
 import { splitStringByLastOccurance } from '@/util/splitStringByLastMarker';
 import { isElectron } from '../../core/handleElectron';
 import * as logger from '../../logger';
-import saveProjectsMeta from '../../core/projects/saveProjetcsMeta';
+import saveProjectsMeta, { saveSupabaseProjectsMeta } from '../../core/projects/saveProjetcsMeta';
 import { environment } from '../../../environment';
 import staicLangJson from '../../lib/lang/langNames.json';
 import packageInfo from '../../../../package.json';
@@ -286,6 +286,31 @@ const ProjectContextProvider = ({ children }) => {
       return status;
     };
 
+    const createSupabaseProject = async (call, project, update, projectType) => {
+      // createProjectCommonUtils();
+      // common props pass for all project type
+      const projectMetaObj = {
+        newProjectFields,
+        language,
+        copyright,
+        importedFiles,
+        call,
+        project,
+        update,
+        projectType,
+      };
+      if (projectType !== 'OBS') {
+        // createProjectTranslationUtils();
+        const temp_obj = {
+          versificationScheme: versificationScheme.title,
+          canonSpecification,
+        };
+        Object.assign(projectMetaObj, temp_obj);
+      }
+      logger.debug('ProjectContext.js', 'Calling saveSupabaseProjectsMeta with required props');
+      const status = isElectron() ? saveProjectsMeta(projectMetaObj) : saveSupabaseProjectsMeta(projectMetaObj);
+      return status;
+    };
     const resetProjectStates = () => {
       const initialState = {
         language: '',
@@ -357,6 +382,7 @@ const ProjectContextProvider = ({ children }) => {
             setSideTabTitle,
             setSelectedProject,
             createProject,
+            createSupabaseProject,
             setLanguage,
             setScrollLock,
             setUsername,

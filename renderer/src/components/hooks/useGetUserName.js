@@ -10,7 +10,7 @@ export const useGetUserName = () => {
     useEffect(() => {
         const fetchUserName = async () => {
             try {
-                if (!username && isElectron()) {
+                if (isElectron()) {
                     const value = await localforage.getItem('userProfile');
                     setUsername(value?.username);
                 }

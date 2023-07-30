@@ -116,7 +116,7 @@ export default function ProjectList() {
     setCallEditProject(false);
     await FetchProjects();
   };
-// checking if isArchived is true show projects in archive tab else project tab
+  // checking if isArchived is true show projects in archive tab else project tab
   function filterArchive(project) {
     if (project.isArchived === showArchived) {
       return true;
@@ -125,7 +125,6 @@ export default function ProjectList() {
     }
     return false;
   }
-
   return (
     <>
       {callEditProject === false
@@ -472,7 +471,7 @@ export default function ProjectList() {
                               )}
                             </tbody>
                           </table>
-                          {(!starredrow || !unstarredrow) && <div><LoadingScreen /></div> }
+                          {(!starredrow || !unstarredrow) && <div><LoadingScreen /></div>}
                         </div>
                       </div>
                     </div>
@@ -492,7 +491,7 @@ export default function ProjectList() {
               </ProjectContextProvider>
             </AutographaContextProvider>
           </AuthenticationContextProvider>
-)}
+        )}
     </>
   );
 }

@@ -8,7 +8,7 @@ import OBSBack from '../lib/OBSback.md';
 import OBSLicense from '../lib/OBSLicense.md';
 import JsonToMd from '../obsRcl/JsonToMd/JsonToMd';
 import packageInfo from '../../../package.json';
-import { supabaseStorage } from '../../../supabase';
+import { newPath, supabaseStorage } from '../../../supabase';
 
 const path = require('path');
 const md5 = require('md5');
@@ -231,7 +231,7 @@ export const createObsContent = (
 
     return new Promise(async (resolve) => {
       const ingredients = {};
-      const supabasePath = `scribe/users/${username}/projects/${project.projectName}_${id}/ingredients`;
+      const supabasePath = `${newPath}/${username}/projects/${project.projectName}_${id}/ingredients`;
 
       const uploadFileToSupabase = async (filePath, fileContent) => {
         const { data: file, error } = await supabaseStorage()
@@ -328,9 +328,6 @@ export const createObsContent = (
           role: 'title',
         };
 
-        // OBS License
-        // fs.writeFileSync(path.join(folder, 'LICENSE.md'), OBSLicense);
-        // obsstat = fs.statSync(path.join(folder, 'LICENSE.md'));
         obsstat = await uploadFileToSupabase(`${supabasePath}/LICENSE.md`, OBSLicense);
         ingredients[path.join('ingredients', 'LICENSE.md')] = {
           checksum: {
@@ -388,8 +385,8 @@ export const createObsContent = (
         sync: { services: { door43: [] } },
       };
       console.log('createObsContent.js', 'Creating ag-settings.json file in content');
-      const stat = await uploadFileToSupabase(`${supabasePath}/ag-settings.json`, JSON.stringify(settings));
-      ingredients[path.join('ingredients', 'ag-settings.json')] = {
+      const stat = await uploadFileToSupabase(`${supabasePath}/${environment.PROJECT_SETTING_FILE}`, JSON.stringify(settings));
+      ingredients[path.join('ingredients', environment.PROJECT_SETTING_FILE)] = {
         checksum: {
           md5: md5(settings),
         },

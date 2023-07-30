@@ -14,16 +14,17 @@ import PopoverProjectType from '@/layouts/editor/PopoverProjectType';
 import { SnackBar } from '@/components/SnackBar';
 import useValidator from '@/components/hooks/useValidator';
 import ConfirmationModal from '@/layouts/editor/ConfirmationModal';
-import LoadingScreen from '@/components/Loading/LoadingScreen';
+import CustomMultiComboBox from '@/components/Resources/ResourceUtils/CustomMultiComboBox';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import moment from 'moment';
+import { v5 as uuidv5 } from 'uuid';
+import { environment } from '../../../environment';
 import LayoutIcon from '@/icons/basil/Outline/Interface/Layout.svg';
 import BullhornIcon from '@/icons/basil/Outline/Communication/Bullhorn.svg';
-// import ProcessorIcon from '@/icons/basil/Outline/Devices/Processor.svg';
-// import CheckIcon from '@/icons/basil/Outline/Interface/Check.svg';
 import ImageIcon from '@/icons/basil/Outline/Files/Image.svg';
 import { classNames } from '../../util/classNames';
 import * as logger from '../../logger';
 import ImportPopUp from './ImportPopUp';
-import CustomList from './CustomList';
 import burrito from '../../lib/BurritoTemplete.json';
 // eslint-disable-next-line no-unused-vars
 const solutions = [
@@ -70,7 +71,8 @@ function BibleHeaderTagDropDown(headerDropDown, handleDropDown, call) {
             className="flex justify-center items-center px-3 py-2 text-white ml-5
           font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
           >
-            <div className="">{headerDropDown}</div>
+            {/* <div className="">{headerDropDown}</div> */}
+            <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
             <ChevronDownIcon
               className="w-5 h-5 ml-2"
               aria-hidden="true"
@@ -84,7 +86,7 @@ function BibleHeaderTagDropDown(headerDropDown, handleDropDown, call) {
           className="flex justify-center items-center px-3 py-2 text-white ml-5
           font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
         >
-          <div className="">{headerDropDown}</div>
+          <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
         </button>
       )
 
@@ -99,10 +101,8 @@ export default function NewWebProject({ call, project, closeEdit }) {
     },
     actions: {
       setLanguage,
-      createProject,
-      setNewProjectFields,
-      setLanguages,
       createSupabaseProject,
+      setNewProjectFields,
     },
   } = useContext(ProjectContext);
 
@@ -122,6 +122,7 @@ export default function NewWebProject({ call, project, closeEdit }) {
   const [notify, setNotify] = useState();
   const [metadata, setMetadata] = useState();
   const [openModal, setOpenModal] = useState(false);
+  const [projectLangData, setProjectLangData] = useState({});
   const [error, setError] = useState({
     projectName: {},
     abbr: {},
@@ -150,37 +151,50 @@ export default function NewWebProject({ call, project, closeEdit }) {
     setNewProjectFields({ ...newProjectFields, projectName: e.target.value, abbreviation });
   };
 
-  const setValue = async (value) => {
-    if (value.title) {
-      setLanguage(value);
-      languages.forEach((l) => {
-        if (l.title !== value.title) {
-          setLanguages(languages.concat(value));
-        }
-      });
+  const setEditLanguage = async (value) => {
+    // check the language already in the list or set a new one which create on save project
+    if (value.ang) {
+      const editLang = languages.filter((l) => l.ang?.toLowerCase() === value.ang?.toLowerCase());
+      if (editLang.length > 0) {
+        setLanguage(editLang[0]);
+      } else {
+        const key = value.ang + +moment().format();
+        const id = uuidv5(key, environment.uuidToken);
+        setLanguage(
+          {
+            id,
+            ang: value.ang,
+            ld: value?.ld || 'LTR',
+            lc: value?.lc,
+            custom: true,
+          },
+        );
+      }
     }
   };
-  const createTheProject = (update) => {
+
+  const createWebProject = async (update) => {
     setLoading(true);
-    logger.debug('NewProject.js', 'Creating new project.');
-    const value = createProject(call, metadata, update, headerDropDown);
-    value.then((status) => {
-      logger.debug('NewProject.js', status[0].value);
+    if (newProjectFields.projectName && newProjectFields.abbreviation) {
+      const value = await createSupabaseProject(call, metadata, update, headerDropDown);
+      console.log({ value });
+
+      const status = value[0];
+      logger.debug('NewProject.js', status.value);
       setLoading(false);
-      setNotify(status[0].type);
-      setSnackText(status[0].value);
+      setNotify(status.type);
+      setSnackText(status.value);
       setOpenSnackBar(true);
-      if (status[0].type === 'success') {
+      if (status.type === 'success') {
         if (call === 'edit') {
           closeEdit();
         } else {
           router.push('/projects');
         }
       }
-    });
+    }
   };
   const validate = async () => {
-    logger.debug('NewProject.js', 'Validating the fields.');
     setLoading(true);
     let create = true;
     if (newProjectFields.projectName && newProjectFields.abbreviation) {
@@ -213,37 +227,23 @@ export default function NewWebProject({ call, project, closeEdit }) {
     }
     if (create === true) {
       // Checking whether the burrito is of latest version
-      logger.warn('NewProject.js', 'Checking whether the burrito is of latest version.');
+      console.warn('NewProject.js', 'Checking whether the burrito is of latest version.');
       if (call === 'edit' && burrito?.meta?.version !== metadata?.meta?.version) {
         setOpenModal(true);
         setLoading(false);
       } else {
         logger.warn('NewProject.js', 'Calling createTheProject function');
-        createTheProject(false);
+        createWebProject(false);
       }
     } else {
       setLoading(false);
     }
   };
 
-  const createWebProject = async () => {
-    setLoading(true);
-    if (newProjectFields.projectName && newProjectFields.abbreviation) {
-      const value = await createSupabaseProject(call, metadata, false, headerDropDown);
-      console.log({ value });
-      value && setLoading(false);
-      router.push('/projects');
-    } else {
-      setNotify('warning');
-      setSnackText(t('dynamic-msg-fill-all-fields'));
-      setOpenSnackBar(true);
-      setLoading(false);
-    }
-  };
   const updateBurritoVersion = () => {
     setOpenModal(false);
     logger.warn('NewProject.js', 'Calling createTheProject function with burrito update');
-    createTheProject(true);
+    createWebProject(true);
   };
   const [openPopUp, setOpenPopUp] = useState(false);
   const [replaceWarning, setReplaceWarning] = useState(false);
@@ -265,7 +265,11 @@ export default function NewWebProject({ call, project, closeEdit }) {
       abbreviation: project.identification.abbreviation.en,
       description: project.project[project.type.flavorType.flavor.name].description,
     });
-    setValue({ title: project.languages[0].name.en, scriptDirection: project.project[project.type.flavorType.flavor.name].scriptDirection });
+    setProjectLangData({
+      ang: project.languages[0].name.en,
+      ld: project.project[project.type.flavorType.flavor.name].scriptDirection,
+      lc: project.languages[0]?.tag ? project.languages[0].tag : project.languages[0].name.en.substring(0, 3),
+    });
     setMetadata(project);
     // set dropdown to the project type
     switch (project.type.flavorType.flavor.name) {
@@ -285,11 +289,21 @@ export default function NewWebProject({ call, project, closeEdit }) {
         break;
     }
   };
+
+  useEffect(() => {
+    setEditLanguage(projectLangData);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [languages.length, projectLangData]);
+
   useEffect(() => {
     if (call === 'edit') {
       loadData(project);
+    } else if (call === 'new') {
+      // set englsh as default lang
+      const defaulLang = languages.filter((lang) => lang.lc === 'en');
+      setLanguage(defaulLang[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call]);
 
   return (
@@ -299,7 +313,12 @@ export default function NewWebProject({ call, project, closeEdit }) {
     >
       {loading === true
         ? (
-          <LoadingScreen />
+          <div className="h-full items-center justify-center flex">
+            <svg className="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </div>
         )
         : (
           <div className=" rounded-md border shadow-sm mt-4 ml-5 mr-5 mb-5">
@@ -362,22 +381,29 @@ export default function NewWebProject({ call, project, closeEdit }) {
                       && (
                         <div className="absolute">
                           <TargetLanguageTag>
-                            {language.scriptDirection ? language.scriptDirection : 'LTR'}
+                            {language.ld ? language.ld : 'LTR'}
                           </TargetLanguageTag>
                         </div>
                       )}
-                    <h4 className="text-xs font-base mb-2 text-primary  tracking-wide leading-4  font-light">
+                    <h4 className="text-xs font-base mb-3 text-primary  tracking-wide leading-4  font-light">
                       {t('label-target-language')}
                       <span className="text-error">*</span>
                     </h4>
-                    <CustomList
-                      selected={language}
-                      setSelected={setLanguage}
-                      // options={languages}
-                      options={languages.filter((v, i, a) => a.findIndex((v2) => ['title', 'scriptDirection'].every((k) => v2[k] === v[k])) === i)}
-                      show
+                    <CustomMultiComboBox
+                      selectedList={[language]}
+                      setSelectedList={setLanguage}
+                      customData={languages}
+                      filterParams="ang"
+                      dropArrow
+                      showLangCode={{ show: true, langkey: 'lc' }}
                     />
                   </div>
+                  <button type="button" className="mt-6 -ml-2" title="type minimum 3 letter for search">
+                    <InformationCircleIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </button>
                   <div className="mt-5">
                     <TargetLanguagePopover projectType={headerDropDown} />
                   </div>
@@ -404,7 +430,7 @@ export default function NewWebProject({ call, project, closeEdit }) {
                         type="button"
                         aria-label="create"
                         className="w-40 h-10 my-5 bg-success leading-loose rounded shadow text-xs font-base text-white tracking-wide font-light uppercase"
-                        onClick={() => createWebProject()}
+                        onClick={() => validate()}
                       >
                         {t('btn-create-project')}
                       </button>

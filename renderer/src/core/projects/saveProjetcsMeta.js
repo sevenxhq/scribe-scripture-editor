@@ -2,7 +2,7 @@ import moment from 'moment';
 import * as localforage from 'localforage';
 import { v5 as uuidv5 } from 'uuid';
 import { createAudioVersification } from '@/util/createAudioVersification';
-import { createVersificationUSFM } from '../../util/createVersificationUSFM';
+import { createVersificationUSFM, createWebVersificationUSFM } from '../../util/createVersificationUSFM';
 import { createObsContent, createWebObsContent } from '../../util/createObsContent';
 import createTranslationSB from '../burrito/createTranslationSB';
 import createObsSB from '../burrito/createObsSB';
@@ -10,13 +10,14 @@ import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import createAudioSB from '../burrito/createAudioSB';
 import packageInfo from '../../../../package.json';
-import { createDirectory, supabaseStorage } from '../../../../supabase';
+import { createDirectory, newPath, supabaseStorage } from '../../../../supabase';
 
 const bookAvailable = (list, id) => list.some((obj) => obj === id);
 const checker = (arr, target) => target.every((v) => arr.includes(v));
 
-const saveProjectsMeta = async (projectMetaObj) => {
+export const saveProjectsMeta = async (projectMetaObj) => {
   logger.debug('saveProjectsMeta.js', 'In saveProjectsMeta');
+  console.log('saveProjectsMeta.js', { projectMetaObj });
   const newpath = localStorage.getItem('userPath');
   const status = [];
   const fs = window.require('fs');
@@ -347,11 +348,12 @@ const saveProjectsMeta = async (projectMetaObj) => {
 };
 
 export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
+  console.log('saveProjectsMeta.js', { projectMetaObj });
   const userProfile = await localforage.getItem('userProfile');
   const currentUser = userProfile.user.email;
   const status = [];
-  await createDirectory(`scribe/users/${currentUser}/projects}`);
-  const projectDir = `scribe/users/${currentUser}/projects}`;
+  await createDirectory(`${newPath}/${currentUser}/projects}`);
+  const projectDir = `${newPath}/${currentUser}/projects}`;
   let projectNameExists = false;
   let checkCanon = false;
   const { data: folderList } = await supabaseStorage().list(projectDir);
@@ -405,7 +407,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
       // Create New burrito
       // ingredient has the list of created files in the form of SB Ingredients
       console.debug('saveProjectsMeta.js', 'Calling creatVersification for generating USFM files.');
-      await createVersificationUSFM(
+      await createWebVersificationUSFM(
         currentUser,
         projectMetaObj.newProjectFields,
         projectMetaObj.versificationScheme,
@@ -413,6 +415,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
         projectMetaObj.language.ld,
         id,
         projectMetaObj.importedFiles,
+        projectMetaObj.copyright,
         projectMetaObj.project,
         projectMetaObj.call,
         projectMetaObj.projectType,
@@ -439,7 +442,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
           burritoFile.ingredients = ingredient;
         }
         console.debug('saveProjectsMeta.js', 'Creating a burrito file.');
-        await supabaseStorage().upload(`scribe/users/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile));
+        await supabaseStorage().upload(`${newPath}/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile));
       }).finally(() => {
         console.debug('saveProjectsMeta.js', projectMetaObj.call === 'new' ? 'New project created successfully.' : 'Updated the Changes.');
         status.push({ type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') });
@@ -494,7 +497,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
         burritoFile.ingredients = ingredient;
       }
       console.debug('saveProjectsMeta.js', 'Creating a burrito file.');
-      await supabaseStorage().upload(`scribe/users/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile));
+      await supabaseStorage().upload(`${newPath}/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile));
     }).finally(() => {
       console.debug('saveProjectsMeta.js', projectMetaObj.call === 'new' ? 'New project created successfully.' : 'Updated the Changes.');
       status.push({ type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') });
@@ -573,7 +576,53 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
           burritoFile.ingredients = ingredient;
         }
         console.debug('saveProjectsMeta.js', 'Creating a burrito file.');
-        await supabaseStorage().upload(`scribe/users/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile));
+        await supabaseStorage().upload(`${newPath}/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile)).then(async () => {
+          // Adding text USFM to audio project
+          if ((projectMetaObj.importedFiles).length !== 0) {
+            const newScope = [];
+            projectMetaObj.importedFiles.forEach((file) => {
+              newScope.push(file.id);
+            });
+            // ingredient has the list of created files in the form of SB Ingredients
+            console.debug('saveProjectsMeta.js', 'Calling creatVersification for generating USFM files.');
+            await createWebVersificationUSFM(
+              currentUser,
+              projectMetaObj.newProjectFields,
+              projectMetaObj.versificationScheme,
+              newScope,
+              projectMetaObj.language.ld,
+              id,
+              projectMetaObj.importedFiles,
+              projectMetaObj.copyright,
+              projectMetaObj.project,
+              projectMetaObj.call,
+              'Audio',
+            ).then(async (ingredient) => {
+              logger.debug('saveProjectsMeta.js', 'Calling createTranslationSB for creating burrito.');
+              const burritoFile = await createTranslationSB(
+                currentUser,
+                projectMetaObj.newProjectFields,
+                scope,
+                projectMetaObj.language.ang,
+                projectMetaObj.language.lc,
+                projectMetaObj.language.ld,
+                projectMetaObj.copyright,
+                id,
+                projectMetaObj.project,
+                projectMetaObj.call,
+                projectMetaObj.update,
+              );
+              if (projectMetaObj.call === 'edit') {
+                burritoFile.ingredients = { ...projectMetaObj.project.ingredients, ...ingredient };
+              } else {
+                burritoFile.ingredients = ingredient;
+              }
+              logger.debug('saveProjectsMeta.js', 'Creating a burrito file.');
+              const { data } = supabaseStorage().upload(`${newPath}/${currentUser}/projects/${projectMetaObj.newProjectFields.projectName}_${id}/metadata.json`, JSON.stringify(burritoFile));
+              console.log('saveProjectsMeta.js', { data });
+            });
+          }
+        });
       }).finally(() => {
         console.debug('saveProjectsMeta.js', projectMetaObj.call === 'new' ? 'New project created successfully.' : 'Updated the Changes.');
         status.push({ type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') });
@@ -604,5 +653,3 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
   }
   return status;
 };
-
-export default saveProjectsMeta;

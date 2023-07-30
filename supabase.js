@@ -6,11 +6,6 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 export default createClient(
     supabaseUrl,
     supabaseAnonKey,
-    // {
-    //     auth: {
-    //         persistSession: false,
-    //     },
-    // },
 );
 
 export const supabaseStorage = () => createClient(
@@ -20,7 +15,7 @@ export const supabaseStorage = () => createClient(
 
 export async function createDirectory(path, data) {
     const { data: folder } = await supabaseStorage().list(path);
-    if (folder) {
+    if (folder.length > 0) {
         console.log('folder already exists', folder);
     } else {
         if (data) {
@@ -29,10 +24,12 @@ export async function createDirectory(path, data) {
         const fileName = '.keep';
         const filePath = `${path}/${fileName}`;
         const fileContent = new Blob([], { type: 'text/plain' });
-        await supabaseStorage().upload(filePath, fileContent, {
+        const { data: createdDirectory } = await supabaseStorage().upload(filePath, fileContent, {
             cacheControl: '3600',
             upsert: false,
         });
+        console.log('created directory', createdDirectory);
+        return data;
     }
 }
 

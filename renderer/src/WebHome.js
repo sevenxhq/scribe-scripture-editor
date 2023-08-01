@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // import { AuthenticationContext } from './components/Login/AuthenticationContextProvider';
 // import { loadUsers } from './core/Login/handleJson';
 import { getorPutAppLangage } from './core/projects/handleProfile';
@@ -18,7 +18,7 @@ const WebHome = () => {
   //   loadUsers();
   // }, []);
 
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
     setSession(data.session);
     if (session !== null || session !== undefined) {
@@ -27,11 +27,11 @@ const WebHome = () => {
         i18n.changeLanguage(appLangCode);
       }
     }
-  };
+  }, [session]);
 
   useEffect(() => {
     checkSession();
-  }, []);
+  }, [checkSession]);
 
   if (session === null || session === undefined) {
     return <WebLogin />;

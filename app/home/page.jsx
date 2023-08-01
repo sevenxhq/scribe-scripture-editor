@@ -1,12 +1,12 @@
 'use client';
 
 import SectionContainer from '@/layouts/editor/SectionContainer';
-import { Providers } from '../providers';
+import ProtectedRoute from '@/components/Protected';
 
-export default function ReferenceSelector() {
+export default function page() {
   return (
-    <Providers>
+    <ProtectedRoute>
       <SectionContainer />
-    </Providers>
+    </ProtectedRoute>
   );
 }

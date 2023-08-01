@@ -51,6 +51,7 @@ const EditorPanel = ({ obsStory, storyUpdate }) => {
       return false;
     }
   };
+  console.log({ obsStory });
   return (
     <>
       {obsStory.map((story, index) => (

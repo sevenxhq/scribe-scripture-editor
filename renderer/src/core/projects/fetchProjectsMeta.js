@@ -1,8 +1,9 @@
+import * as localforage from 'localforage';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
 import { environment } from '../../../environment';
 import { isElectron } from '../handleElectron';
-import { supabaseStorage } from '../../../../supabase';
+import { newPath, supabaseStorage } from '../../../../supabase';
 
 const fetchProjectsMeta = async ({ currentUser }) => {
   if (isElectron()) {
@@ -46,15 +47,16 @@ const fetchProjectsMeta = async ({ currentUser }) => {
     });
   }
 
-  const path = `scribe/users/${currentUser}/projects`;
+  const path = `${newPath}/${currentUser}/projects`;
   const { data: allProjects } = await supabaseStorage().list(path);
+  console.log('fetchProjectsMeta.js', allProjects);
 
   const projectPromises = allProjects.map(async (proj) => {
     const projectName = proj.name;
     const { data, error } = await supabaseStorage().download(`${path}/${projectName}/metadata.json`);
 
     if (error) {
-      console.error('ProjectList.js', 'Failed to fetch projects from Supabase');
+      console.error('fetchProjectsMeta.js', error);
       return null;
     }
 
@@ -72,21 +74,19 @@ const fetchProjectsMeta = async ({ currentUser }) => {
     }
 
     if (setting) {
-      console.log('ProjectList.js', 'Found scribe-settings for the project, merging scribe-settings and burrito');
       return { ...setting, ...projectJson };
     }
-      logger.debug('ProjectList.js', 'Unable to find scribe-settings for the project so pushing only burrito');
-      return projectJson;
+    console.log('ProjectList.js', 'Unable to find scribe-settings for the project so pushing only burrito');
+    return projectJson;
   });
 
   // Wrap the entire code in a Promise and return it.
   const projectMetaPromise = new Promise((resolve) => {
     Promise.all(projectPromises).then((projectsArray) => {
       const filteredProjects = projectsArray.filter((p) => p !== null);
-      // localforage.setItem('projectmeta', { projects: filteredProjects }).then(() => {
-      console.log({ filteredProjects });
-      resolve({ projects: filteredProjects });
-      // });
+      localforage.setItem('projectmeta', { projects: filteredProjects }).then(() => {
+        resolve({ projects: filteredProjects });
+      });
     });
   });
 

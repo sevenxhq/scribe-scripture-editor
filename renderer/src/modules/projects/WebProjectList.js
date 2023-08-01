@@ -136,7 +136,6 @@ export default function ProjectList() {
       });
       setNotifications(temp);
     }).then(() => setActiveNotificationCount(activeNotificationCount + 1));
-    console.log({ projectName, projectId });
     // setLoading(false);
   };
 
@@ -176,7 +175,6 @@ export default function ProjectList() {
     }
     return false;
   }
-  console.log({ starredrow, unstarredrow });
 
   return (
     <div>

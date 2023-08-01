@@ -74,13 +74,14 @@ const { t } = useTranslation();
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log({ stories });
 
   return (
     <div>
       { isLoading === false ? (
-        <>
+        <div>
           {
-            stories.map((story, index) => (
+            stories?.map((story, index) => (
               <div
                 key={story.id}
                 className={`flex gap-5 mb-5 items-center justify-center ${story.id === selectedStory && 'bg-light'}`}
@@ -123,7 +124,7 @@ const { t } = useTranslation();
               </div>
             ))
           }
-        </>
+        </div>
         ) : (
           <LoadingScreen />
         )}

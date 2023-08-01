@@ -11,7 +11,7 @@ import CustomNavigation from '@/components/EditorPage/Navigation/CustomNavigatio
 import NavigationObs from '@/components/EditorPage/ObsEditor/NavigationObs';
 import ReferenceObs from '@/components/EditorPage/ObsEditor/ReferenceObs';
 import { isElectron } from '@/core/handleElectron';
-import core from '@/components/EditorPage/ObsEditor/core';
+import { core, webCore } from '@/components/EditorPage/ObsEditor/core';
 import ReferenceAudio from '@/components/EditorPage/Reference/Audio/ReferenceAudio';
 import { SnackBar } from '@/components/SnackBar';
 import useAddNotification from '@/components/hooks/useAddNotification';
@@ -111,9 +111,9 @@ const SectionPlaceholder1 = ({ editor }) => {
     if (sectionNum === 2) {
       setHideAddition(false);
     } else {
-    setHideAddition(true);
+      setHideAddition(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layout, sectionNum]);
 
   useEffect(() => {
@@ -157,9 +157,9 @@ const SectionPlaceholder1 = ({ editor }) => {
       setRemovingSection('2');
       setLoadResource2(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetResourceOnDeleteOffline?.referenceColumnOneData1Reset, resetResourceOnDeleteOffline?.referenceColumnOneData2Reset,
-      removingSection]);
+    removingSection]);
 
   const getReferenceHistoryOnLoad = async () => new Promise((resolve) => {
     fetchSettingsResourceHistory(
@@ -179,17 +179,17 @@ const SectionPlaceholder1 = ({ editor }) => {
       setOpenSnackBar,
       addNotification,
       sectionPlaceholderNum,
-      ).then(() => {
-        resolve();
-      });
+    ).then(() => {
+      resolve();
     });
+  });
 
   // call useEffect on Load resource
   useEffect(() => {
-      getReferenceHistoryOnLoad().then(() => {
-        logger.debug('SectionPlaceholder1.js', 'Getting Resources Reference on Load');
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    getReferenceHistoryOnLoad().then(() => {
+      logger.debug('SectionPlaceholder1.js', 'Getting Resources Reference on Load');
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // call useEffect on Save reference (call on new resource / new pane)
@@ -212,9 +212,9 @@ const SectionPlaceholder1 = ({ editor }) => {
         setReferenceColumnOneData2,
         setOpenResource1,
         setOpenResource2,
-    );
+      );
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openResource1, openResource2, referenceColumnOneData1?.languageId, referenceColumnOneData1.refName,
     referenceColumnOneData1?.selectedResource, referenceColumnOneData2?.languageId, referenceColumnOneData2?.refName,
     referenceColumnOneData2?.selectedResource, sectionNum, layout,
@@ -222,7 +222,7 @@ const SectionPlaceholder1 = ({ editor }) => {
     referenceColumnOneData1?.offlineResource, resetResourceOnDeleteOffline?.referenceColumnOneData1Reset,
     resetResourceOnDeleteOffline?.referenceColumnOneData2Reset, referenceColumnOneData2, referenceColumnOneData1]);
 
-    // referenceColumnOneData2 referenceColumnOneData1
+  // referenceColumnOneData2 referenceColumnOneData1
   const CustomNavigation1 = (
     <CustomNavigation
       setNavigation={setNavigation1}
@@ -260,19 +260,34 @@ const SectionPlaceholder1 = ({ editor }) => {
   );
   useEffect(() => {
     // Set OBS stories
-    if (isElectron()) {
-      localforage.getItem('userProfile').then((user) => {
-        const fs = window.require('fs');
+    const readObs = async () => {
+      // if (isElectron()) {
+      localforage.getItem('userProfile').then(async (user) => {
         if (_obsNavigation1 && referenceColumnOneData1.refName && referenceColumnOneData1.selectedResource === 'obs') {
-          setStories1(core(fs, _obsNavigation1, referenceColumnOneData1.refName, user.username));
+          if (isElectron()) {
+            const fs = window.require('fs');
+            setStories1(core(fs, _obsNavigation1, referenceColumnOneData1.refName, user.username));
+          } else {
+            setStories1(await webCore(_obsNavigation1, referenceColumnOneData1.refName));
+          }
         }
         if (_obsNavigation2 && referenceColumnOneData2.refName && referenceColumnOneData2.selectedResource === 'obs') {
-          setStories2(core(fs, _obsNavigation2, referenceColumnOneData2.refName, user.username));
+          if (isElectron()) {
+            const fs = window.require('fs');
+            setStories2(core(fs, _obsNavigation2, referenceColumnOneData1.refName, user.username));
+          } else {
+            setStories2(await webCore(_obsNavigation2, referenceColumnOneData1.refName));
+          }
         }
       });
-    }
+      // }
+    };
+    readObs();
   }, [_obsNavigation1, _obsNavigation2, referenceColumnOneData1, referenceColumnOneData2]);
 
+  console.log({
+    referenceColumnOneData2, referenceColumnOneData1, stories1, stories2,
+  });
   return (
     <>
       {(layout > 0 && layout <= 2) && (
@@ -300,38 +315,38 @@ const SectionPlaceholder1 = ({ editor }) => {
                   setAddingSection={setAddingSection}
                 >
                   {
-                  (loadResource1 === true)
-              && ((referenceColumnOneData1.selectedResource === 'bible' && (
-                <>
-                  {referenceColumnOneData1?.languageId
-                  && (
-                    <ReferenceBible
-                      languageId={referenceColumnOneData1.languageId}
-                      refName={referenceColumnOneData1.refName}
-                      bookId={_bookId1}
-                      chapter={_chapter1}
-                      verse={_verse1}
-                    />
-                  )}
-                </>
-              )) || (referenceColumnOneData1.selectedResource === 'obs' && (
-                <>
-                  {referenceColumnOneData1?.languageId
-                  && (
-                    <ReferenceObs
-                      stories={stories1}
-                    />
-                    )}
-                </>
-                )) || (referenceColumnOneData1.selectedResource === 'audio' && (
-                  <ReferenceAudio
-                    languageId={referenceColumnOneData1.languageId}
-                    refName={referenceColumnOneData1.refName}
-                    bookId={_bookId1}
-                    chapter={_chapter1}
-                    verse={_verse1}
-                  />
-                  )) || (
+                    (loadResource1 === true)
+                    && ((referenceColumnOneData1.selectedResource === 'bible' && (
+                      <>
+                        {referenceColumnOneData1?.languageId
+                          && (
+                            <ReferenceBible
+                              languageId={referenceColumnOneData1.languageId}
+                              refName={referenceColumnOneData1.refName}
+                              bookId={_bookId1}
+                              chapter={_chapter1}
+                              verse={_verse1}
+                            />
+                          )}
+                      </>
+                    )) || (referenceColumnOneData1.selectedResource === 'obs' && (
+                      <>
+                        {referenceColumnOneData1?.languageId
+                          && (
+                            <ReferenceObs
+                              stories={stories1}
+                            />
+                          )}
+                      </>
+                    )) || (referenceColumnOneData1.selectedResource === 'audio' && (
+                      <ReferenceAudio
+                        languageId={referenceColumnOneData1.languageId}
+                        refName={referenceColumnOneData1.refName}
+                        bookId={_bookId1}
+                        chapter={_chapter1}
+                        verse={_verse1}
+                      />
+                    )) || (
                     <TranslationHelps
                       selectedResource={referenceColumnOneData1.selectedResource}
                       languageId={referenceColumnOneData1.languageId}
@@ -342,81 +357,81 @@ const SectionPlaceholder1 = ({ editor }) => {
                       story={_obsNavigation1}
                       offlineResource={referenceColumnOneData1.offlineResource}
                     />
+                      )
                     )
-              )
-            }
+                  }
                 </EditorSection>
-          )}
+              )}
               {openResource2 === false && (
-              <EditorSection
-                row="2"
-                hideAddition={hideAddition}
-                sectionNum={sectionNum}
-                setSectionNum={setSectionNum}
-                title={referenceColumnOneData2.refName}
-                selectedResource={referenceColumnOneData2.selectedResource}
-                languageId={referenceColumnOneData2.languageId}
-                referenceResources={referenceColumnOneData2}
-                setReferenceResources={setReferenceColumnOneData2}
-                setLoadResource={setLoadResource2}
-                loadResource={loadResource2}
-                openResource={openResource2}
-                setOpenResource1={setOpenResource1}
-                setOpenResource2={setOpenResource2}
-                CustomNavigation={(referenceColumnOneData2.selectedResource).lastIndexOf('obs', 0) === 0 ? ObsNavigation2 : CustomNavigation2}
-                setRemovingSection={setRemovingSection}
-                setAddingSection={setAddingSection}
-              >
-                {
-              (loadResource2 === true)
-              && ((referenceColumnOneData2.selectedResource === 'bible' && (
-                <>
-                  {referenceColumnOneData2?.languageId
-                  && (
-                  <ReferenceBible
-                    languageId={referenceColumnOneData2.languageId}
-                    refName={referenceColumnOneData2.refName}
-                    bookId={_bookId2}
-                    chapter={_chapter2}
-                    verse={_verse2}
-                  />
-                  )}
-                </>
-                )) || (referenceColumnOneData2.selectedResource === 'obs' && (
-                  <>
-                    {referenceColumnOneData2?.languageId
-                  && (
-                  <ReferenceObs
-                    stories={stories2}
-                  />
-                  )}
-                  </>
-                )) || (referenceColumnOneData2.selectedResource === 'audio' && (
-                <ReferenceAudio
+                <EditorSection
+                  row="2"
+                  hideAddition={hideAddition}
+                  sectionNum={sectionNum}
+                  setSectionNum={setSectionNum}
+                  title={referenceColumnOneData2.refName}
+                  selectedResource={referenceColumnOneData2.selectedResource}
                   languageId={referenceColumnOneData2.languageId}
-                  refName={referenceColumnOneData2.refName}
-                  bookId={_bookId1}
-                  chapter={_chapter1}
-                  verse={_verse1}
-                />
-                )) || (
-                  <TranslationHelps
-                    selectedResource={referenceColumnOneData2.selectedResource}
-                    languageId={referenceColumnOneData2.languageId}
-                    owner={referenceColumnOneData2.owner}
-                    bookId={_bookId2}
-                    chapter={_chapter2}
-                    verse={_verse2}
-                    story={_obsNavigation2}
-                    offlineResource={referenceColumnOneData2.offlineResource}
-                  />
-                )
-              )
-            }
-              </EditorSection>
-          )}
+                  referenceResources={referenceColumnOneData2}
+                  setReferenceResources={setReferenceColumnOneData2}
+                  setLoadResource={setLoadResource2}
+                  loadResource={loadResource2}
+                  openResource={openResource2}
+                  setOpenResource1={setOpenResource1}
+                  setOpenResource2={setOpenResource2}
+                  CustomNavigation={(referenceColumnOneData2.selectedResource).lastIndexOf('obs', 0) === 0 ? ObsNavigation2 : CustomNavigation2}
+                  setRemovingSection={setRemovingSection}
+                  setAddingSection={setAddingSection}
+                >
+                  {
+                    (loadResource2 === true)
+                    && ((referenceColumnOneData2.selectedResource === 'bible' && (
+                      <>
+                        {referenceColumnOneData2?.languageId
+                          && (
+                            <ReferenceBible
+                              languageId={referenceColumnOneData2.languageId}
+                              refName={referenceColumnOneData2.refName}
+                              bookId={_bookId2}
+                              chapter={_chapter2}
+                              verse={_verse2}
+                            />
+                          )}
+                      </>
+                    )) || (referenceColumnOneData2.selectedResource === 'obs' && (
+                      <>
+                        {referenceColumnOneData2?.languageId
+                          && (
+                            <ReferenceObs
+                              stories={stories2}
+                            />
+                          )}
+                      </>
+                    )) || (referenceColumnOneData2.selectedResource === 'audio' && (
+                      <ReferenceAudio
+                        languageId={referenceColumnOneData2.languageId}
+                        refName={referenceColumnOneData2.refName}
+                        bookId={_bookId1}
+                        chapter={_chapter1}
+                        verse={_verse1}
+                      />
+                    )) || (
+                    <TranslationHelps
+                      selectedResource={referenceColumnOneData2.selectedResource}
+                      languageId={referenceColumnOneData2.languageId}
+                      owner={referenceColumnOneData2.owner}
+                      bookId={_bookId2}
+                      chapter={_chapter2}
+                      verse={_verse2}
+                      story={_obsNavigation2}
+                      offlineResource={referenceColumnOneData2.offlineResource}
+                    />
+                      )
+                    )
+                  }
+                </EditorSection>
+              )}
             </div>
-        )}
+          )}
         </>
       )}
       <SnackBar

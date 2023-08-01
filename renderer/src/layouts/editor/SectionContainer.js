@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import localforage from 'localforage';
 import ObsEditor from '@/components/EditorPage/ObsEditor/ObsEditor';
 import AudioEditor from '@/components/EditorPage/AudioEditor/AudioEditor';
+import { isElectron } from '@/core/handleElectron';
 import SectionPlaceholder1 from './SectionPlaceholder1';
 import SectionPlaceholder2 from './SectionPlaceholder2';
 import XelahEditor from '../../components/EditorPage/Scribex/XelahEditor';
+import { newPath, supabaseStorage } from '../../../../supabase';
 import packageInfo from '../../../../package.json';
 
 const MainPlayer = dynamic(
@@ -14,8 +16,18 @@ const MainPlayer = dynamic(
 );
 const SectionContainer = () => {
   const [editor, setEditor] = useState();
+
+  const setSupabaseEditor = useCallback(async () => {
+    const userProfile = await localforage.getItem('userProfile');
+    const username = userProfile?.user?.email;
+    const projectName = await localforage.getItem('currentProject');
+    const { data } = await supabaseStorage().download(`${newPath}/${username}/projects/${projectName}/metadata.json`);
+    const metadata = JSON.parse(await data.text());
+    setEditor(metadata.type.flavorType.flavor.name);
+  }, []);
+
   useEffect(() => {
-    if (!editor) {
+    if (isElectron()) {
       localforage.getItem('userProfile').then((value) => {
         const username = value?.username;
         localforage.getItem('currentProject').then((projectName) => {
@@ -28,8 +40,10 @@ const SectionContainer = () => {
           setEditor(metadata.type.flavorType.flavor.name);
         });
       });
+    } else {
+      setSupabaseEditor();
     }
-  });
+  }, [editor, setSupabaseEditor]);
   return (
     <>
       <div className="grid grid-flow-col auto-cols-fr m-3 gap-2">

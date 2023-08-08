@@ -129,8 +129,12 @@ const ProjectContextProvider = ({ children }) => {
     };
     console.debug('ProjectContext.js', `Creating a ${environment.USER_SETTING_FILE} file`);
     const { data } = supabaseStorage().list(file);
+    console.log('ProjectContext.js', { data });
     if (data.length === 0) {
-      const { data: envSettings } = supabaseStorage().upload(file, JSON.stringify(json));
+      const { data: envSettings } = supabaseStorage().upload(file, JSON.stringify(json), {
+        cacheControl: '3600',
+        upsert: false,
+      });
       if (envSettings) {
         console.log('ProjectContext.js', { envSettings });
       }
@@ -482,7 +486,31 @@ const ProjectContextProvider = ({ children }) => {
           });
         });
       });
+    } else {
+      loadWebSettings();
+      localforage.getItem('userProfile').then((value) => {
+        setUsername(value?.user?.email);
+      });
+      localforage.getItem('currentProject').then((projectName) => {
+        setSelectedProject(projectName);
+        // setProjectMeta in a var
+        localforage.getItem('projectmeta').then((projectMeta) => {
+          setSelectedProject(projectName);
+          // setProjectMeta in a var
+          projectMeta?.projects.forEach((meta) => {
+            const currentprojectId = Object.keys(meta.identification.primary[packageInfo.name])[0];
+            const currentprojectName = meta.identification.name.en;
+            splitStringByLastOccurance(projectName, '_').then((arr) => {
+              if (arr.length > 0 && arr[0].toLowerCase() === currentprojectName.toLowerCase()
+                && arr[1].toLowerCase() === currentprojectId.toLocaleLowerCase()) {
+                setSelectedProjectMeta(meta);
+              }
+            });
+          });
+        });
+      });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

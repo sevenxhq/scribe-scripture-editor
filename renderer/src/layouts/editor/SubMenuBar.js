@@ -37,8 +37,8 @@ export default function SubMenuBar() {
     state: {
       layout,
       row,
-      openResource1,
-      openResource3,
+      // openResource1,
+      // openResource3,
 
     },
     actions: {
@@ -96,7 +96,6 @@ export default function SubMenuBar() {
     }
     // if (layout === 2) { setLayout(0); }
   };
-  console.log({ openResource1, openResource3 });
   // Third Attempts
   // useEffect(() => {
   //   const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
@@ -154,7 +153,6 @@ export default function SubMenuBar() {
       supabaseResourceType();
     }
   });
-  console.log({ layout });
   return (
     <>
 

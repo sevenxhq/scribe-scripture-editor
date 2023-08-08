@@ -1,4 +1,3 @@
-import * as localforage from 'localforage';
 import packageInfo from '../../../../../package.json';
 import { newPath, supabaseStorage } from '../../../../../supabase';
 
@@ -150,8 +149,7 @@ const core = (fs, num, projectName, username) => {
   return stories;
 };
 
-const webCore = async (num, projectName) => {
-  const value = await localforage.getItem('userProfile');
+const webCore = async (num, projectName, username) => {
   const stories = [];
   let id = 1;
   let footer = false;
@@ -160,7 +158,7 @@ const webCore = async (num, projectName) => {
     const data = await loadWebData(
       num.toString().padStart(2, '0'),
       projectName,
-      value.user.email,
+      username,
     );
     if (!data) {
       return stories;

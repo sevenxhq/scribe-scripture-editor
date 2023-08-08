@@ -29,7 +29,6 @@ export const readRefBurrito = async ({
             return;
         }
         const _files = JSON.parse(await files.text());
-        console.log('files', _files);
         resolve(_files);
     });
 };

@@ -4,7 +4,6 @@ import packageInfo from '../../../../../package.json';
 import { newPath } from '../../../../../supabase';
 
 function ObsImage({ story, online }) {
-  console.log({ online });
   const path = require('path');
   const newpath = localStorage.getItem('userPath');
   const imageName = story.img.split('/');

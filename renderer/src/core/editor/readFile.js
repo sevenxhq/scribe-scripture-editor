@@ -9,7 +9,6 @@ export const readFile = async ({
     projectname,
     filename,
 }) => {
-    console.log({ username, projectname, filename });
     if (isElectron()) {
         const fs = window.require('fs');
         const path = require('path');
@@ -32,7 +31,6 @@ export const readFile = async ({
             console.error('readWebFile function error', error);
         }
         const parsedData = readBlobAsync(fileContent);
-        console.log({ parsedData });
         resolve(parsedData);
     });
 };

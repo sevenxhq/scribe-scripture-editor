@@ -60,7 +60,7 @@ export default function EditorSection({
       selectedProjectMeta,
     },
   } = useContext(ProjectContext);
-
+  console.log({ selectedProjectMeta });
   function removeResource() {
     setOpenModal(true);
   }
@@ -122,7 +122,7 @@ export default function EditorSection({
     } else {
       setLoadResource(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openResourcePopUp, title]);
 
   const addRow = () => {
@@ -159,10 +159,10 @@ export default function EditorSection({
       // offline=false->resources are added directly using collection Tab, offline=true-> resources added from door43
       // Fetching the language code from burrito file to get the direction
       getScriptureDirection(title)
-      .then((dir) => {
-        logger.debug('EditorSection.js', 'Setting language direction');
-        setProjectScriptureDir(dir);
-      });
+        .then((dir) => {
+          logger.debug('EditorSection.js', 'Setting language direction');
+          setProjectScriptureDir(dir);
+        });
     } else {
       // Setting language direction to null for Translation Helps
       logger.debug('EditorSection.js', 'Setting language direction to null for Translation Helps');

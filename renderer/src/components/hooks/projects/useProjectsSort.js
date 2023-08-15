@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import * as localForage from 'localforage';
 import moment from 'moment';
-import { updateAgSettings } from '../../../core/projects/updateAgSettings';
+import { updateAgSettings, updateWebAgSettings } from '../../../core/projects/updateAgSettings';
 import parseProjectMetaUpdate from '../../../core/projects/parseProjectMetaUpdate';
 // import metaFileReplace from '../../../core/projects/metaFileReplace';
 import { isElectron } from '../../../core/handleElectron';
@@ -297,12 +297,16 @@ function useProjectsSort() {
 
     await localForage.setItem('projectmeta', projectArrayTemp);
 
-    projectArrayTemp.projects.forEach((_project) => {
+    projectArrayTemp.projects.forEach(async (_project) => {
       if (_project.identification.name.en === name) {
         const id = Object.keys(_project.identification.primary.scribe);
         const projectName = `${name}_${id}`;
         logger.debug('useProjectsSort.js', `Updating archive/restore in scribe settings for ${name}`);
-        updateAgSettings(currentUser, projectName, _project);
+        if (isElectron()) {
+          updateAgSettings(currentUser, projectName, _project);
+        } else {
+         await updateWebAgSettings(currentUser, projectName, _project);
+        }
       }
     });
     await FetchProjects();

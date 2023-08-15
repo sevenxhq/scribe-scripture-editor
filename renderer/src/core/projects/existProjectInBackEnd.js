@@ -24,14 +24,15 @@ function isBackendProjectExist(ProjectDir) {
                 } else {
                     resolve(false);
                 }
+            } else {
+                const resourcePath = path.join(newPath, packageInfo.name, 'users', value.user.email, 'resources', ProjectDir);
+                // check for path exist or not and resolve true or false will work for pane 1 now add for other panes
+                const { data } = await supabaseStorage().download(resourcePath);
+                if (data) {
+                    resolve(true);
+                }
+                resolve(false);
             }
-            const resourcePath = path.join(newPath, packageInfo.name, 'users', value.user.email, 'resources', ProjectDir);
-            // check for path exist or not and resolve true or false will work for pane 1 now add for other panes
-            const { data } = await supabaseStorage().download(resourcePath);
-            if (data) {
-                resolve(true);
-            }
-            resolve(false);
         });
     });
 }

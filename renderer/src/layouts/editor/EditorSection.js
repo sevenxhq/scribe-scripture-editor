@@ -60,7 +60,6 @@ export default function EditorSection({
       selectedProjectMeta,
     },
   } = useContext(ProjectContext);
-  console.log({ selectedProjectMeta });
   function removeResource() {
     setOpenModal(true);
   }

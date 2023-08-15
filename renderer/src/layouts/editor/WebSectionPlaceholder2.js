@@ -12,7 +12,7 @@ import ReferenceBible from '@/components/EditorPage/Reference/ReferenceBible/Ref
 import { ProjectContext } from '@/components/context/ProjectContext';
 import CustomNavigation from '@/components/EditorPage/Navigation/CustomNavigation';
 import NavigationObs from '@/components/EditorPage/ObsEditor/NavigationObs';
-import ReferenceObs from '@/components/EditorPage/ObsEditor/ReferenceObs';
+import ReferenceObs from '@/components/EditorPage/ObsEditor/WebReferenceObs';
 import { webCore } from '@/components/EditorPage/ObsEditor/core';
 import ReferenceAudio from '@/components/EditorPage/Reference/Audio/ReferenceAudio';
 import { SnackBar } from '@/components/SnackBar';

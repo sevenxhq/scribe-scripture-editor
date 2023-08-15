@@ -44,7 +44,7 @@ export const updateWebAgSettings = async (username, projectName, data) => {
   }
   setting.project[data.type.flavorType.flavor.name] = data.project[data.type.flavorType.flavor.name];
   await supabaseStorage().upload(folder, JSON.stringify(setting), {
-    cacheControl: '3600',
+    // cacheControl: '3600',
     upsert: true,
   });
 };

@@ -214,7 +214,9 @@ export const createWebVersificationUSFM = async (
 
   const uploadFileToSupabase = async (filePath, fileContent) => {
     const { data: file, error } = await supabaseStorage()
-      .upload(filePath, new Blob([fileContent], { type: 'text/plain' }));
+      .upload(filePath, new Blob([fileContent], { type: 'text/plain' }), {
+        upsert: true,
+      });
 
     if (error) {
       console.error('Error uploading file to Supabase:', error);

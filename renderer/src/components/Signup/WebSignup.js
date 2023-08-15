@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createWebUser } from '@/core/Login/handleLogin';
-import supabase from '../../../../supabase';
+import { createSupabaseSettingJson, createWebUser } from '@/core/Login/handleLogin';
+import { environment } from '../../../environment';
+import supabase, { newPath } from '../../../../supabase';
 
 function SignupPage() {
   const [email, setEmail] = useState('');
@@ -19,12 +20,13 @@ function SignupPage() {
       password,
     });
     if (data) {
+      createSupabaseSettingJson(`${newPath}/${data.user.email}/${environment.USER_SETTING_FILE}`);
       console.log('signup successful', data);
+      createWebUser(data.user);
+      router.push('/login');
     } else {
       console.error('error occured', error);
     }
-    createWebUser(data.user);
-    router.push('/login');
   }
 
   return (

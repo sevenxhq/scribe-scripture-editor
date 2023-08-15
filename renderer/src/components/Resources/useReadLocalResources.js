@@ -23,12 +23,13 @@ export default async function readLocalResources(username, setSubMenuItems) {
       recursive: true,
     });
     readResourceMetadata(commonResourceDir, commonResourceMetaPath, setSubMenuItems, parseData);
+  } else {
+    const userProfile = await localforage.getItem('userProfile');
+    const email = userProfile.user.email;
+    const parseData = [];
+    const projectsDir = `${newPath}/${email}/resources`;
+    const userResourceMetaPath = `${newPath}/${email}/resources`;
+    createDirectory(userResourceMetaPath);
+    readResourceMetadata(projectsDir, userResourceMetaPath, setSubMenuItems, parseData);
   }
-  const userProfile = await localforage.getItem('userProfile');
-  const email = userProfile.user.email;
-  const parseData = [];
-  const projectsDir = `${newPath}/${email}/resources`;
-  const userResourceMetaPath = `${newPath}/${email}/resources`;
-  createDirectory(userResourceMetaPath);
-  readResourceMetadata(projectsDir, userResourceMetaPath, setSubMenuItems, parseData);
 }

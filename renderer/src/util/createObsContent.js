@@ -235,7 +235,9 @@ export const createObsContent = (
 
       const uploadFileToSupabase = async (filePath, fileContent) => {
         const { data: file, error } = await supabaseStorage()
-          .upload(filePath, new Blob([fileContent], { type: 'text/markdown' }));
+          .upload(filePath, new Blob([fileContent], { type: 'text/markdown' }), {
+            upsert: true,
+          });
 
         if (error) {
           console.error('Error uploading file to Supabase:', error);

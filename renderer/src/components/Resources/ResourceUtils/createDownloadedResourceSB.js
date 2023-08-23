@@ -506,6 +506,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
               const { data: existingResources } = await supabaseStorage().list(folder);
               console.log({ existingResources });
               for (const element of existingResources) {
+                if (element.name !== '.keep') {
                 console.log(element.name);
                 const { data: filecontentMeta } = await supabaseStorage().download(`${folder}/${element.name}/metadata.json`);
                 console.log({ filecontentMeta });
@@ -529,6 +530,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
                 }
               }
             }
+          }
 
             if (!resourceExist) {
               const response = await fetch(resource.metadata_json_url);
@@ -544,7 +546,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
 
               console.log('DownloadResourcePopUp.js', 'In resource download - basic burrito generated for resource ', `${resource.name}-${resource.owner}`);
 
-              currentProjectName = `${resource.name}_${Object.keys(resourceBurritoFile.identification.primary.ag)[0]}`;
+              currentProjectName = `${resource.name}_${Object.keys(resourceBurritoFile.identification.primary.scribe)[0]}`;
 
               const zipResponse = await fetch(resource.zipball_url);
               const zipBuffer = await zipResponse.arrayBuffer();

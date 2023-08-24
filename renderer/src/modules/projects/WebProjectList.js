@@ -169,7 +169,6 @@ export default function ProjectList() {
     }
     return false;
   }
-  console.log({ unstarredProjects });
   return (
     <div>
       {loading ? <LoadingScreen /> : callEditProject === false

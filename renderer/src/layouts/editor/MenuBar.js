@@ -13,14 +13,13 @@ import { ProjectContext } from '@/components/context/ProjectContext';
 import { saveReferenceResource } from '@/core/projects/updateAgSettings';
 import UserProfile from '@/components/Profile/UserProfile';
 import { splitStringByLastOccurance } from '@/util/splitStringByLastMarker';
-import { AutographaContext } from '@/components/context/AutographaContext';
 import styles from './MenuBar.module.css';
 import LogoIcon from '@/icons/logo.svg';
 
 export default function TopMenuBar() {
   const {
     states: {
-      // selectedProject,
+      selectedProject,
       openSideBar,
     },
     actions: {
@@ -28,11 +27,6 @@ export default function TopMenuBar() {
     },
   } = useContext(ProjectContext);
 
-  const {
-    states: {
-      selectedProject,
-    },
-  } = useContext(AutographaContext);
   const {
     state: {
       fontSize,
@@ -92,7 +86,7 @@ export default function TopMenuBar() {
             </div>
             <div>
               <span aria-label="editor-project-name" className="text-primary px-10 py-2 text-lg tracking-wide font-bold uppercase" title="Project Name">
-                {selectedProject}
+                {projectname?.[0]}
               </span>
             </div>
             <div className="flex-grow">

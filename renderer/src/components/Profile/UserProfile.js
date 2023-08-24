@@ -12,6 +12,7 @@ import { AuthenticationContext } from '@/components/Login/AuthenticationContextP
 import { useGetUserName } from '@/components/hooks/useGetUserName';
 import { useRouter } from 'next/navigation';
 import { isElectron } from '@/core/handleElectron';
+import * as localforage from 'localforage';
 import supabase from '../../../../supabase';
 
 const UserProfile = () => {
@@ -23,6 +24,7 @@ const UserProfile = () => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    localforage.removeItem('userProfile');
     error ? console.log({ error }) : router.push('/login');
   };
 

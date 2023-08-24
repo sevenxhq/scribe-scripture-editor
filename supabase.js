@@ -6,6 +6,11 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 export default createClient(
     supabaseUrl,
     supabaseAnonKey,
+    {
+        auth: {
+            persistSession: false,
+        },
+    },
 );
 
 export const supabaseStorage = () => createClient(

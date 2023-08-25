@@ -22,7 +22,7 @@ const UserProfile = (_username) => {
 
   return (
     <div>
-      <Menu as="div" className="ml-3 relative z-10">
+      <Menu as="div" className="relative">
         {({ open }) => (
           <>
             <div>

@@ -3,34 +3,58 @@ import { environment } from '../../../environment';
 import { loadUsers } from '../Login/handleJson';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
+import { isElectron } from '../handleElectron';
+import { newPath, supabaseStorage } from '../../../../supabase';
 
 export const getorPutAppLangage = async (method, currentUser, appLang) => {
-  logger.debug('handleProfile.js', 'In updateAppLang, for updating the App language Selection');
-  const newpath = localStorage.getItem('userPath');
-  const fs = window.require('fs');
-  const path = require('path');
+  if (isElectron()) {
+    logger.error('handleProfile.js', 'In updateAppLang, for updating the App language Selection');
+    const newpath = localStorage.getItem('userPath');
+    const fs = window.require('fs');
+    const path = require('path');
+    let file;
+    if (currentUser) {
+      file = path.join(newpath, packageInfo.name, 'users', currentUser, environment.USER_SETTING_FILE);
+    } else {
+      throw new Error('Not getting current logged user');
+    }
+    try {
+      if (fs.existsSync(file)) {
+        const data = await fs.readFileSync(file);
+        const json = JSON.parse(data);
+        if (method.toLowerCase() === 'get') {
+          return json.appLanguage;
+        } if (method.toLowerCase() === 'put') {
+          // save lang code
+          json.appLanguage = appLang.code;
+          logger.debug('handleProfile.js', 'Updating the app lang details in existing file');
+          await fs.writeFileSync(file, JSON.stringify(json));
+        }
+      }
+    } catch (err) {
+      logger.error('handleProfile.js', 'Failed to read the data from file');
+      throw new Error(err?.message || err);
+    }
+  }
   let file;
   if (currentUser) {
-    file = path.join(newpath, packageInfo.name, 'users', currentUser, environment.USER_SETTING_FILE);
-  } else {
-    throw new Error('Not getting current logged user');
-  }
-  try {
-    if (fs.existsSync(file)) {
-      const data = await fs.readFileSync(file);
-      const json = JSON.parse(data);
+    file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
+    const { data: settingsFile, error } = await supabaseStorage().list(file);
+    if (settingsFile) {
+      const { data } = await supabaseStorage().download(file);
+      const settings = JSON.parse(await data.text());
       if (method.toLowerCase() === 'get') {
-        return json.appLanguage;
+        return settings.appLanguage;
       } if (method.toLowerCase() === 'put') {
         // save lang code
-        json.appLanguage = appLang.code;
-        logger.debug('handleProfile.js', 'Updating the app lang details in existing file');
-        await fs.writeFileSync(file, JSON.stringify(json));
+        settings.appLanguage = appLang.code;
+        console.log('handleProfile.js', 'Updating the app lang details in existing file');
+        await supabaseStorage().upload(file, JSON.stringify(settings));
       }
     }
-  } catch (err) {
-    logger.error('handleProfile.js', 'Failed to read the data from file');
-    throw new Error(err?.message || err);
+    if (error) {
+      throw new Error(error?.message || error);
+    }
   }
 };
 
@@ -67,32 +91,32 @@ const updateOffline = async (data, appLang) => {
   logger.debug('handleProfile.js', 'In updateOffline');
   const status = [];
   await localForage.getItem('userProfile')
-  .then(async (userdata) => {
-    const keys = Object.keys(data);
-    keys.forEach((key) => {
-      userdata[key] = data[key];
-  });
-  logger.debug('handleProfile.js', 'Updating profile data in localForage');
-  localForage.setItem('userProfile', userdata);
-  // call app lang update in user json
-  await getorPutAppLangage('put', userdata?.username, appLang);
-  // update user details in users list
-  const value = updateJson(userdata);
-  value.then((val) => {
-    status.push(val);
-  });
-  });
+    .then(async (userdata) => {
+      const keys = Object.keys(data);
+      keys.forEach((key) => {
+        userdata[key] = data[key];
+      });
+      logger.debug('handleProfile.js', 'Updating profile data in localForage');
+      localForage.setItem('userProfile', userdata);
+      // call app lang update in user json
+      await getorPutAppLangage('put', userdata?.username, appLang);
+      // update user details in users list
+      const value = updateJson(userdata);
+      value.then((val) => {
+        status.push(val);
+      });
+    });
   return status;
 };
 export const saveProfile = async (values, appLang) => {
   logger.debug('handleProfile.js', 'In saveProfile');
   const status = [];
   await localForage.getItem('appMode')
-  .then(async (mode) => {
-    if (mode === 'offline') {
-      const value = await updateOffline(values, appLang);
-      status.push(value[0]);
-    }
-  });
+    .then(async (mode) => {
+      if (mode === 'offline') {
+        const value = await updateOffline(values, appLang);
+        status.push(value[0]);
+      }
+    });
   return status;
 };

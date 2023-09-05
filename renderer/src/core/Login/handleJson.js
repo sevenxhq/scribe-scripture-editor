@@ -1,7 +1,14 @@
+
 import * as localForage from 'localforage';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
-import { createDirectory, supabaseStorage } from '../../../../supabase';
+// import { createDirectory, supabaseStorage } from '../../../../supabase';
+
+if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+  const supabaseStorage = require('../../../../supabase').supabaseStorage
+  const createDirectory = require('../../../../supabase').createDirectory
+  
+}
 
 const path = require('path');
 
@@ -112,6 +119,8 @@ export const handleJson = async (values, fs) => {
 };
 
 export const handleJsonWeb = async (values) => {
+  // const supabaseStorage = require('../../../../supabase').supabaseStorage
+  // const createDirectory = require('../../../../supabase').createDirectory
   const newpath = `${packageInfo.name}/users`;
   error = { userExist: false, fetchFile: false };
 
@@ -121,11 +130,11 @@ export const handleJsonWeb = async (values) => {
     return error;
   }
 
-  if (await supabaseStorage().download(`${newpath}/users.json`).then((result) => result.error)) {
+  if (await sbStorageDownload(`${newpath}/users.json`).then((result) => result.error)) {
     const array = [];
     array.push(values);
     try {
-      await supabaseStorage().upload(`${newpath}/users.json`, JSON.stringify(array), {
+      await sbStorageUpload(`${newpath}/users.json`, JSON.stringify(array), {
         cacheControl: '3600',
         upsert: true,
       });
@@ -146,7 +155,7 @@ export const handleJsonWeb = async (values) => {
       return error;
     }
   } else {
-    const { data, error } = await supabaseStorage().download(`${newpath}/users.json`);
+    const { data, error } = await sbStorageDownload(`${newpath}/users.json`);
     if (error) {
       console.error('handleJson.js', 'Failed to read the data from file');
       error.fetchFile = true;
@@ -161,7 +170,7 @@ export const handleJsonWeb = async (values) => {
     }
     json.push(values);
     try {
-      const { data: newUser } = await supabaseStorage().upload(`${newpath}/users.json`, JSON.stringify(json), {
+      const { data: newUser } = await sbStorageUpload(`${newpath}/users.json`, JSON.stringify(json), {
         cacheControl: '3600',
         upsert: true,
       });

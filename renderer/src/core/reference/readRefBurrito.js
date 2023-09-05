@@ -1,7 +1,10 @@
 /* eslint-disable no-async-promise-executor */
 import { supabaseStorage } from '../../../../supabase';
 import * as logger from '../../logger';
-import { isElectron } from '../handleElectron';
+import { isElectron } from '@/core/handleElectron';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//     const supabaseStorage = require('../../../../supabase').supabaseStorage
+//   }
 
 export const readRefBurrito = async ({
     metaPath,

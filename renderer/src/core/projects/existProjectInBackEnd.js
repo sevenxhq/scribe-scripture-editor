@@ -1,7 +1,11 @@
 import localforage from 'localforage';
 import packageInfo from '../../../../package.json';
-import { isElectron } from '../handleElectron';
+import { isElectron } from '@/core/handleElectron';
 import { newPath, supabaseStorage } from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//     const supabaseStorage = require('../../../../supabase').supabaseStorage
+//     const newPath = require('../../../../supabase').newPath
+//   }
 
 function isBackendProjectExist(ProjectDir) {
     const path = require('path');
@@ -27,7 +31,7 @@ function isBackendProjectExist(ProjectDir) {
             } else {
                 const resourcePath = path.join(newPath, packageInfo.name, 'users', value.user.email, 'resources', ProjectDir);
                 // check for path exist or not and resolve true or false will work for pane 1 now add for other panes
-                const { data } = await supabaseStorage().download(resourcePath);
+                const { data } = await sbStorageDownload(resourcePath);
                 if (data) {
                     resolve(true);
                 }

@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseSettingJson, createWebUser } from '@/core/Login/handleLogin';
 import { environment } from '../../../environment';
-import supabase, { newPath } from '../../../../supabase';
+import  {supabaseSignup, newPath } from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const newPath = require('../../../../supabase').newPath
+//   const supabase = require('../../../../../supabase').supabase
+// }
 
 function SignupPage() {
   const [email, setEmail] = useState('');
@@ -16,7 +20,7 @@ function SignupPage() {
     e.preventDefault();
     console.log('Email:', email, 'Password:', password);
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseSignup({
       email,
       password,
     });

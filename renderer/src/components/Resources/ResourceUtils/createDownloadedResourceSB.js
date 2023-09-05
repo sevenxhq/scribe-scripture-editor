@@ -16,7 +16,7 @@ import packageInfo from '../../../../../package.json';
 import customLicense from '../../../lib/license/Custom.md';
 import OBSLicense from '../../../lib/OBSLicense.md';
 import OBSData from '../../../lib/OBSData.json';
-import { newPath, supabaseStorage } from '../../../../../supabase';
+import { newPath, sbStorageDownload,sbStorageList,sbStorageUpload,sbStorageUpdate } from '../../../../../supabase';
 
 const md5 = require('md5');
 
@@ -225,8 +225,7 @@ export const generateWebResourceIngredientsOBS = async (currentResourceMeta, cur
       const userProfile = await localForage.getItem('userProfile');
       const email = userProfile?.user?.email;
       const filePath = `${newPath}/${email}/resources/${file}`;
-      const { data: fileResponse, error: fileError } = await supabaseStorage()
-        .download(filePath);
+      const { data: fileResponse, error: fileError } = await sbStorageDownload(filePath);
 
       if (fileError) {
         logger.debug('DownloadResourcePopUp.js', 'error file not found in resource download');
@@ -503,12 +502,12 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
           if (resource.isChecked) {
             console.log('passed is checked ---------->');
             if (!update) {
-              const { data: existingResources } = await supabaseStorage().list(folder);
+              const { data: existingResources } = await sbStorageList(folder);
               console.log({ existingResources });
               for (const element of existingResources) {
                 if (element.name !== '.keep') {
                 console.log(element.name);
-                const { data: filecontentMeta } = await supabaseStorage().download(`${folder}/${element.name}/metadata.json`);
+                const { data: filecontentMeta } = await sbStorageDownload(`${folder}/${element.name}/metadata.json`);
                 console.log({ filecontentMeta });
                 const storedResourceMeta = filecontentMeta;
                 if (storedResourceMeta?.resourceMeta) {
@@ -558,19 +557,19 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
 
               for (const [zipPath, zipObject] of Object.entries(zip.files)) {
                 if (zipObject.dir) {
-                  await supabaseStorage().upload(`${folder}/${zipObject.name}`, { upsert: false });
+                  await sbStorageUpload(`${folder}/${zipObject.name}`,'', { upsert: false });
                 } else {
                   const fileContent = await zipObject.async('uint8array');
-                  await supabaseStorage().upload(`${folder}/${zipObject.name}`, fileContent, { upsert: false });
+                  await sbStorageUpload(`${folder}/${zipObject.name}`, fileContent, { upsert: false });
                 }
                 if (zipPath.toLowerCase().includes('license')) {
                   console.log('DownloadResourcePopUp.js', 'In resource download - check license file found');
                   licenseFileFound = true;
-                  const { data: customLicense } = await supabaseStorage().download(`${folder}/${zipPath}`);
+                  const { data: customLicense } = await sbStorageDownload(`${folder}/${zipPath}`);
                   if (customLicense) {
-                    const { data: licenseContent } = await supabaseStorage().download(`${folder}/${zipPath}`);
+                    const { data: licenseContent } = await sbStorageDownload(`${folder}/${zipPath}`);
                     const checksum = md5(licenseContent);
-                    const { data: size } = await supabaseStorage().download(`${folder}/${zipPath}`);
+                    const { data: size } = await sbStorageDownload(`${folder}/${zipPath}`);
                     resourceBurritoFile.ingredients[zipPath.replace(currentResourceProject.name, '.')] = {
                       checksum: { md5: checksum },
                       mimeType: 'text/md',
@@ -588,7 +587,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
                 case 'bible':
                   resourceBurritoFile = await generateResourceIngredientsTextTransaltion(
                     currentResourceMeta,
-                    supabaseStorage(),
+                    // supabaseStorage(),
                     folder,
                     currentResourceProject,
                     resourceBurritoFile,
@@ -613,11 +612,11 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
               if (!licenseFileFound) {
                 console.log('DownloadResourcePopUp.js', 'In resource custom license add - no license found');
 
-                const { data } = await supabaseStorage().list(`${folder}/${currentResourceProject.name}`);
+                const { data } = await sbStorageList(`${folder}/${currentResourceProject.name}`);
                 console.log('what is the length', { data });
                 if (data.length > 0) {
-                  await supabaseStorage().upload(`${folder}/${currentResourceProject.name}/LICENSE.md`, customLicenseContent, { upsert: false });
-                  const { data: size } = await supabaseStorage().download(`${folder}/${currentResourceProject.name}/LICENSE.md`);
+                  await sbStorageUpload(`${folder}/${currentResourceProject.name}/LICENSE.md`, customLicenseContent, { upsert: false });
+                  const { data: size } = await sbStorageDownload(`${folder}/${currentResourceProject.name}/LICENSE.md`);
                   if (size) {
                     console.log('In resource custom license add - custom license added', { size });
                     resourceBurritoFile.ingredients['./LICENSE.md'] = {
@@ -632,10 +631,10 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
 
               // scribe settings file generation
               const settings = await generateAgSettings(resourceBurritoFile, currentResourceMeta, selectResource);
-              await supabaseStorage().upload(`${folder}/${currentResourceProject.name}/${environment.PROJECT_SETTING_FILE}`, JSON.stringify(settings), { upsert: false });
-              const { data: settingsContent } = await supabaseStorage().download(`${folder}/${currentResourceProject.name}/${environment.PROJECT_SETTING_FILE}`);
+              await sbStorageUpload(`${folder}/${currentResourceProject.name}/${environment.PROJECT_SETTING_FILE}`, JSON.stringify(settings), { upsert: false });
+              const { data: settingsContent } = await sbStorageDownload(`${folder}/${currentResourceProject.name}/${environment.PROJECT_SETTING_FILE}`);
               const checksum = md5(settingsContent);
-              const { data: size } = await supabaseStorage().download(`${folder}/${currentResourceProject.name}/${environment.PROJECT_SETTING_FILE}`);
+              const { data: size } = await sbStorageDownload(`${folder}/${currentResourceProject.name}/${environment.PROJECT_SETTING_FILE}`);
               resourceBurritoFile.ingredients['./scribe-settings.json'] = {
                 checksum: { md5: checksum },
                 mimeType: 'application/json',
@@ -652,14 +651,14 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
                 }
               });
 
-              await supabaseStorage().upload(`${folder}/${currentResourceProject.name}/metadata.json`, JSON.stringify(resourceBurritoFile), { upsert: false });
+              await sbStorageUpload(`${folder}/${currentResourceProject.name}/metadata.json`, JSON.stringify(resourceBurritoFile), { upsert: false });
               console.log('passed ag settings creations ---------->');
 
               // finally remove zip and rename base folder to projectname_id
-              const { data, error } = await supabaseStorage().list(`${folder}/${currentResourceProject.name}`);
+              const { data, error } = await sbStorageList(`${folder}/${currentResourceProject.name}`);
               if (data) {
-                await supabaseStorage().update(`${folder}/${currentResourceProject.name}`, `${folder}/${currentProjectName}`, { cacheControl: '3600', upsert: true });
-                await supabaseStorage().remove(`${folder}/${currentProjectName}.zip`);
+                await sbStorageUpdate({path:`${folder}/${currentResourceProject.name}`, payload:`${folder}/${currentProjectName}`, options:{ cacheControl: '3600', upsert: true }});
+                await sbStorageRemove(`${folder}/${currentProjectName}.zip`);
               } else {
                 console.log('error in storage.list ---------->', error);
               }
@@ -673,7 +672,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
         }
 
         if (update && update.status) {
-          await supabaseStorage().remove(`${folder}/${update?.oldResource?.projectDir}`, { recursive: true });
+          await sbStorageRemove(`${folder}/${update?.oldResource?.projectDir}`, { recursive: true });
         }
 
         resolve({ status: 'success', existing: resourceExistCount });

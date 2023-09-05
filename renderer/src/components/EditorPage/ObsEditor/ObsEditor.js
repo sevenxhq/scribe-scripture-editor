@@ -17,6 +17,7 @@ import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
 import { newPath } from '../../../../../supabase';
 
+
 export const getDetails = () => new Promise((resolve) => {
   logger.debug('ObsEditor.js', 'In getDetails() for fetching the burrito file of current project');
   localforage.getItem('userProfile').then((value) => {

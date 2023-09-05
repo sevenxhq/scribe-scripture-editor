@@ -29,8 +29,8 @@ import { getComparator, stableSort } from '@/components/ProjectsPage/Projects/So
 import { environment } from '../../../environment';
 import SearchTags from './SearchTags';
 import * as logger from '../../logger';
-import { newPath, supabaseStorage } from '../../../../supabase';
-import NewWebProject from './NewWebProject';
+import { newPath, sbStorageDownload, sbStorageList } from '../../../../supabase';
+import NewWebProject from './NewWebProject'
 
 export default function ProjectList() {
   const router = useRouter();
@@ -71,18 +71,16 @@ export default function ProjectList() {
     setCurrentProject(project);
     const projectName = `${project.name}_${project.id[0]}`;
     const folderPath = `${newPath}/${username}/projects/${projectName}/ingredients`;
-    const { data: files, error } = await supabaseStorage().list(folderPath);
+    const { data: files, error } = await sbStorageList(folderPath);
     if (error) {
       console.error('Error fetching ingredient files', error);
     }
 
     const zip = new JSZip(); // Create a new JSZip instance
     for (const file of files) {
-      const { data, error } = await supabaseStorage()
-        .download(`${folderPath}/${file.name}`);
+      const { data, error } = await sbStorageDownload(`${folderPath}/${file.name}`);
 
-      const { data: metadata } = await supabaseStorage()
-        .download(`${newPath}/${username}/projects/${projectName}/metadata.json`);
+      const { data: metadata } = await sbStorageDownload(`${newPath}/${username}/projects/${projectName}/metadata.json`);
 
       const arrayBuffer = await data.arrayBuffer(); // Convert Blob to ArrayBuffer
       const content = new TextDecoder('utf-8').decode(arrayBuffer);
@@ -141,7 +139,7 @@ export default function ProjectList() {
     const path = require('path');
     const value = await localforage.getItem('userProfile');
     const folder = path.join('scribe', 'users', value.user.email, 'projects', `${project.name}_${project.id[0]}`);
-    const { data } = await supabaseStorage().download(path.join(folder, 'metadata.json'));
+    const { data } = await sbStorageDownload(path.join(folder, 'metadata.json'));
     let metadata = JSON.parse(await data.text());
     const firstKey = Object.keys(metadata.ingredients)[0];
     const folderName = firstKey.split(/[(\\)?(/)?]/gm).slice(0, -1);
@@ -149,7 +147,7 @@ export default function ProjectList() {
     folderName.forEach((folder) => {
       dirName = path.join(dirName, folder);
     });
-    const { data: settings } = await supabaseStorage().download(path.join(folder, dirName, environment.PROJECT_SETTING_FILE), 'utf-8');
+    const { data: settings } = await sbStorageDownload(path.join(folder, dirName, environment.PROJECT_SETTING_FILE), 'utf-8');
     const agSetting = JSON.parse(await settings.text());
     metadata = { ...metadata, ...agSetting };
     logger.debug('ProjectList.js', 'Loading current project metadata');

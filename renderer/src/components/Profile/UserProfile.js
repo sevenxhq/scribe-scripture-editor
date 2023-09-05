@@ -13,7 +13,10 @@ import { useGetUserName } from '@/components/hooks/useGetUserName';
 import { useRouter } from 'next/navigation';
 import { isElectron } from '@/core/handleElectron';
 import * as localforage from 'localforage';
-import supabase from '../../../../supabase';
+import {supabaseSignout} from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+	// const supabase = require('../../../../supabase').supabase;
+// }
 
 const UserProfile = () => {
   const { action: { logout } } = useContext(AuthenticationContext);
@@ -23,10 +26,12 @@ const UserProfile = () => {
   const router = useRouter();
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
+    // if(!process.env.NEXT_PUBLIC_IS_ELECTRON){
+    const { error } = await supabaseSignout();
     localforage.removeItem('userProfile');
     error ? console.log({ error }) : router.push('/login');
   };
+// }
 
   // get username from custom hook
   const { username } = useGetUserName();

@@ -4,6 +4,9 @@ import { handleJson, handleJsonWeb } from './handleJson';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
 import { supabaseStorage } from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const supabaseStorage = require('../../../../supabase').supabaseStorage
+// }
 
 export const createUser = (values, fs) => {
   logger.debug('handleLogin.js', 'In createUser to create a new user');

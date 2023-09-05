@@ -6,6 +6,11 @@ import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
 import { createDirectory, newPath, supabaseStorage } from '../../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//     const supabaseStorage = require('../../../../../supabase').supabaseStorage
+//     const newPath = require('../../../../../supabase').newPath
+//     const createDirectory = require('../../../../../supabase').createDirectory
+//   }
 
 const JSZip = require('jszip');
 
@@ -138,7 +143,7 @@ const DownloadCreateSBforHelps = async (projectResource, setLoading, update = fa
             console.log('DownloadCreateSBforHelps.js', 'In helps-resource download');
             setLoading(true);
             const folder = `${newPath}/${username}/resources`;
-            const { data: existingResource } = await supabaseStorage().download(folder);
+            const { data: existingResource } = await sbStorageDownload(folder);
             console.log(existingResource);
             const downloadProjectName = `${projectResource?.name}_${projectResource?.owner}_${projectResource?.release?.tag_name}`;
             existingResource?.forEach((element) => {
@@ -157,7 +162,7 @@ const DownloadCreateSBforHelps = async (projectResource, setLoading, update = fa
                 await createDirectory(`${folder}/${projectResource?.name}.zip}`, Buffer.from(blob));
 
                 // extract zip
-                const { data: filecontent, error: fileContentError } = await supabaseStorage().download(`${folder}/${projectResource?.name}.zip}`);
+                const { data: filecontent, error: fileContentError } = await sbStorageDownload(`${folder}/${projectResource?.name}.zip}`);
                 if (fileContentError) {
                     console.log('Failed to download zip file', fileContentError);
                 }

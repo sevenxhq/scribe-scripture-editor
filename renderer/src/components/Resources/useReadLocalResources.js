@@ -3,6 +3,10 @@ import { isElectron } from '@/core/handleElectron';
 import * as localforage from 'localforage';
 import packageInfo from '../../../../package.json';
 import { createDirectory, newPath } from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const newPath = require('../../../../supabase').newPath
+//   const createDirectory = require('../../../../supabase').createDirectory
+// }
 
 export default async function readLocalResources(username, setSubMenuItems) {
   if (isElectron()) {

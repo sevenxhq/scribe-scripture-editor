@@ -1,5 +1,8 @@
-import { isElectron } from '../handleElectron';
+import { isElectron } from '@/core/handleElectron';
 import { supabaseStorage } from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const supabaseStorage = require('../../../../../supabase').supabaseStorage
+// }
 
 export const readRefMeta = async ({
   projectsDir,

@@ -5,6 +5,9 @@ import { readRefBurrito } from '../../../core/reference/readRefBurrito';
 import writeToFile from '../../../core/editor/writeToFile';
 import packageInfo from '../../../../../package.json';
 import { newPath } from '../../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const newPath = require('../../../../../supabase').newPath
+// }
 // function to save to file.
 export const saveToFile = async (usfmText, bookCode) => {
   try {

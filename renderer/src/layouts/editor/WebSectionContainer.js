@@ -11,6 +11,11 @@ import Scribex from '@/components/EditorPage/Scribex/Scribex';
 import SectionPlaceholder1 from './WebSectionPlaceholder1';
 import SectionPlaceholder2 from './WebSectionPlaceholder2';
 import { newPath, supabaseStorage } from '../../../../supabase';
+import { isElectron } from '@/core/handleElectron';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const supabaseStorage = require('../../../../../supabase').supabaseStorage
+//   const newPath = require('../../../../supabase').newPath
+// }
 
 const MainPlayer = dynamic(
   () => import('@/components/EditorPage/AudioEditor/MainPlayer'),
@@ -24,7 +29,7 @@ const SectionContainer = () => {
       const userProfile = await localforage.getItem('userProfile');
       const username = userProfile?.user?.email;
       const projectName = await localforage.getItem('currentProject');
-      const { data } = await supabaseStorage().download(`${newPath}/${username}/projects/${projectName}/metadata.json`);
+      const { data } = await sbStorageDownload(`${newPath}/${username}/projects/${projectName}/metadata.json`);
       const metadata = JSON.parse(await data.text());
       setEditor(metadata.type.flavorType.flavor.name);
     };

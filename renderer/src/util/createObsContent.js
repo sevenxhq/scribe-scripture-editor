@@ -8,7 +8,7 @@ import OBSBack from '../lib/OBSback.md';
 import OBSLicense from '../lib/OBSLicense.md';
 import JsonToMd from '../obsRcl/JsonToMd/JsonToMd';
 import packageInfo from '../../../package.json';
-import { newPath, supabaseStorage } from '../../../supabase';
+import { newPath, sbStorageUpload } from '../../../supabase';
 
 const path = require('path');
 const md5 = require('md5');
@@ -234,8 +234,7 @@ export const createObsContent = (
       const supabasePath = `${newPath}/${username}/projects/${project.projectName}_${id}/ingredients`;
 
       const uploadFileToSupabase = async (filePath, fileContent) => {
-        const { data: file, error } = await supabaseStorage()
-          .upload(filePath, new Blob([fileContent], { type: 'text/markdown' }), {
+        const { data: file, error } = await sbStorageUpload(filePath, new Blob([fileContent], { type: 'text/markdown' }), {
             upsert: true,
           });
 

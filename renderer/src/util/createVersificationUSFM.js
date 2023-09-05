@@ -3,7 +3,7 @@ import moment from 'moment';
 import { environment } from '../../environment';
 import * as logger from '../logger';
 import packageInfo from '../../../package.json';
-import { newPath, supabaseStorage } from '../../../supabase';
+import { newPath, sbStorageUpload } from '../../../supabase';
 
 const grammar = require('usfm-grammar');
 const path = require('path');
@@ -213,8 +213,7 @@ export const createWebVersificationUSFM = async (
   });
 
   const uploadFileToSupabase = async (filePath, fileContent) => {
-    const { data: file, error } = await supabaseStorage()
-      .upload(filePath, new Blob([fileContent], { type: 'text/plain' }), {
+    const { data: file, error } = await sbStorageUpload(filePath, new Blob([fileContent], { type: 'text/plain' }), {
         upsert: true,
       });
 

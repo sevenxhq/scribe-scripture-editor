@@ -1,5 +1,5 @@
 import packageInfo from '../../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../../supabase';
+import { newPath, sbStorageDownload } from '../../../../../supabase';
 
 const loadData = (fs, file, projectName, username) => {
   const newpath = localStorage.getItem('userPath');
@@ -60,7 +60,7 @@ export async function readBlobAsync(blob) {
 
 const loadWebData = async (file, projectName, username) => {
   const filePath = `${newPath}/${username}/resources/${projectName}/content/${file}.md`;
-  const { data } = await supabaseStorage().download(filePath);
+  const { data } = await sbStorageDownload(filePath);
   const parsedData = readBlobAsync(data);
 
   if (parsedData) {

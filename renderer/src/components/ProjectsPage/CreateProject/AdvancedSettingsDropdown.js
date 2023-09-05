@@ -12,7 +12,7 @@ import CustomCanonSpecification from './CustomCanonSpecification';
 import LicencePopover from './LicencePopover';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../../supabase';
+import { newPath, sbStorageDownload } from '../../../../../supabase';
 
 function BookNumberTag(props) {
   const { children } = props;
@@ -152,7 +152,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
           localforage.getItem('userProfile').then(async (value) => {
             logger.debug('AdvancedSettingsDropdown.js', 'Fetching the current username');
             const folder = path.join(newPath, value?.user?.email, 'projects', `${project.identification.name.en}_${id[0]}`, 'ingredients', 'license.md');
-            const { data } = await supabaseStorage().download(folder);
+            const { data } = await sbStorageDownload(folder);
             if (data) {
               myLicence.licence = data;
             } else {

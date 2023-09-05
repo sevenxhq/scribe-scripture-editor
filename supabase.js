@@ -11,7 +11,7 @@ const supabase = !IsElectron ? createClient(supabaseUrl, supabaseAnonKey) : {};
 // const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const supabaseStorage = !IsElectron ? createClient(supabaseUrl, supabaseAnonKey).storage.from('scribe') : {};
-console.log({ supabase })
+console.log({supabase, supabaseStorage })
 
 async function createDirectory(path, data) {
 	const { data: folder } = await supabaseStorage().list(path);
@@ -82,10 +82,15 @@ const supabaseSignout = async () => {
 	}
 }
 
-const sbStorageList = (file) => {
+const sbStorageList = async (file) => {
 	console.log('sbStorageList', file)
-	const response = supabaseStorage().list(file);
-	console.log('sbStorageList response', response)
+	if(file === undefined) {
+		console.log('sbStorageList file is undefined')
+		const response =await supabaseStorage.list();
+		return response;
+	}
+	const response = await supabaseStorage.list(file);
+	console.log('sbStorageList response', {response})
 	return response;
 };
 
@@ -94,7 +99,7 @@ const sbStorageUpload = (file, payload, settings = {}) => {
 	return data;
 };
 const sbStorageDownload = async (path) => {
-	const res = await supabaseStorage().download(path);
+	const res = await supabaseStorage.download(path);
 	return res;
 };
 
@@ -123,5 +128,6 @@ export {
 	sbStorageUpload,
 	sbStorageUpdate,
 	sbStorageRemove,
+	IsElectron
 
 };

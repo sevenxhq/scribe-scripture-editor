@@ -15,6 +15,7 @@ const WebHome = () => {
     const checkSession = async () => {
       const data = await getSupabaseSession();
       if (data.session.user) {
+        console.log('data.session.user', data.session.user);
         setSession(data.session);
         const appLangCode = await getorPutAppLangage('get', data.session.user.email);
         if (i18n.language !== appLangCode) {

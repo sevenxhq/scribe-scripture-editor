@@ -29,7 +29,7 @@ import { getComparator, stableSort } from '@/components/ProjectsPage/Projects/So
 import { environment } from '../../../environment';
 import SearchTags from './SearchTags';
 import * as logger from '../../logger';
-import { newPath, sbStorageDownload, sbStorageList } from '../../../../supabase';
+import { newPath, sbStorageDownload, sbStorageList,supabaseStorage } from '../../../../supabase';
 import NewWebProject from './NewWebProject'
 
 export default function ProjectList() {
@@ -71,13 +71,16 @@ export default function ProjectList() {
     setCurrentProject(project);
     const projectName = `${project.name}_${project.id[0]}`;
     const folderPath = `${newPath}/${username}/projects/${projectName}/ingredients`;
+    console.log("triggering from web project list")
     const { data: files, error } = await sbStorageList(folderPath);
+    // const { data: files, error } = await supabaseStorage().list(folderPath);
     if (error) {
       console.error('Error fetching ingredient files', error);
     }
 
     const zip = new JSZip(); // Create a new JSZip instance
     for (const file of files) {
+      console.log({ file })
       const { data, error } = await sbStorageDownload(`${folderPath}/${file.name}`);
 
       const { data: metadata } = await sbStorageDownload(`${newPath}/${username}/projects/${projectName}/metadata.json`);
@@ -174,7 +177,7 @@ export default function ProjectList() {
         ? (
           <>
             <ProjectsLayout
-              title={t('projects-page')}
+              title={t('projects-page')+" - Web"}
               archive="enable"
               isImport
               showArchived={showArchived}

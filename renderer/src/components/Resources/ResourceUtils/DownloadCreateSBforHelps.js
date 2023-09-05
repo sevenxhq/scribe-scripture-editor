@@ -5,12 +5,7 @@ import moment from 'moment';
 import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
-import { createDirectory, newPath, supabaseStorage } from '../../../../../supabase';
-// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-//     const supabaseStorage = require('../../../../../supabase').supabaseStorage
-//     const newPath = require('../../../../../supabase').newPath
-//     const createDirectory = require('../../../../../supabase').createDirectory
-//   }
+import { createDirectory, newPath, sbStorageRemove,sbStorageList } from '../../../../../supabase';
 
 const JSZip = require('jszip');
 
@@ -153,7 +148,7 @@ const DownloadCreateSBforHelps = async (projectResource, setLoading, update = fa
             });
 
             await fetch(projectResource?.zipball_url).then((res) => res.arrayBuffer()).then(async (blob) => {
-                const { data: folderExist } = await supabaseStorage().list(folder);
+                const { data: folderExist } = await sbStorageList(folder);
                 console.log({ folderExist });
                 if (!folderExist) {
                     await createDirectory(folder);
@@ -198,7 +193,7 @@ const DownloadCreateSBforHelps = async (projectResource, setLoading, update = fa
                         // if updation delete old resource
                         console.log({ projectOld: `${projectResource?.name}_${projectResource?.owner}_${update?.prevVersion}` });
                         try {
-                            supabaseStorage().remove(`folder/${projectResource?.name}_${projectResource?.owner}_${update?.prevVersion}`);
+                            sbStorageRemove(`folder/${projectResource?.name}_${projectResource?.owner}_${update?.prevVersion}`);
                             update && update?.setIsOpen(false);
                         } catch (err) {
                             logger.debug('DownloadCreateSBforHelps.js', 'error in deleting prev resource');

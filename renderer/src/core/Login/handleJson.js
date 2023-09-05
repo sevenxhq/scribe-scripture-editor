@@ -2,13 +2,7 @@
 import * as localForage from 'localforage';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
-// import { createDirectory, supabaseStorage } from '../../../../supabase';
-
-if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-  const supabaseStorage = require('../../../../supabase').supabaseStorage
-  const createDirectory = require('../../../../supabase').createDirectory
-  
-}
+import { createDirectory, supabaseStorage } from '../../../../supabase';
 
 const path = require('path');
 

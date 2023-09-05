@@ -11,11 +11,7 @@ import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import createAudioSB from '../burrito/createAudioSB';
 import packageInfo from '../../../../package.json';
-import { createDirectory, newPath, supabaseStorage } from '../../../../supabase';
-// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-//   const supabaseStorage = require('../../../../supabase').supabaseStorage
-//   const newPath = require('../../../../supabase').newPath
-// }
+import { createDirectory, newPath, sbStorageList } from '../../../../supabase';
 
 const bookAvailable = (list, id) => list.some((obj) => obj === id);
 const checker = (arr, target) => target.every((v) => arr.includes(v));
@@ -394,7 +390,7 @@ export const saveSupabaseProjectsMeta = async (projectMetaObj) => {
   const projectDir = `${newPath}/${currentUser}/projects}`;
   let projectNameExists = false;
   let checkCanon = false;
-  const { data: folderList } = await supabaseStorage().list(projectDir);
+  const { data: folderList } = await sbStorageList(projectDir);
   folderList.forEach((folder) => {
     const name = folder.name.split('_');
     if (name[0] === projectMetaObj.newProjectFields.projectName && projectMetaObj.call === 'new') {

@@ -11,6 +11,7 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         const checkUser = async () => {
             const user = await getSupabaseUser();
+            console.log('getSupabaseUser', user);
             if (!user) {
                 router.push('/login'); // Redirect to the sign in page if user is not signed in
             }

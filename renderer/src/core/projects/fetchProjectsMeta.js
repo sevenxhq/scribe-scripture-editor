@@ -3,14 +3,16 @@ import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
 import { environment } from '../../../environment';
 import { isElectron } from '@/core/handleElectron';
-import { newPath, supabaseStorage } from '../../../../supabase';
+import { newPath, sbStorageList,IsElectron ,sbStorageDownload} from '../../../../supabase';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //   const supabaseStorage = require('../../../../supabase').supabaseStorage
 //   const newPath = require('../../../../supabase').newPath
 // }
 
 const fetchProjectsMeta = async ({ currentUser }) => {
+  console.log("fetchProjectsMeta", { currentUser })
   if (isElectron()) {
+    console.log("fetchProjectsMeta", "isElectron")
     logger.debug('fetchProjectsMeta.js', 'In fetchProjectsMeta');
     const newpath = localStorage.getItem('userPath');
     const fs = window.require('fs');
@@ -50,11 +52,12 @@ const fetchProjectsMeta = async ({ currentUser }) => {
       resolve({ projects: burritos });
     });
   }
-
-  if(!process.env.NEXT_PUBLIC_IS_ELECTRON){
+console.log("before fetchProjectsMeta", { currentUser, IsElectron })
+  if( !IsElectron ){
+console.log('fetchProjectsMeta.js', 'In fetchProjectsMeta');
   const path = `${newPath}/${currentUser}/projects`;
-  const { data: allProjects } = await supabaseStorage().list(path);
-
+  const { data: allProjects } = await sbStorageList(path);
+console.log({allProjects})
   const projectPromises = allProjects?.map(async (proj) => {
     const projectName = proj.name;
     const { data, error } = await sbStorageDownload(`${path}/${projectName}/metadata.json`);
@@ -81,6 +84,7 @@ const fetchProjectsMeta = async ({ currentUser }) => {
       return { ...setting, ...projectJson };
     }
     console.log('ProjectList.js', 'Unable to find scribe-settings for the project so pushing only burrito');
+    console.log({ projectJson })
     return projectJson;
   });
 

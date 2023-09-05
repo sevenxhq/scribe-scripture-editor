@@ -8,7 +8,7 @@ import { loadUsers } from './core/Login/handleJson';
 import ProjectContextProvider from './components/context/ProjectContext';
 import ReferenceContextProvider from './components/context/ReferenceContext';
 import * as logger from './logger';
-import ProjectList from './modules/projects/ProjectList';
+import ProjectList from '@/components/Projects/ProjectList';
 import AutographaContextProvider from './components/context/AutographaContext';
 import { getorPutAppLangage } from './core/projects/handleProfile';
 import i18n from './translations/i18n';

@@ -1,4 +1,6 @@
-import ProjectList from '@/modules/projects/WebProjectList';
+'use client';
+
+import ProjectList from '@/modules/projects/ProjectList';
 import ProtectedRoute from '@/components/Protected';
 
 const projects = () => (

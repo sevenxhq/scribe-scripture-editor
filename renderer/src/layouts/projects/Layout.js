@@ -74,27 +74,27 @@ export default function ProjectsLayout(props) {
                             type="button"
                             className="flex text-white ml-5 font-bold text-xs px-3 py-2 rounded-full
                                     leading-3 tracking-wider uppercase bg-primary items-center"
-                          onClick={openImportPopUp}
-                        >
-                          <ArrowDownTrayIcon className="h-4 mr-2 text-white" />
-                          {t('btn-import')}
-                        </button>
-                        <ImportProjectPopUp open={openPopUp} closePopUp={closeImportPopUp} setConflictPopup={setConflictPopup} />
-                      </>
-                    )}
+                            onClick={openImportPopUp}
+                          >
+                            <ArrowDownTrayIcon className="h-4 mr-2 text-white" />
+                            {t('btn-import')}
+                          </button>
+                          <ImportProjectPopUp open={openPopUp} closePopUp={closeImportPopUp} setConflictPopup={setConflictPopup} />
+                        </>
+                      )}
 
-                  {conflictPopup.open
-                    && (
-                    <div className="fixed z-50 ">
-                      <ConflictResolverUI conflictData={conflictPopup} setConflictPopup={setConflictPopup} />
-                    </div>
-                  )}
+                    {conflictPopup.open
+                      && (
+                        <div className="fixed z-50 ">
+                          <ConflictResolverUI conflictData={conflictPopup} setConflictPopup={setConflictPopup} />
+                        </div>
+                      )}
 
-                  {/* Archived projects button */}
-                  {archive === 'enable' && (
-                    <div>
-                      <button
-                        className={`flex text-white ml-5 font-bold text-xs px-3 py-2 rounded-full
+                    {/* Archived projects button */}
+                    {archive === 'enable' && (
+                      <div>
+                        <button
+                          className={`flex text-white ml-5 font-bold text-xs px-3 py-2 rounded-full
                                     leading-3 tracking-wider uppercase ${showArchived ? 'bg-primary' : 'bg-red-600'} items-center`}
                           type="button"
                           onClick={toggleArchive}

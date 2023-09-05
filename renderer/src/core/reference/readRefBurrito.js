@@ -1,7 +1,10 @@
 /* eslint-disable no-async-promise-executor */
-import { supabaseStorage } from '../../../../supabase';
+import { isElectron } from '@/core/handleElectron';
+import { sbStorageDownload } from '../../../../supabase';
 import * as logger from '../../logger';
-import { isElectron } from '../handleElectron';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//     const supabaseStorage = require('../../../../supabase').supabaseStorage
+//   }
 
 export const readRefBurrito = async ({
     metaPath,
@@ -22,8 +25,7 @@ export const readRefBurrito = async ({
         });
     }
     return new Promise(async (resolve) => {
-        const { data: files, error } = await supabaseStorage()
-            .download(metaPath);
+        const { data: files, error } = await sbStorageDownload(metaPath);
         if (error) {
             console.error('Error fetching files:', error);
             return;

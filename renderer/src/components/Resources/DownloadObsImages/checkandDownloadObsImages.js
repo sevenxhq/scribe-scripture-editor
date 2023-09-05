@@ -2,7 +2,9 @@ import { isElectron } from '@/core/handleElectron';
 import { environment } from '../../../../environment';
 import packageInfo from '../../../../../package.json';
 import OBSData from '../../../lib/OBSData.json';
-import { createDirectory, supabaseStorage } from '../../../../../supabase';
+import {
+  createDirectory, sbStorageList, sbStorageUpload, sbStorageDownload,
+} from '../../../../../supabase';
 
 const downloadImageAndSave = async (url, savePath, fs) => {
   const response = await fetch(url, { mode: 'no-cors' });
@@ -31,7 +33,7 @@ async function downloadImageAndSaveSupabase(url) {
     const img = document.createElement('img');
     img.src = imageUrl;
     document.body.appendChild(img);
-    const { data, error } = await supabaseStorage().upload(`${packageInfo.name}/common/${environment.OBS_IMAGE_DIR}`, blob);
+    const { data, error } = await sbStorageUpload(`${packageInfo.name}/common/${environment.OBS_IMAGE_DIR}`, blob);
     if (error) {
       console.log('error uploading images to supabase', { error });
       throw error;
@@ -67,11 +69,11 @@ export const checkandDownloadObsImages = async () => {
     });
   } else {
     const obsImagePath = `${packageInfo.name}/common/${environment.OBS_IMAGE_DIR}`;
-    const { data: exist } = await supabaseStorage().list(obsImagePath);
+    const { data: exist } = await sbStorageList(obsImagePath);
     if (!exist) {
       await createDirectory(obsImagePath);
     }
-    const { data: filesInDir } = await supabaseStorage().download(obsImagePath);
+    const { data: filesInDir } = await sbStorageDownload(obsImagePath);
     console.log({ filesInDir });
     Object.values(OBSData).forEach(async (storyObj) => {
       Object.values(storyObj.story).forEach(async (story) => {

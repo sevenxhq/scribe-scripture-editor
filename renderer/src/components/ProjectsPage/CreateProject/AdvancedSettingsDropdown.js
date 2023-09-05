@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import localforage from 'localforage';
 import { useTranslation } from 'react-i18next';
-import CustomList from '@/modules/projects/CustomList';
 import { isElectron } from '@/core/handleElectron';
+import CustomList from '@/components/Projects/CustomList';
 import { OT, NT } from '../../../lib/CanonSpecification';
 import { ProjectContext } from '../../context/ProjectContext';
 import CustomCanonSpecification from './CustomCanonSpecification';
 import LicencePopover from './LicencePopover';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../../supabase';
+import { newPath, sbStorageDownload } from '../../../../../supabase';
 
 function BookNumberTag(props) {
   const { children } = props;
@@ -152,7 +152,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
           localforage.getItem('userProfile').then(async (value) => {
             logger.debug('AdvancedSettingsDropdown.js', 'Fetching the current username');
             const folder = path.join(newPath, value?.user?.email, 'projects', `${project.identification.name.en}_${id[0]}`, 'ingredients', 'license.md');
-            const { data } = await supabaseStorage().download(folder);
+            const { data } = await sbStorageDownload(folder);
             if (data) {
               myLicence.licence = data;
             } else {

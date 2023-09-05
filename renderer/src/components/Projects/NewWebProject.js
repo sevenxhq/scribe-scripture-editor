@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+'use client';
+
+import { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -6,15 +8,16 @@ import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import ProjectsLayout from '@/layouts/projects/Layout';
 import AdvancedSettingsDropdown from '@/components/ProjectsPage/CreateProject/AdvancedSettingsDropdown';
 import { ProjectContext } from '@/components/context/ProjectContext';
+import { AutographaContext } from '@/components/context/AutographaContext';
 import TargetLanguagePopover from '@/components/ProjectsPage/CreateProject/TargetLanguagePopover';
 import PopoverProjectType from '@/layouts/editor/PopoverProjectType';
 import { SnackBar } from '@/components/SnackBar';
 import useValidator from '@/components/hooks/useValidator';
 import ConfirmationModal from '@/layouts/editor/ConfirmationModal';
 import CustomMultiComboBox from '@/components/Resources/ResourceUtils/CustomMultiComboBox';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import moment from 'moment';
 import { v5 as uuidv5 } from 'uuid';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { environment } from '../../../environment';
 import LayoutIcon from '@/icons/basil/Outline/Interface/Layout.svg';
 import BullhornIcon from '@/icons/basil/Outline/Communication/Bullhorn.svg';
@@ -57,40 +60,39 @@ function TargetLanguageTag(props) {
 function BibleHeaderTagDropDown(headerDropDown, handleDropDown, call) {
   return (
     call === 'new'
-    ? (
-      <PopoverProjectType
-        items={solutions}
-        handleDropDown={handleDropDown}
-      >
+      ? (
+        <PopoverProjectType
+          items={solutions}
+          handleDropDown={handleDropDown}
+        >
+          <button
+            type="button"
+            aria-label="open-popover"
+            className="flex justify-center items-center px-3 py-2 text-white ml-5
+          font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
+          >
+            {/* <div className="">{headerDropDown}</div> */}
+            <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
+            <ChevronDownIcon
+              className="w-5 h-5 ml-2"
+              aria-hidden="true"
+            />
+          </button>
+        </PopoverProjectType>
+      )
+      : (
         <button
           type="button"
-          aria-label="open-popover"
           className="flex justify-center items-center px-3 py-2 text-white ml-5
           font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
         >
-          {/* <div className="">{headerDropDown}</div> */}
           <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
-          <ChevronDownIcon
-            className="w-5 h-5 ml-2"
-            aria-hidden="true"
-          />
         </button>
-      </PopoverProjectType>
-    )
-    : (
-      <button
-        type="button"
-        className="flex justify-center items-center px-3 py-2 text-white ml-5
-          font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
-      >
-        <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
-      </button>
-    )
+      )
 
   );
 }
-
-export default function NewProject({ call, project, closeEdit }) {
+export default function NewWebProject({ call, project, closeEdit }) {
   const {
     states: {
       newProjectFields,
@@ -99,27 +101,35 @@ export default function NewProject({ call, project, closeEdit }) {
     },
     actions: {
       setLanguage,
-      createProject,
+      createSupabaseProject,
       setNewProjectFields,
     },
-  } = React.useContext(ProjectContext);
+  } = useContext(ProjectContext);
+
+  const {
+    states: {
+      loading,
+    },
+    action: {
+      setLoading,
+    },
+  } = useContext(AutographaContext);
   const { t } = useTranslation();
   const { action: { validateField, isLengthValidated, isTextValidated } } = useValidator();
   const router = useRouter();
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
-  const [loading, setLoading] = React.useState(false);
-  const [metadata, setMetadata] = React.useState();
-  const [openModal, setOpenModal] = React.useState(false);
-  const [projectLangData, setProjectLangData] = React.useState({});
-  const [error, setError] = React.useState({
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
+  const [metadata, setMetadata] = useState();
+  const [openModal, setOpenModal] = useState(false);
+  const [projectLangData, setProjectLangData] = useState({});
+  const [error, setError] = useState({
     projectName: {},
     abbr: {},
     description: {},
   });
 
-  const [headerDropDown, setHeaderDropDown] = React.useState(solutions[0].name);
+  const [headerDropDown, setHeaderDropDown] = useState(solutions[0].name);
   const handleDropDown = (currentSelection) => {
     setHeaderDropDown(currentSelection);
   };
@@ -163,26 +173,28 @@ export default function NewProject({ call, project, closeEdit }) {
     }
   };
 
-  const createTheProject = (update) => {
-    logger.debug('NewProject.js', 'Creating new project.');
-    const value = createProject(call, metadata, update, headerDropDown);
-    value.then((status) => {
-      logger.debug('NewProject.js', status[0].value);
+  const createWebProject = async (update) => {
+    setLoading(true);
+    if (newProjectFields.projectName && newProjectFields.abbreviation) {
+      const value = await createSupabaseProject(call, metadata, update, headerDropDown);
+      console.log({ value });
+
+      const status = value[0];
+      logger.debug('NewProject.js', status.value);
       setLoading(false);
-      setNotify(status[0].type);
-      setSnackText(status[0].value);
+      setNotify(status.type);
+      setSnackText(status.value);
       setOpenSnackBar(true);
-      if (status[0].type === 'success') {
+      if (status.type === 'success') {
         if (call === 'edit') {
           closeEdit();
         } else {
           router.push('/projects');
         }
       }
-    });
+    }
   };
   const validate = async () => {
-    logger.debug('NewProject.js', 'Validating the fields.');
     setLoading(true);
     let create = true;
     if (newProjectFields.projectName && newProjectFields.abbreviation) {
@@ -215,25 +227,26 @@ export default function NewProject({ call, project, closeEdit }) {
     }
     if (create === true) {
       // Checking whether the burrito is of latest version
-      logger.warn('NewProject.js', 'Checking whether the burrito is of latest version.');
+      console.warn('NewProject.js', 'Checking whether the burrito is of latest version.');
       if (call === 'edit' && burrito?.meta?.version !== metadata?.meta?.version) {
         setOpenModal(true);
         setLoading(false);
       } else {
         logger.warn('NewProject.js', 'Calling createTheProject function');
-        createTheProject(false);
+        createWebProject(false);
       }
     } else {
       setLoading(false);
     }
   };
+
   const updateBurritoVersion = () => {
     setOpenModal(false);
     logger.warn('NewProject.js', 'Calling createTheProject function with burrito update');
-    createTheProject(true);
+    createWebProject(true);
   };
-  const [openPopUp, setOpenPopUp] = React.useState(false);
-  const [replaceWarning, setReplaceWarning] = React.useState(false);
+  const [openPopUp, setOpenPopUp] = useState(false);
+  const [replaceWarning, setReplaceWarning] = useState(false);
 
   function openImportPopUp() {
     setOpenPopUp(true);
@@ -241,9 +254,7 @@ export default function NewProject({ call, project, closeEdit }) {
 
   function closeImportPopUp() {
     setOpenPopUp(false);
-  }
-  function callReplace(value) {
-    if (call === 'edit' && value === true) {
+    if (call === 'edit') {
       setReplaceWarning(true);
     }
   }
@@ -278,9 +289,10 @@ export default function NewProject({ call, project, closeEdit }) {
         break;
     }
   };
+
   useEffect(() => {
     setEditLanguage(projectLangData);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [languages.length, projectLangData]);
 
   useEffect(() => {
@@ -293,6 +305,7 @@ export default function NewProject({ call, project, closeEdit }) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call]);
+
   return (
     <ProjectsLayout
       title={call === 'new' ? t('new-project-page') : t('edit-project')}
@@ -306,7 +319,7 @@ export default function NewProject({ call, project, closeEdit }) {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
           </div>
-          )
+        )
         : (
           <div className=" rounded-md border shadow-sm mt-4 ml-5 mr-5 mb-5">
             <div className="grid grid-cols-1 lg:grid-cols-3 m-10 gap-5">
@@ -366,12 +379,12 @@ export default function NewProject({ call, project, closeEdit }) {
                   <div>
                     {headerDropDown !== 'Audio'
                       && (
-                      <div className="absolute">
-                        <TargetLanguageTag>
-                          {language.ld ? language.ld : 'LTR'}
-                        </TargetLanguageTag>
-                      </div>
-                    )}
+                        <div className="absolute">
+                          <TargetLanguageTag>
+                            {language.ld ? language.ld : 'LTR'}
+                          </TargetLanguageTag>
+                        </div>
+                      )}
                     <h4 className="text-xs font-base mb-3 text-primary  tracking-wide leading-4  font-light">
                       {t('label-target-language')}
                       <span className="text-error">*</span>
@@ -385,7 +398,7 @@ export default function NewProject({ call, project, closeEdit }) {
                       showLangCode={{ show: true, langkey: 'lc' }}
                     />
                   </div>
-                  <button type="button" className="mt-6 -ml-2" title={t('msg-min-three-letter')}>
+                  <button type="button" className="mt-6 -ml-2" title="type minimum 3 letter for search">
                     <InformationCircleIcon
                       className="h-5 w-5"
                       aria-hidden="true"
@@ -404,7 +417,7 @@ export default function NewProject({ call, project, closeEdit }) {
                   >
                     {t('btn-import-books')}
                   </button>
-                  <ImportPopUp open={openPopUp} closePopUp={closeImportPopUp} projectType={headerDropDown} replaceConformation={callReplace} />
+                  <ImportPopUp open={openPopUp} closePopUp={closeImportPopUp} projectType={headerDropDown} />
                 </div>
               </div>
 
@@ -446,7 +459,7 @@ export default function NewProject({ call, project, closeEdit }) {
               </div>
             </div>
           </div>
-      )}
+        )}
       <SnackBar
         openSnackBar={snackBar}
         snackText={snackText}
@@ -478,7 +491,7 @@ TargetLanguageTag.propTypes = {
   children: PropTypes.string,
 };
 
-NewProject.propTypes = {
+NewWebProject.propTypes = {
   call: PropTypes.string,
   project: PropTypes.object,
   closeEdit: PropTypes.func,

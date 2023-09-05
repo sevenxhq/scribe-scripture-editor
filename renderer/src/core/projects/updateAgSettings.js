@@ -1,10 +1,16 @@
 import localforage from 'localforage';
 import { splitStringByLastOccurance } from '@/util/splitStringByLastMarker';
+import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import packageInfo from '../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../supabase';
-import { isElectron } from '../handleElectron';
+import {
+ newPath, sbStorageDownload, sbStorageUpload,
+} from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const supabaseStorage = require('../../../../supabase').supabaseStorage
+//   const newPath = require('../../../../supabase').newPath
+// }
 
 export const updateAgSettings = async (username, projectName, data) => {
   logger.debug('updateAgSettings.js', 'In updateAgSettings');
@@ -31,7 +37,7 @@ export const updateAgSettings = async (username, projectName, data) => {
 export const updateWebAgSettings = async (username, projectName, data) => {
   const result = Object.keys(data.ingredients).filter((key) => key.includes(environment.PROJECT_SETTING_FILE));
   const folder = `${newPath}/${username}/projects/${projectName}/${result[0]}`;
-  const { data: settings } = await supabaseStorage().download(folder);
+  const { data: settings } = await sbStorageDownload(folder);
   let setting = {};
   setting = JSON.parse(await settings.text());
   if (settings.version !== environment.AG_SETTING_VERSION) {
@@ -43,7 +49,7 @@ export const updateWebAgSettings = async (username, projectName, data) => {
     }
   }
   setting.project[data.type.flavorType.flavor.name] = data.project[data.type.flavorType.flavor.name];
-  await supabaseStorage().upload(folder, JSON.stringify(setting), {
+  await sbStorageUpload(folder, JSON.stringify(setting), {
     // cacheControl: '3600',
     upsert: true,
   });

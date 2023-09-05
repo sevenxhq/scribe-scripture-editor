@@ -1,5 +1,5 @@
 import packageInfo from '../../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../../supabase';
+import { newPath, sbStorageDownload } from '../../../../../supabase';
 
 const loadData = (fs, file, projectName, username) => {
   const newpath = localStorage.getItem('userPath');
@@ -60,8 +60,9 @@ export async function readBlobAsync(blob) {
 
 const loadWebData = async (file, projectName, username) => {
   const filePath = `${newPath}/${username}/resources/${projectName}/content/${file}.md`;
-  const { data } = await supabaseStorage().download(filePath);
+  const { data } = await sbStorageDownload(filePath);
   const parsedData = readBlobAsync(data);
+  console.log({filePath,data,parsedData})
 
   if (parsedData) {
     return parsedData;
@@ -150,10 +151,12 @@ const core = (fs, num, projectName, username) => {
 };
 
 const webCore = async (num, projectName, username) => {
+  console.log({ num, projectName, username })
   const stories = [];
   // eslint-disable-next-line prefer-const
   let id = 1; let footer = false;
   const data = await loadWebData(num.toString().padStart(2, 0), projectName, username);
+  console.log({data})
   const allLines = data.split(/\r\n|\n/);
   // Reading line by line
   allLines.forEach((line) => {

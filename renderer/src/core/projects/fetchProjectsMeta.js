@@ -2,11 +2,17 @@ import * as localforage from 'localforage';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
 import { environment } from '../../../environment';
-import { isElectron } from '../handleElectron';
-import { newPath, supabaseStorage } from '../../../../supabase';
+import { isElectron } from '@/core/handleElectron';
+import { newPath, sbStorageList,IsElectron ,sbStorageDownload} from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const supabaseStorage = require('../../../../supabase').supabaseStorage
+//   const newPath = require('../../../../supabase').newPath
+// }
 
 const fetchProjectsMeta = async ({ currentUser }) => {
+  console.log("fetchProjectsMeta", { currentUser })
   if (isElectron()) {
+    console.log("fetchProjectsMeta", "isElectron")
     logger.debug('fetchProjectsMeta.js', 'In fetchProjectsMeta');
     const newpath = localStorage.getItem('userPath');
     const fs = window.require('fs');
@@ -46,13 +52,15 @@ const fetchProjectsMeta = async ({ currentUser }) => {
       resolve({ projects: burritos });
     });
   }
-
+console.log("before fetchProjectsMeta", { currentUser, IsElectron })
+  if( !IsElectron ){
+console.log('fetchProjectsMeta.js', 'In fetchProjectsMeta');
   const path = `${newPath}/${currentUser}/projects`;
-  const { data: allProjects } = await supabaseStorage().list(path);
-
+  const { data: allProjects } = await sbStorageList(path);
+console.log({allProjects})
   const projectPromises = allProjects?.map(async (proj) => {
     const projectName = proj.name;
-    const { data, error } = await supabaseStorage().download(`${path}/${projectName}/metadata.json`);
+    const { data, error } = await sbStorageDownload(`${path}/${projectName}/metadata.json`);
 
     if (error) {
       console.error('fetchProjectsMeta.js', error);
@@ -64,7 +72,7 @@ const fetchProjectsMeta = async ({ currentUser }) => {
     let setting;
     const result = Object.keys(projectJson.ingredients).filter((key) => key.includes(environment.PROJECT_SETTING_FILE));
     if (result[0]) {
-      const { data: settingData } = await supabaseStorage().download(`${path}/${projectName}/${result[0]}`);
+      const { data: settingData } = await sbStorageDownload(`${path}/${projectName}/${result[0]}`);
       if (settingData) {
         setting = JSON.parse(await settingData.text());
       } else {
@@ -76,8 +84,10 @@ const fetchProjectsMeta = async ({ currentUser }) => {
       return { ...setting, ...projectJson };
     }
     console.log('ProjectList.js', 'Unable to find scribe-settings for the project so pushing only burrito');
+    console.log({ projectJson })
     return projectJson;
   });
+
 
   // Wrap the entire code in a Promise and return it.
   const projectMetaPromise = new Promise((resolve) => {
@@ -91,5 +101,6 @@ const fetchProjectsMeta = async ({ currentUser }) => {
 
   // Return the Promise that resolves with the projects' metadata.
   return projectMetaPromise;
+}
 };
 export default fetchProjectsMeta;

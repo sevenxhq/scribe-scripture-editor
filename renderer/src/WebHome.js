@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getorPutAppLangage } from './core/projects/handleProfile';
 import i18n from './translations/i18n';
-import supabase from '../../supabase';
+import { getSupabaseSession } from '../../supabase';
 import WebLogin from './components/Login/WebLogin';
 
 const WebHome = () => {
@@ -13,9 +13,9 @@ const WebHome = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
+      const data = await getSupabaseSession();
       if (data.session.user) {
-      setSession(data.session);
+        setSession(data.session);
         const appLangCode = await getorPutAppLangage('get', data.session.user.email);
         if (i18n.language !== appLangCode) {
           i18n.changeLanguage(appLangCode);

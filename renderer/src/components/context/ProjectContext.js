@@ -9,7 +9,10 @@ import { saveProjectsMeta, saveSupabaseProjectsMeta } from '../../core/projects/
 import { environment } from '../../../environment';
 import staicLangJson from '../../lib/lang/langNames.json';
 import packageInfo from '../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../supabase';
+
+import {
+  newPath, sbStorageList, sbStorageUpload, sbStorageDownload,
+} from '../../../../supabase';
 
 const path = require('path');
 const advanceSettings = require('../../lib/AdvanceSettings.json');
@@ -130,10 +133,10 @@ const ProjectContextProvider = ({ children }) => {
       sync: { services: { door43: [] } },
     };
     console.debug('ProjectContext.js', `Creating a ${environment.USER_SETTING_FILE} file`);
-    const { data } = supabaseStorage().list(file);
+    const data = sbStorageList(file);
     console.log('ProjectContext.js', { data });
     if (data.length === 0) {
-      const { data: envSettings } = supabaseStorage().upload(file, JSON.stringify(json), {
+      const { data: envSettings } = sbStorageUpload(file, JSON.stringify(json), {
         cacheControl: '3600',
         upsert: false,
       });
@@ -227,7 +230,7 @@ const ProjectContextProvider = ({ children }) => {
     }
 
     const file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
-    const { data: agUserSettings, error } = await supabaseStorage().download(file);
+    const { data: agUserSettings, error } = await sbStorageDownload(file);
     if (error) {
       console.error('ProjectContext.js', 'Failed to read the data from file');
     }
@@ -314,52 +317,53 @@ const ProjectContextProvider = ({ children }) => {
     }
   };
 
-  const updateWebJson = async (currentSettings) => {
-    let currentUser;
-    await localforage.getItem('userProfile').then((value) => {
-      currentUser = value.user.email;
-      setUsername(value.user.email);
-    });
-    const file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
-    const { data } = await supabaseStorage().download(file);
-    if (data) {
-      const json = JSON.parse(await data.text());
-      // eslint-disable-next-line no-nested-ternary
-      const currentSetting = (currentSettings === 'copyright' ? copyright
-        : (currentSettings === 'languages' ? {
-          title: language.ang,
-          id: language.id,
-          scriptDirection: language.ld,
-          langCode: language.lc,
-          custom: true,
-        }
-          : canonSpecification));
-      if (currentSettings === 'canonSpecification') {
-        (json.history?.textTranslation[currentSettings])?.push(currentSetting);
-      } else if (json.history[currentSettings]
-        && uniqueId(json.history[currentSettings], currentSetting.id)) {
-        (json.history[currentSettings]).forEach((setting) => {
-          if (setting.id === currentSetting.id) {
-            const keys = Object.keys(setting);
-            keys.forEach((key) => {
-              setting[key] = currentSetting[key];
-            });
+    const updateWebJson = async (currentSettings) => {
+      let currentUser;
+      await localforage.getItem('userProfile').then((value) => {
+        currentUser = value.user.email;
+        setUsername(value.user.email);
+      });
+      const file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
+      const { data } = await sbStorageDownload(file);
+      if (data) {
+        const json = JSON.parse(await data.text());
+        // eslint-disable-next-line no-nested-ternary
+        const currentSetting = (currentSettings === 'copyright' ? copyright
+          : (currentSettings === 'languages' ? {
+            title: language.ang,
+            id: language.id,
+            scriptDirection: language.ld,
+            langCode: language.lc,
+            custom: true,
           }
-        });
+            : canonSpecification));
+        if (currentSettings === 'canonSpecification') {
+          (json.history?.textTranslation[currentSettings])?.push(currentSetting);
+        } else if (json.history[currentSettings]
+          && uniqueId(json.history[currentSettings], currentSetting.id)) {
+          (json.history[currentSettings]).forEach((setting) => {
+            if (setting.id === currentSetting.id) {
+              const keys = Object.keys(setting);
+              keys.forEach((key) => {
+                setting[key] = currentSetting[key];
+              });
+            }
+          });
+        } else {
+          // updating the canon or pushing new language
+          (json.history[currentSettings]).push(currentSetting);
+        }
+        json.version = environment.AG_USER_SETTING_VERSION;
+        json.sync.services.door43 = json?.sync?.services?.door43 ? json?.sync?.services?.door43 : [];
+        console.debug('ProjectContext.js', 'Upadting the settings in existing file');
+        await sbStorageUpload(file, JSON.stringify(json));
+        console.debug('ProjectContext.js', 'Loading new settings from file');
+        await loadWebSettings();
       } else {
-        // updating the canon or pushing new language
-        (json.history[currentSettings]).push(currentSetting);
+        console.error('ProjectContext.js', 'Failed to read the data from file');
       }
-      json.version = environment.AG_USER_SETTING_VERSION;
-      json.sync.services.door43 = json?.sync?.services?.door43 ? json?.sync?.services?.door43 : [];
-      console.debug('ProjectContext.js', 'Upadting the settings in existing file');
-      await supabaseStorage().upload(file, JSON.stringify(json));
-      console.debug('ProjectContext.js', 'Loading new settings from file');
-      await loadWebSettings();
-    } else {
-      console.error('ProjectContext.js', 'Failed to read the data from file');
-    }
-  };
+    };
+
   // common functions for create projects
   const createProjectCommonUtils = async () => {
     logger.debug('ProjectContext.js', 'In createProject common utils');
@@ -488,7 +492,7 @@ const ProjectContextProvider = ({ children }) => {
           });
         });
       });
-    } else {
+    } else if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
       loadWebSettings();
       localforage.getItem('userProfile').then((value) => {
         setUsername(value?.user?.email);

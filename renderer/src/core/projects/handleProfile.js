@@ -1,10 +1,16 @@
 import * as localForage from 'localforage';
+import { isElectron } from '@/core/handleElectron';
 import { environment } from '../../../environment';
 import { loadUsers } from '../Login/handleJson';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
-import { isElectron } from '../handleElectron';
-import { newPath, supabaseStorage } from '../../../../supabase';
+import {
+  newPath, sbStorageList, sbStorageDownload, sbStorageUpload,
+} from '../../../../supabase';
+// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+//   const supabaseStorage = require('../../../../supabase').supabaseStorage
+//   const newPath = require('../../../../supabase').newPath
+// }
 
 export const getorPutAppLangage = async (method, currentUser, appLang) => {
   if (isElectron()) {
@@ -37,23 +43,26 @@ export const getorPutAppLangage = async (method, currentUser, appLang) => {
     }
   }
   let file;
-  if (currentUser) {
-    file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
-    const { data: settingsFile, error } = await supabaseStorage().list(file);
-    if (settingsFile) {
-      const { data } = await supabaseStorage().download(file);
-      const settings = JSON.parse(await data.text());
-      if (method.toLowerCase() === 'get') {
-        return settings.appLanguage;
-      } if (method.toLowerCase() === 'put') {
-        // save lang code
-        settings.appLanguage = appLang.code;
-        console.log('handleProfile.js', 'Updating the app lang details in existing file');
-        await supabaseStorage().upload(file, JSON.stringify(settings));
+  if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
+    if (currentUser) {
+      file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
+      const { data: settingsFile, error } = await sbStorageList(file);
+      console.log('settingsFile', settingsFile);
+      if (settingsFile) {
+        const { data } = await sbStorageDownload(file);
+        const settings = JSON.parse(await data.text());
+        if (method.toLowerCase() === 'get') {
+          return settings.appLanguage;
+        } if (method.toLowerCase() === 'put') {
+          // save lang code
+          settings.appLanguage = appLang.code;
+          console.log('handleProfile.js', 'Updating the app lang details in existing file');
+          await sbStorageUpload(file, JSON.stringify(settings));
+        }
       }
-    }
-    if (error) {
-      throw new Error(error?.message || error);
+      if (error) {
+        throw new Error(error?.message || error);
+      }
     }
   }
 };

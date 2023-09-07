@@ -7,7 +7,7 @@ import ObsEditor from '@/components/EditorPage/ObsEditor/ObsWebEditor';
 import AudioEditor from '@/components/EditorPage/AudioEditor/AudioEditor';
 import { ScribexContext } from '@/components/context/ScribexContext';
 import { useReadUsfmFile } from '@/components/hooks/scribex/useReadUsfmFile';
-import Scribex from '@/components/EditorPage/Scribex/Scribex';
+import Scribex from '@/components/EditorPage/Scribex/Scribex'; // eslint-disable-line
 import SectionPlaceholder1 from './WebSectionPlaceholder1';
 import SectionPlaceholder2 from './WebSectionPlaceholder2';
 import { newPath, sbStorageDownload } from '../../../../supabase';

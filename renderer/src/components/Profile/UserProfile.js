@@ -13,10 +13,7 @@ import { useGetUserName } from '@/components/hooks/useGetUserName';
 import { useRouter } from 'next/navigation';
 import { isElectron } from '@/core/handleElectron';
 import * as localforage from 'localforage';
-import {supabaseSignout} from '../../../../supabase';
-// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-	// const supabase = require('../../../../supabase').supabase;
-// }
+import { supabaseSignout } from '../../../../supabase';
 
 const UserProfile = () => {
   const { action: { logout } } = useContext(AuthenticationContext);

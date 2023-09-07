@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as localforage from 'localforage';
-import {supabaseSignIn} from '../../../../supabase';
+import { supabaseSignIn } from '../../../../supabase';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -21,8 +21,6 @@ const SignIn = () => {
     if (data.session) {
       console.log('sign in success', data);
       await localforage.setItem('userProfile', data);
-      const userData = await localforage.getItem('userProfile');
-      console.log({userData})
       router.push('/projects');
       setLoading(false);
     } else {

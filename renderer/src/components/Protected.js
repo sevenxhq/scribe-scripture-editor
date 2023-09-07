@@ -2,16 +2,13 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { isElectron } from '@/core/handleElectron';
-import {getSupabaseUser} from '../../../supabase';
-
+import { getSupabaseUser } from '../../../supabase';
 
 const ProtectedRoute = ({ children }) => {
     const router = useRouter();
     useEffect(() => {
         const checkUser = async () => {
             const user = await getSupabaseUser();
-            console.log('getSupabaseUser', user);
             if (!user) {
                 router.push('/login'); // Redirect to the sign in page if user is not signed in
             }

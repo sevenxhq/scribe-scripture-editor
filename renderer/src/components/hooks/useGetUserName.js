@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import localforage from 'localforage';
-import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../logger';
 import { supabase } from '../../../../supabase';
 
@@ -15,8 +14,7 @@ export const useGetUserName = () => {
                 if (IsElectron) {
                     const value = await localforage.getItem('userProfile');
                     setUsername(value?.username);
-                }
-                else if (!IsElectron) {
+                } else if (!IsElectron) {
                     const { data: { session }, error } = await supabase.auth.getSession();
                     if (error) {
                         console.error(error);

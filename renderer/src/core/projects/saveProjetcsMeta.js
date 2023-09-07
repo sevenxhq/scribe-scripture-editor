@@ -11,7 +11,9 @@ import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import createAudioSB from '../burrito/createAudioSB';
 import packageInfo from '../../../../package.json';
-import { createDirectory, newPath, sbStorageList } from '../../../../supabase';
+import {
+  createDirectory, newPath, sbStorageList, sbStorageUpload,
+} from '../../../../supabase';
 
 const bookAvailable = (list, id) => list.some((obj) => obj === id);
 const checker = (arr, target) => target.every((v) => arr.includes(v));
@@ -294,66 +296,66 @@ export const saveProjectsMeta = async (projectMetaObj) => {
           'metadata.json',
         ), JSON.stringify(burritoFile));
       })
-      .then(async () => {
-        // Adding text USFM to audio project
-        if ((projectMetaObj.importedFiles).length !== 0) {
-          const newScope = [];
-          projectMetaObj.importedFiles.forEach((file) => {
-            newScope.push(file.id);
-          });
-          // ingredient has the list of created files in the form of SB Ingredients
-          logger.debug('saveProjectsMeta.js', 'Calling creatVersification for generating USFM files.');
-          await createVersificationUSFM(
-            currentUser,
-            projectMetaObj.newProjectFields,
-            projectMetaObj.versificationScheme,
-            newScope,
-            projectMetaObj.language.ld,
-            id,
-            projectMetaObj.importedFiles,
-            projectMetaObj.copyright,
-            projectMetaObj.project,
-            projectMetaObj.call,
-            'Audio',
-          ).then(async (ingredient) => {
-            logger.debug('saveProjectsMeta.js', 'Calling createTranslationSB for creating burrito.');
-            const burritoFile = await createTranslationSB(
+        .then(async () => {
+          // Adding text USFM to audio project
+          if ((projectMetaObj.importedFiles).length !== 0) {
+            const newScope = [];
+            projectMetaObj.importedFiles.forEach((file) => {
+              newScope.push(file.id);
+            });
+            // ingredient has the list of created files in the form of SB Ingredients
+            logger.debug('saveProjectsMeta.js', 'Calling creatVersification for generating USFM files.');
+            await createVersificationUSFM(
               currentUser,
               projectMetaObj.newProjectFields,
-              scope,
-              projectMetaObj.language.ang,
-              projectMetaObj.language.lc,
+              projectMetaObj.versificationScheme,
+              newScope,
               projectMetaObj.language.ld,
-              projectMetaObj.copyright,
               id,
+              projectMetaObj.importedFiles,
+              projectMetaObj.copyright,
               projectMetaObj.project,
               projectMetaObj.call,
-              projectMetaObj.update,
-            );
-            if (projectMetaObj.call === 'edit') {
-              burritoFile.ingredients = { ...projectMetaObj.project.ingredients, ...ingredient };
-            } else {
-              burritoFile.ingredients = ingredient;
-            }
-            logger.debug('saveProjectsMeta.js', 'Creating a burrito file.');
-            await fs.writeFileSync(path.join(
-              projectDir,
-              `${projectMetaObj.newProjectFields.projectName}_${id}`,
-              'text-1',
-              'metadata.json',
-            ), JSON.stringify(burritoFile));
-          });
-        }
-      })
-      .then(async () => {
-        // init git for the Project
-        const projectGitPath = path.join(projectDir, `${projectMetaObj.newProjectFields.projectName}_${id}`);
-        await checkGitandCommitFiles(fs, projectGitPath, null, currentUser);
-      })
-      .finally(() => {
-        logger.debug('saveProjectsMeta.js', projectMetaObj.call === 'new' ? 'New project created successfully.' : 'Updated the Changes.');
-        status.push({ type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') });
-      });
+              'Audio',
+            ).then(async (ingredient) => {
+              logger.debug('saveProjectsMeta.js', 'Calling createTranslationSB for creating burrito.');
+              const burritoFile = await createTranslationSB(
+                currentUser,
+                projectMetaObj.newProjectFields,
+                scope,
+                projectMetaObj.language.ang,
+                projectMetaObj.language.lc,
+                projectMetaObj.language.ld,
+                projectMetaObj.copyright,
+                id,
+                projectMetaObj.project,
+                projectMetaObj.call,
+                projectMetaObj.update,
+              );
+              if (projectMetaObj.call === 'edit') {
+                burritoFile.ingredients = { ...projectMetaObj.project.ingredients, ...ingredient };
+              } else {
+                burritoFile.ingredients = ingredient;
+              }
+              logger.debug('saveProjectsMeta.js', 'Creating a burrito file.');
+              await fs.writeFileSync(path.join(
+                projectDir,
+                `${projectMetaObj.newProjectFields.projectName}_${id}`,
+                'text-1',
+                'metadata.json',
+              ), JSON.stringify(burritoFile));
+            });
+          }
+        })
+        .then(async () => {
+          // init git for the Project
+          const projectGitPath = path.join(projectDir, `${projectMetaObj.newProjectFields.projectName}_${id}`);
+          await checkGitandCommitFiles(fs, projectGitPath, null, currentUser);
+        })
+        .finally(() => {
+          logger.debug('saveProjectsMeta.js', projectMetaObj.call === 'new' ? 'New project created successfully.' : 'Updated the Changes.');
+          status.push({ type: 'success', value: (projectMetaObj.call === 'new' ? 'New project created' : 'Updated the changes') });
+        });
     }
   };
   // Switch Project Creation

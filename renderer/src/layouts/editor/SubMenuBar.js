@@ -15,7 +15,7 @@ import ColumnsIcon from '@/icons/basil/Outline/Interface/Columns.svg';
 import MenuDropdown from '../../components/MenuDropdown/MenuDropdown';
 import menuStyles from './MenuBar.module.css';
 import packageInfo from '../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../supabase';
+import { newPath, sbStorageDownload } from '../../../../supabase';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //   const supabaseStorage = require('../../../../../supabase').supabaseStorage
 //   const newPath = require('../../../../supabase').newPath

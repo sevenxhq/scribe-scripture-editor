@@ -1,7 +1,9 @@
+import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
-import { isElectron } from '@/core/handleElectron';
-import { newPath, sbStorageUpdate, sbStorageUpload } from '../../../../supabase';
+import {
+    newPath, sbStorageDownload, sbStorageUpdate, sbStorageUpload,
+} from '../../../../supabase';
 
 const writeToFile = async ({
     username,
@@ -32,7 +34,7 @@ const writeToFile = async ({
     if (projectsPath) {
         // appending to an existing file
         console.log('writeToFile.js', 'Appending to the existing file');
-        sbStorageUpdate({path:filePath,payload: data});
+        sbStorageUpdate({ path: filePath, payload: data });
     } else {
         // Creating new file if nothing present
         console.log('writeToFile.js', 'Creating new file to write');

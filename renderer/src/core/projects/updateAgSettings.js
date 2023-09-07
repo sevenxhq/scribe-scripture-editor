@@ -1,10 +1,12 @@
 import localforage from 'localforage';
 import { splitStringByLastOccurance } from '@/util/splitStringByLastMarker';
+import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../logger';
 import { environment } from '../../../environment';
 import packageInfo from '../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../supabase';
-import { isElectron } from '@/core/handleElectron';
+import {
+ newPath, sbStorageDownload, sbStorageUpload,
+} from '../../../../supabase';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //   const supabaseStorage = require('../../../../supabase').supabaseStorage
 //   const newPath = require('../../../../supabase').newPath

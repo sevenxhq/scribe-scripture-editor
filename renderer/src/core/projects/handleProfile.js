@@ -1,10 +1,12 @@
 import * as localForage from 'localforage';
+import { isElectron } from '@/core/handleElectron';
 import { environment } from '../../../environment';
 import { loadUsers } from '../Login/handleJson';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
-import { isElectron } from '@/core/handleElectron';
-import { newPath, sbStorageList,sbStorageDownload ,sbStorageUpload} from '../../../../supabase';
+import {
+  newPath, sbStorageList, sbStorageDownload, sbStorageUpload,
+} from '../../../../supabase';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //   const supabaseStorage = require('../../../../supabase').supabaseStorage
 //   const newPath = require('../../../../supabase').newPath
@@ -45,7 +47,7 @@ export const getorPutAppLangage = async (method, currentUser, appLang) => {
     if (currentUser) {
       file = `${newPath}/${currentUser}/${environment.USER_SETTING_FILE}`;
       const { data: settingsFile, error } = await sbStorageList(file);
-      console.log('settingsFile',settingsFile)
+      console.log('settingsFile', settingsFile);
       if (settingsFile) {
         const { data } = await sbStorageDownload(file);
         const settings = JSON.parse(await data.text());
@@ -62,8 +64,8 @@ export const getorPutAppLangage = async (method, currentUser, appLang) => {
         throw new Error(error?.message || error);
       }
     }
-  };
-}
+  }
+};
 
 const updateJson = async (userdata) => {
   logger.error('handleProfile.js', 'In UpdateJson, for updating the current user details');

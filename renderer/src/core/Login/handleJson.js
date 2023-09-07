@@ -1,8 +1,9 @@
-
 import * as localForage from 'localforage';
 import * as logger from '../../logger';
 import packageInfo from '../../../../package.json';
-import { createDirectory, supabaseStorage } from '../../../../supabase';
+import {
+  createDirectory, sbStorageDownload, sbStorageUpload, supabaseStorage,
+} from '../../../../supabase';
 
 const path = require('path');
 

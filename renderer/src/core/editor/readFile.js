@@ -1,7 +1,8 @@
 /* eslint-disable no-async-promise-executor */
 import { readBlobAsync } from '@/components/EditorPage/ObsEditor/core';
 import packageInfo from '../../../../package.json';
-import { newPath, supabaseStorage } from '../../../../supabase';
+import { newPath, sbStorageDownload } from '../../../../supabase';
+import { isElectron } from '../handleElectron';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //     const supabaseStorage = require('../../../../supabase').supabaseStorage
 //     const newPath = require('../../../../supabase').newPath

@@ -16,7 +16,9 @@ import packageInfo from '../../../../../package.json';
 import customLicense from '../../../lib/license/Custom.md';
 import OBSLicense from '../../../lib/OBSLicense.md';
 import OBSData from '../../../lib/OBSData.json';
-import { newPath, sbStorageDownload,sbStorageList,sbStorageUpload,sbStorageUpdate } from '../../../../../supabase';
+import {
+  newPath, sbStorageDownload, sbStorageList, sbStorageUpload, sbStorageUpdate, sbStorageRemove,
+} from '../../../../../supabase';
 
 const md5 = require('md5');
 
@@ -100,19 +102,19 @@ export const createDownloadedResourceSB = async (username, resourceMeta, project
       }
       json.languages[0].name.en = projectResource.language_title;
 
-        json.copyright.shortStatements = [
-          {
-            statement: resourceMeta?.dublin_core?.rights,
-          },
-        ];
-        json.copyright.licenses[0].ingredient = 'LICENSE.md';
-        if (selectResource === 'bible') {
-          resourceMeta.projects.forEach(({ identifier: scope }) => {
-            json.type.flavorType.currentScope[scope.toUpperCase()] = [];
-            localizedNames[scope.toUpperCase()] = json.localizedNames[scope.toUpperCase()];
-          });
-          json.localizedNames = localizedNames;
-        }
+      json.copyright.shortStatements = [
+        {
+          statement: resourceMeta?.dublin_core?.rights,
+        },
+      ];
+      json.copyright.licenses[0].ingredient = 'LICENSE.md';
+      if (selectResource === 'bible') {
+        resourceMeta.projects.forEach(({ identifier: scope }) => {
+          json.type.flavorType.currentScope[scope.toUpperCase()] = [];
+          localizedNames[scope.toUpperCase()] = json.localizedNames[scope.toUpperCase()];
+        });
+        json.localizedNames = localizedNames;
+      }
 
       logger.debug('createDownloadedResourceSB.js', 'Created the createBibleResource SB');
       resolve(json);
@@ -506,30 +508,30 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
               console.log({ existingResources });
               for (const element of existingResources) {
                 if (element.name !== '.keep') {
-                console.log(element.name);
-                const { data: filecontentMeta } = await sbStorageDownload(`${folder}/${element.name}/metadata.json`);
-                console.log({ filecontentMeta });
-                const storedResourceMeta = filecontentMeta;
-                if (storedResourceMeta?.resourceMeta) {
-                  const storedResourceName = storedResourceMeta.resourceMeta.name;
-                  const storedResourceOwner = storedResourceMeta.resourceMeta.owner;
-                  const storedResourceTag = storedResourceMeta.resourceMeta.release?.tag_name;
-                  if (
-                    storedResourceName === resource.name
-                    && storedResourceOwner === resource.owner
-                    && storedResourceTag === resource.release?.tag_name
-                  ) {
-                    console.log(
-                      'DownloadResourcePopUp.js',
-                      `In resource download existing resource ${resource.name}_${resource.release?.tag_name}`,
-                    );
-                    resourceExist = true;
-                    resourceExistCount += 1;
+                  console.log(element.name);
+                  const { data: filecontentMeta } = await sbStorageDownload(`${folder}/${element.name}/metadata.json`);
+                  console.log({ filecontentMeta });
+                  const storedResourceMeta = filecontentMeta;
+                  if (storedResourceMeta?.resourceMeta) {
+                    const storedResourceName = storedResourceMeta.resourceMeta.name;
+                    const storedResourceOwner = storedResourceMeta.resourceMeta.owner;
+                    const storedResourceTag = storedResourceMeta.resourceMeta.release?.tag_name;
+                    if (
+                      storedResourceName === resource.name
+                      && storedResourceOwner === resource.owner
+                      && storedResourceTag === resource.release?.tag_name
+                    ) {
+                      console.log(
+                        'DownloadResourcePopUp.js',
+                        `In resource download existing resource ${resource.name}_${resource.release?.tag_name}`,
+                      );
+                      resourceExist = true;
+                      resourceExistCount += 1;
+                    }
                   }
                 }
               }
             }
-          }
 
             if (!resourceExist) {
               const response = await fetch(resource.metadata_json_url);
@@ -557,7 +559,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
 
               for (const [zipPath, zipObject] of Object.entries(zip.files)) {
                 if (zipObject.dir) {
-                  await sbStorageUpload(`${folder}/${zipObject.name}`,'', { upsert: false });
+                  await sbStorageUpload(`${folder}/${zipObject.name}`, '', { upsert: false });
                 } else {
                   const fileContent = await zipObject.async('uint8array');
                   await sbStorageUpload(`${folder}/${zipObject.name}`, fileContent, { upsert: false });
@@ -657,7 +659,7 @@ export const handleDownloadWebResources = async (resourceData, selectResource, a
               // finally remove zip and rename base folder to projectname_id
               const { data, error } = await sbStorageList(`${folder}/${currentResourceProject.name}`);
               if (data) {
-                await sbStorageUpdate({path:`${folder}/${currentResourceProject.name}`, payload:`${folder}/${currentProjectName}`, options:{ cacheControl: '3600', upsert: true }});
+                await sbStorageUpdate({ path: `${folder}/${currentResourceProject.name}`, payload: `${folder}/${currentProjectName}`, options: { cacheControl: '3600', upsert: true } });
                 await sbStorageRemove(`${folder}/${currentProjectName}.zip`);
               } else {
                 console.log('error in storage.list ---------->', error);

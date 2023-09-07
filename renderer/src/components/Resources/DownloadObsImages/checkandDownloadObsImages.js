@@ -2,8 +2,9 @@ import { isElectron } from '@/core/handleElectron';
 import { environment } from '../../../../environment';
 import packageInfo from '../../../../../package.json';
 import OBSData from '../../../lib/OBSData.json';
-import { createDirectory, sbStorageList, sbStorageUpload, sbStorageDownload } from '../../../../../supabase';
-
+import {
+  createDirectory, sbStorageList, sbStorageUpload, sbStorageDownload,
+} from '../../../../../supabase';
 
 const downloadImageAndSave = async (url, savePath, fs) => {
   const response = await fetch(url, { mode: 'no-cors' });

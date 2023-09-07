@@ -1,5 +1,5 @@
 import { isElectron } from '@/core/handleElectron';
-import { supabaseStorage } from '../../../../supabase';
+import { sbStorageList } from '../../../../supabase';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //   const supabaseStorage = require('../../../../../supabase').supabaseStorage
 // }
@@ -26,12 +26,7 @@ export const readRefMeta = async ({
     });
   }
     try {
-      const { data: files, error } = await supabaseStorage()
-        .list(`${projectsDir}`, {
-          limit: 100,
-          offset: 0,
-        });
-
+      const { data: files, error } = await sbStorageList(`${projectsDir}`);
       if (error) {
         console.error('Error fetching files:', error);
         return [];

@@ -1,7 +1,7 @@
 import localforage from 'localforage';
-import packageInfo from '../../../../package.json';
 import { isElectron } from '@/core/handleElectron';
-import { newPath, supabaseStorage } from '../../../../supabase';
+import packageInfo from '../../../../package.json';
+import { newPath, sbStorageDownload } from '../../../../supabase';
 // if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
 //     const supabaseStorage = require('../../../../supabase').supabaseStorage
 //     const newPath = require('../../../../supabase').newPath

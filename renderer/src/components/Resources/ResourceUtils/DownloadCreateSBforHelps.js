@@ -5,7 +5,9 @@ import moment from 'moment';
 import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
-import { createDirectory, newPath, sbStorageRemove,sbStorageList } from '../../../../../supabase';
+import {
+    createDirectory, newPath, sbStorageRemove, sbStorageList, sbStorageDownload,
+} from '../../../../../supabase';
 
 const JSZip = require('jszip');
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import UserProfile from './Profile';
 import Sync from './Sync';
-import ProjectList from './ProjectList';
+import ProjectList from '@/components/Projects/ProjectList';
 import NewProject from './NewProject';
 
 export const ProjectsNav = ({ renderComponent }) => (

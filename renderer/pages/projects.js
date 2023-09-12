@@ -1,4 +1,4 @@
-import ProjectList from '@/modules/projects/ProjectList';
+import ProjectList from '@/components/Projects/ProjectList';
 import AuthenticationContextProvider from '@/components/Login/AuthenticationContextProvider';
 import AutographaContextProvider from '@/components/context/AutographaContext';
 import ProjectContextProvider from '@/components/context/ProjectContext';

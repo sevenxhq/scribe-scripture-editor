@@ -5,11 +5,8 @@ import {
   updateAgSettings,
   updateWebAgSettings,
 } from '../../../core/projects/updateAgSettings';
-import parseProjectMetaUpdate from '../../../core/projects/parseProjectMetaUpdate';
-// import metaFileReplace from '../../../core/projects/metaFileReplace';
 import { isElectron } from '../../../core/handleElectron';
 import fetchProjectsMeta from '../../../core/projects/fetchProjectsMeta';
-// import parseFileUpdate from '../../../core/projects/parseFileUpdate';
 import * as logger from '../../../logger';
 
 function useProjectsSort() {
@@ -28,7 +25,6 @@ function useProjectsSort() {
 
   const starrtedData = [];
   const unstarrtedData = [];
-  const username = 'Michael';
 
   useEffect(() => {
     if (notifications.length !== 0) {
@@ -40,162 +36,6 @@ function useProjectsSort() {
       }
     });
   }, [notifications]);
-
-  const handleClickStarred = async (event, name, property) => {
-    logger.debug(
-      'useProjectsSort.js',
-      'converting starred to be unstarred and viceversa',
-    );
-    property === 'starred' ? setactive('starred') : setactive('unstarred');
-    const selectedIndex = property === 'starred'
-      ? starredrow.findIndex((x) => x.name === name)
-      : unstarredrow.findIndex((x) => x.name === name);
-    const copy = property === 'starred'
-      ? starredrow.splice(selectedIndex, 1)
-      : unstarredrow.splice(selectedIndex, 1);
-    const projectArrayTemp = [];
-    if (isElectron()) {
-      let currentUser;
-      await localForage.getItem('userProfile').then((value) => {
-        currentUser = value?.username;
-      });
-      const projects = localForage.getItem('projectmeta');
-      projects
-        .then((value) => {
-          if (value) {
-            projectArrayTemp.push(value);
-          }
-        })
-        .then(() => {
-          projectArrayTemp[0].projects.forEach((_project) => {
-            if (_project.identification.name.en === name) {
-              let dirName;
-              switch (_project.type.flavorType.flavor.name) {
-                case 'textTranslation':
-                  dirName = 'textTranslation';
-                  break;
-                case 'textStories':
-                  dirName = 'textStories';
-                  break;
-                case 'audioTranslation':
-                  dirName = 'audioTranslation';
-                  break;
-                default:
-                  break;
-              }
-              const status = _project.project[dirName].starred;
-              const selectedProject = _project;
-              selectedProject.project[dirName].starred = !status;
-              selectedProject.project[dirName].lastSeen = moment().format();
-            }
-          });
-        })
-        .finally(() => {
-          localForage
-            .setItem('projectmeta', projectArrayTemp[0])
-            .then(() => {
-              projectArrayTemp[0].projects.forEach((_project) => {
-                if (_project.identification.name.en === name) {
-                  const id = Object.keys(
-                    _project.identification.primary.scribe,
-                  );
-                  const projectName = `${name}_${id}`;
-                  logger.debug(
-                    'useProjectsSort.js',
-                    `Updating star/unstar in Scribe settings for ${name}`,
-                  );
-                  updateAgSettings(
-                    currentUser,
-                    projectName,
-                    _project,
-                  );
-                }
-              });
-              // metaFileReplace({ userData: projectArrayTemp[0] });
-            });
-        });
-    } else {
-      parseProjectMetaUpdate({
-        username,
-        projectName: name,
-      });
-    }
-    settemparray(copy[0]);
-  };
-  const handleWebClickStarred = async (event, name, property) => {
-    logger.debug(
-      'useProjectsSort.js',
-      'converting starred to be unstarred and viceversa',
-    );
-    property === 'starred' ? setactive('starred') : setactive('unstarred');
-    const selectedIndex = property === 'starred'
-      ? starredrow.findIndex((x) => x.name === name)
-      : unstarredrow.findIndex((x) => x.name === name);
-    const copy = property === 'starred'
-      ? starredrow.splice(selectedIndex, 1)
-      : unstarredrow.splice(selectedIndex, 1);
-    const projectArrayTemp = [];
-      let currentUser;
-      await localForage.getItem('userProfile').then((value) => {
-        currentUser = value?.user?.email;
-      });
-      const projects = localForage.getItem('projectmeta');
-      projects
-        .then((value) => {
-          if (value) {
-            projectArrayTemp.push(value);
-          }
-        })
-        .then(() => {
-          projectArrayTemp[0].projects.forEach((_project) => {
-            if (_project.identification.name.en === name) {
-              let dirName;
-              switch (_project.type.flavorType.flavor.name) {
-                case 'textTranslation':
-                  dirName = 'textTranslation';
-                  break;
-                case 'textStories':
-                  dirName = 'textStories';
-                  break;
-                case 'audioTranslation':
-                  dirName = 'audioTranslation';
-                  break;
-                default:
-                  break;
-              }
-              const status = _project.project[dirName].starred;
-              const selectedProject = _project;
-              selectedProject.project[dirName].starred = !status;
-              selectedProject.project[dirName].lastSeen = moment().format();
-            }
-          });
-        })
-        .finally(() => {
-          localForage
-            .setItem('projectmeta', projectArrayTemp[0])
-            .then(() => {
-              projectArrayTemp[0].projects.forEach((_project) => {
-                if (_project.identification.name.en === name) {
-                  const id = Object.keys(
-                    _project.identification.primary.scribe,
-                  );
-                  const projectName = `${name}_${id}`;
-                  logger.debug(
-                    'useProjectsSort.js',
-                    `Updating star/unstar in Scribe settings for ${name}`,
-                  );
-                  updateWebAgSettings(
-                    currentUser,
-                    projectName,
-                    _project,
-                  );
-                }
-              });
-              // metaFileReplace({ userData: projectArrayTemp[0] });
-            });
-        });
-    settemparray(copy[0]);
-  };
 
   const handleRequestSortUnstarred = (event, property) => {
     logger.debug(
@@ -308,12 +148,12 @@ function useProjectsSort() {
   const FetchProjects = async () => {
     const userProfile = await localForage.getItem('userProfile');
     const user = isElectron() ? userProfile.username : userProfile.user.email;
-    console.log("from project sort",{user})
+    console.log('from project sort', { user });
     if (user) {
       logger.debug('useProjectsSort.js', 'Fetching the projects');
-      const projectsData = fetchProjectsMeta({ currentUser: user });     
+      const projectsData = fetchProjectsMeta({ currentUser: user });
       projectsData.then((value) => {
-        console.log("fetchPrjectsmeta",{value})
+        console.log('fetchPrjectsmeta', { value });
         if (value) {
           localForage
             .setItem('projectmeta', value)
@@ -435,101 +275,101 @@ function useProjectsSort() {
       });
     }
   };
-
-  /**
-   * Updates the project's archive status in the localForage database.
-   * @param name - the name of the project
-   */
   const archiveProject = async (project, name) => {
     const userProfile = await localForage.getItem('userProfile');
-    const currentUser = userProfile?.username;
+    const currentUser = isElectron() ? userProfile?.username : userProfile?.user?.email;
 
     const projects = await localForage.getItem('projectmeta');
+    const updatedProjects = JSON.parse(JSON.stringify(projects));
 
-    const projectArrayTemp = JSON.parse(JSON.stringify(projects));
+    updatedProjects.projects.forEach((_project) => {
+      if (_project.identification.name.en !== name) { return; }
 
-    projectArrayTemp.projects.forEach((_project) => {
-      if (_project.identification.name.en === name) {
-        let dirName;
-        switch (_project.type.flavorType.flavor.name) {
-          case 'textTranslation': {
-            dirName = 'textTranslation';
-            break;
-          }
-          case 'textStories': {
-            dirName = 'textStories';
-            break;
-          }
-          case 'audioTranslation': {
-            dirName = 'audioTranslation';
-            break;
-          }
-          default:
-            break;
-        }
-        const status = _project.project[dirName].isArchived;
-        const selectedProject = _project;
-        selectedProject.project[dirName].isArchived = !status;
-        selectedProject.project[dirName].lastSeen = moment().format();
-      }
-    });
+      const flavorName = _project.type.flavorType.flavor.name;
+      const dirNameMap = {
+        textTranslation: 'textTranslation',
+        textStories: 'textStories',
+        audioTranslation: 'audioTranslation',
+      };
 
-    await localForage.setItem('projectmeta', projectArrayTemp);
+      const dirName = dirNameMap[flavorName];
+      if (!dirName) { return; }
 
-    projectArrayTemp.projects.forEach((_project) => {
-      if (_project.identification.name.en === name) {
-        const id = Object.keys(_project.identification.primary.scribe);
-        const projectName = `${name}_${id}`;
-        logger.debug('useProjectsSort.js', `Updating archive/restore in scribe settings for ${name}`);
+      const status = _project.project[dirName].isArchived;
+      _project.project[dirName].isArchived = !status;
+      _project.project[dirName].lastSeen = moment().format();
+
+      const id = Object.keys(_project.identification.primary.scribe);
+      const projectName = `${name}_${id}`;
+      logger.debug('useProjectsSort.js', `Updating archive/restore in scribe settings for ${name}`);
+
+      if (isElectron()) {
         updateAgSettings(currentUser, projectName, _project);
-      }
-    });
-    await FetchProjects();
-  };
-  const archiveWebProject = async (project, name) => {
-    const userProfile = await localForage.getItem('userProfile');
-    const currentUser = userProfile?.user?.email;
-
-    const projects = await localForage.getItem('projectmeta');
-
-    const projectArrayTemp = JSON.parse(JSON.stringify(projects));
-
-    projectArrayTemp.projects.forEach((_project) => {
-      if (_project.identification.name.en === name) {
-        let dirName;
-        switch (_project.type.flavorType.flavor.name) {
-          case 'textTranslation': {
-            dirName = 'textTranslation';
-            break;
-          }
-          case 'textStories': {
-            dirName = 'textStories';
-            break;
-          }
-          case 'audioTranslation': {
-            dirName = 'audioTranslation';
-            break;
-          }
-          default:
-            break;
-        }
-        const status = _project.project[dirName].isArchived;
-        const selectedProject = _project;
-        selectedProject.project[dirName].isArchived = !status;
-        selectedProject.project[dirName].lastSeen = moment().format();
-      }
-    });
-
-    await localForage.setItem('projectmeta', projectArrayTemp);
-
-    projectArrayTemp.projects.forEach((_project) => {
-      if (_project.identification.name.en === name) {
-        const id = Object.keys(_project.identification.primary.scribe);
-        const projectName = `${name}_${id}`;
-        logger.debug('useProjectsSort.js', `Updating archive/restore in scribe settings for ${name}`);
+      } else {
         updateWebAgSettings(currentUser, projectName, _project);
       }
     });
+
+    await localForage.setItem('projectmeta', updatedProjects);
+    await FetchProjects();
+  };
+
+  const handleClickStarred = async (event, name, property) => {
+    // Helper Function: Determine directory name
+    const getDirName = (flavorName) => {
+      const dirNameMap = {
+        textTranslation: 'textTranslation',
+        textStories: 'textStories',
+        audioTranslation: 'audioTranslation',
+      };
+      return dirNameMap[flavorName];
+    };
+
+    // Helper Function: Toggle the starred status of projects
+    const toggleStarredStatus = (projects, name) => {
+      projects.forEach((project) => {
+        if (project.identification.name.en === name) {
+          const dirName = getDirName(project.type.flavorType.flavor.name);
+          if (dirName) {
+            project.project[dirName].starred = !project.project[dirName].starred;
+            project.project[dirName].lastSeen = moment().format();
+          }
+        }
+      });
+    };
+
+    logger.debug('useProjectsSort.js', 'converting starred to be unstarred and viceversa');
+
+    const isActiveStarred = property === 'starred';
+    setactive(isActiveStarred ? 'starred' : 'unstarred');
+
+    const rows = isActiveStarred ? starredrow : unstarredrow;
+    const copy = rows.splice(rows.findIndex((x) => x.name === name), 1);
+
+    const userProfile = await localForage.getItem('userProfile');
+    const currentUser = isElectron() ? userProfile?.username : userProfile?.user?.email;
+
+    const projectsData = await localForage.getItem('projectmeta');
+    if (!projectsData) { return; }
+
+    const projects = JSON.parse(JSON.stringify(projectsData.projects));
+    toggleStarredStatus(projects, name);
+
+    await localForage.setItem('projectmeta', { ...projectsData, projects });
+
+    const projectToUpdate = projects.find((project) => project.identification.name.en === name);
+    if (projectToUpdate) {
+      const id = Object.keys(projectToUpdate.identification.primary.scribe)[0];
+      const projectName = `${name}_${id}`;
+      logger.debug('useProjectsSort.js', `Updating star/unstar in Scribe settings for ${name}`);
+      if (isElectron()) {
+        updateAgSettings(currentUser, projectName, projectToUpdate);
+      } else {
+        updateWebAgSettings(currentUser, projectName, projectToUpdate);
+      }
+    }
+
+    settemparray(copy[0]);
     await FetchProjects();
   };
 
@@ -553,11 +393,11 @@ function useProjectsSort() {
     },
     actions: {
       handleClickStarred,
-      handleWebClickStarred,
+      // handleWebClickStarred,
       handleDelete,
       handleRequestSortUnstarred,
       archiveProject,
-      archiveWebProject,
+      // archiveWebProject,
       setStarredRow,
       setLoading,
       setUnStarredRow,

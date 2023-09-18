@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import React, { useState } from 'react';
+import { useState, useContext } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import ProjectsLayout from '@/layouts/projects/Layout';
@@ -35,7 +35,7 @@ export default function ProjectList() {
       handleClickStarred,
       FetchProjects,
     },
-  } = React.useContext(AutographaContext);
+  } = useContext(AutographaContext);
   const [callEditProject, setCallEditProject] = useState(false);
   const [openPopUp, setOpenPopUp] = useState(false);
   const [currentProject, setCurrentProject] = useState();
@@ -52,70 +52,56 @@ export default function ProjectList() {
     setOrderBy(property);
   };
 
-  const closeEditProject = async () => {
-    logger.debug('ProjectList.js', 'Closing edit project page and updating the values');
-    setCallEditProject(false);
-    await FetchProjects();
-  };
+  // const closeEditProject = async () => {
+  //   logger.debug('ProjectList.js', 'Closing edit project page and updating the values');
+  //   setCallEditProject(false);
+  //   await FetchProjects();
+  // };
 
   return (
     <>
-      {callEditProject === false
-        ? (
-          <>
-            <ProjectsLayout
-              title={t('projects-page')}
-              archive="enable"
-              isImport
-              showArchived={showArchived}
-              setShowArchived={setShowArchived}
-              header={(
-                <SearchTags
-                  contentList1={starredProjects}
-                  contentList2={unstarredProjects}
-                  filterList={filterList}
-                  onfilerRequest1={setStarredRow}
-                  onfilerRequest2={setUnStarredRow}
-                />
-              )}
-            >
-              <div className="mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="px-4 py-4 sm:px-0">
+      <ProjectsLayout
+        title={t('projects-page')}
+        archive="enable"
+        isImport
+        showArchived={showArchived}
+        setShowArchived={setShowArchived}
+        header={(
+          <SearchTags
+            contentList1={starredProjects}
+            contentList2={unstarredProjects}
+            filterList={filterList}
+            onfilerRequest1={setStarredRow}
+            onfilerRequest2={setUnStarredRow}
+          />
+      )}
+      >
+        <div className="mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-4 sm:px-0">
 
-                  <div className="flex flex-col">
-                    <div className="-my-2 sm:-mx-6 lg:-mx-8">
-                      <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                        <div className="shadow border-b border-gray-200 sm:rounded-lg">
-                          <table data-testid="tablelayout" className="min-w-full divide-y divide-gray-200 mb-9">
-                            <EnhancedTableHead
-                              order={order}
-                              orderBy={orderBy}
-                              onRequestSort={handleRequestSort}
-                            />
-                            <ProjectRow isStarred order={order} orderBy={orderBy} showArchived={showArchived} openExportPopUp={openExportPopUp} setCurrentProject={setCurrentProject} setCallEditProject={setCallEditProject} handleClickStarred={handleClickStarred} />
-                            <ProjectRow isStarred={false} order={order} orderBy={orderBy} showArchived={showArchived} openExportPopUp={openExportPopUp} setCurrentProject={setCurrentProject} setCallEditProject={setCallEditProject} handleClickStarred={handleClickStarred} />
-                          </table>
-                          {(!starredrow || !unstarredrow) && <div><LoadingScreen /></div>}
-                        </div>
-                      </div>
-                    </div>
+            <div className="flex flex-col">
+              <div className="-my-2 sm:-mx-6 lg:-mx-8">
+                <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                  <div className="shadow border-b border-gray-200 sm:rounded-lg">
+                    <table data-testid="tablelayout" className="min-w-full divide-y divide-gray-200 mb-9">
+                      <EnhancedTableHead
+                        order={order}
+                        orderBy={orderBy}
+                        onRequestSort={handleRequestSort}
+                      />
+                      <ProjectRow isStarred order={order} orderBy={orderBy} showArchived={showArchived} openExportPopUp={openExportPopUp} setCurrentProject={setCurrentProject} setCallEditProject={setCallEditProject} handleClickStarred={handleClickStarred} />
+                      <ProjectRow isStarred={false} order={order} orderBy={orderBy} showArchived={showArchived} openExportPopUp={openExportPopUp} setCurrentProject={setCurrentProject} setCallEditProject={setCallEditProject} handleClickStarred={handleClickStarred} />
+                    </table>
+                    {(!starredrow || !unstarredrow) && <div><LoadingScreen /></div>}
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
 
-            </ProjectsLayout>
-            <ExportProjectPopUp open={openPopUp} closePopUp={closeExportPopUp} project={currentProject} />
-          </>
-        )
-        : (
-          <AuthenticationContextProvider>
-            <AutographaContextProvider>
-              <ProjectContextProvider>
-                <NewProject call="edit" project={currentProject} closeEdit={() => closeEditProject()} />
-              </ProjectContextProvider>
-            </AutographaContextProvider>
-          </AuthenticationContextProvider>
-        )}
+      </ProjectsLayout>
+      <ExportProjectPopUp open={openPopUp} closePopUp={closeExportPopUp} project={currentProject} />
     </>
   );
 }

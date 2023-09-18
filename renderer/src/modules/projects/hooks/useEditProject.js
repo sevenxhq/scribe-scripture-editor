@@ -34,9 +34,9 @@ const useEditProject = () => {
         settings = fs.readFileSync(path.join(folder, dirName, environment.PROJECT_SETTING_FILE), 'utf-8');
       } else {
         folder = path.join('scribe', 'users', userProfile.user.email, 'projects', `${project.name}_${project.id[0]}`);
-        data = (await sbStorageDownload(path.join(folder, 'metadata.json'))).data;
+        data = await sbStorageDownload(path.join(folder, 'metadata.json'));
         const dirName = getDirNameFromMetadata(JSON.parse(await data.text()));
-        settings = (await sbStorageDownload(path.join(folder, dirName, environment.PROJECT_SETTING_FILE), 'utf-8')).data;
+        settings = await sbStorageDownload(path.join(folder, dirName, environment.PROJECT_SETTING_FILE), 'utf-8');
       }
 
       const metadata = JSON.parse(data instanceof Blob ? await data.text() : data);

@@ -79,9 +79,14 @@ const ProjectRow = ({
                     <div className="ml-0">
                       <div
                         id={`${project.name}`}
-                        onClick={
-                          (event) => handleSelectProject(event, project.name, project.id[0], router, activeNotificationCount, setSelectedProject, setNotifications, setActiveNotificationCount)
-                        }
+                        onClick={(event) => {
+                          if (project.isArchived) {
+                            // do nothing
+                          } else {
+                            // Handle click when project is not archived
+                            handleSelectProject(event, project.name, project.id[0], router, activeNotificationCount, setSelectedProject, setNotifications, setActiveNotificationCount);
+                          }
+                        }}
                         role="button"
                         aria-label={isStarred ? 'unstar-project-name' : 'star-project-name'}
                         tabIndex="0"

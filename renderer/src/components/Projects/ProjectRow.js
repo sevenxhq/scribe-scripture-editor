@@ -13,7 +13,7 @@ import useEditProject from './hooks/useEditProject';
 import useHandleSelectProject from './hooks/useSelectProject';
 
 const ProjectRow = ({
-  isStarred, order, orderBy, showArchived, openExportPopUp, handleClickStarred, setCurrentProject, setCallEditProject,
+  projects, order, orderBy, showArchived, openExportPopUp, handleClickStarred, setCurrentProject,
 }) => {
   const router = useRouter();
   const { t } = useTranslation();
@@ -22,14 +22,13 @@ const ProjectRow = ({
 
   const {
     states: {
-      starredrow,
-      unstarredrow,
       activeNotificationCount,
     },
     action: {
       archiveProject,
       setSelectedProject,
       setNotifications,
+      setCallEditProject,
       setActiveNotificationCount,
     },
   } = useContext(AutographaContext);
@@ -42,20 +41,26 @@ const ProjectRow = ({
     }
     return false;
   }
-  function checkStarred() {
-    if (isStarred) {
-      return starredrow;
+
+  function sortStarred(a, b) {
+    if (a.starred === b.starred) {
+      return 0;
     }
-    return unstarredrow;
+    if (a.starred && !b.starred) {
+      return -1;
+    } if (!a.starred && b.starred) {
+      return 1;
+    }
+    return 0;
   }
   return (
     <tbody className="bg-white divide-y divide-gray-200">
-      {checkStarred() && (stableSort(
-        checkStarred(),
+      {projects && (stableSort(
+        projects,
         getComparator(order, orderBy),
         orderBy,
         order,
-      ).filter(filterArchive).map((project) => (
+      ).filter(filterArchive).sort(sortStarred).map((project) => (
         <Disclosure key={project.id[0]}>
           {({ open }) => (
             <>
@@ -64,12 +69,12 @@ const ProjectRow = ({
                   className="px-4 py-4"
                 >
                   <button
-                    title={isStarred ? 'unstar-project' : 'star-project'}
-                    aria-label={isStarred ? 'unstar-project' : 'star-project'}
-                    onClick={(event) => handleClickStarred(event, project.name, isStarred ? 'unstarred' : 'starred')}
+                    title={project.starred ? 'unstar-project' : 'star-project'}
+                    aria-label={project.starred ? 'unstar-project' : 'star-project'}
+                    onClick={(event) => handleClickStarred(event, project.name, project.starred ? 'unstarred' : 'starred')}
                     type="button"
                   >
-                    {isStarred
+                    {project.starred
                       ? <StarIcon className="h-5 w-5 fill-current text-yellow-400" aria-hidden="true" />
                       : <StarIcon className="h-5 w-5" aria-hidden="true" />}
                   </button>
@@ -83,7 +88,7 @@ const ProjectRow = ({
                           (event) => handleSelectProject(event, project.name, project.id[0], router, activeNotificationCount, setSelectedProject, setNotifications, setActiveNotificationCount)
                         }
                         role="button"
-                        aria-label={isStarred ? 'unstar-project-name' : 'star-project-name'}
+                        aria-label={project.starred ? 'unstar-project-name' : 'star-project-name'}
                         tabIndex="0"
                         className="text-sm font-medium text-gray-900"
                       >

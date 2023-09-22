@@ -51,6 +51,7 @@ const useEditProject = () => {
   };
 
   const editProject = async (project, setCurrentProject, setCallEditProject) => {
+    console.log('editing this...', { project });
     const metadata = await loadProjectData(project);
     setCurrentProject(metadata);
     setCallEditProject(true);

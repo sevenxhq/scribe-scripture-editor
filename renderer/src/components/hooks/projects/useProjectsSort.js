@@ -18,13 +18,16 @@ function useProjectsSort() {
   const [orderByUnstarred, setOrderByUnstarred] = React.useState('name');
   const [starredProjects, setStarredProjets] = React.useState();
   const [unstarredProjects, setUnStarredProjets] = React.useState();
+  const [projects, setProjects] = React.useState();
   const [selectedProject, setSelectedProject] = React.useState('');
   const [notifications, setNotifications] = React.useState([]);
+  const [callEditProject, setCallEditProject] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [activeNotificationCount, setActiveNotificationCount] = React.useState(0);
 
   const starrtedData = [];
   const unstarrtedData = [];
+  const allProjects = [];
 
   useEffect(() => {
     if (notifications.length !== 0) {
@@ -86,6 +89,7 @@ function useProjectsSort() {
     id,
     type,
     isArchived,
+    starred,
   ) => ({
     name,
     language,
@@ -95,9 +99,10 @@ function useProjectsSort() {
     id,
     type,
     isArchived,
+    starred,
   });
 
-  const FetchStarred = (
+  const fetchAllProjects = (
     ProjectName,
     Language,
     createdAt,
@@ -106,8 +111,9 @@ function useProjectsSort() {
     id,
     type,
     isArchived,
+    starred,
   ) => {
-    starrtedData.push(
+    allProjects.push(
       createData(
         ProjectName,
         Language,
@@ -117,30 +123,7 @@ function useProjectsSort() {
         id,
         type,
         isArchived,
-      ),
-    );
-  };
-
-  const FetchUnstarred = (
-    ProjectName,
-    Language,
-    createdAt,
-    LastView,
-    ProjectDescription,
-    id,
-    type,
-    isArchived,
-  ) => {
-    unstarrtedData.push(
-      createData(
-        ProjectName,
-        Language,
-        createdAt,
-        LastView,
-        ProjectDescription,
-        id,
-        type,
-        isArchived,
+        starred,
       ),
     );
   };
@@ -171,6 +154,7 @@ function useProjectsSort() {
                       let description;
                       let flavorType;
                       let isArchived;
+                      let starred;
                       switch (
                       _project.type.flavorType.flavor
                         .name
@@ -185,6 +169,7 @@ function useProjectsSort() {
                           isArchived = _project.project
                             ?.textTranslation
                             ?.isArchived;
+                            starred = _project.project?.textTranslation?.starred;
                           flavorType = 'Text Translation';
                           break;
                         case 'textStories':
@@ -197,6 +182,7 @@ function useProjectsSort() {
                           isArchived = _project.project
                             ?.textStories
                             ?.isArchived;
+                            starred = _project.project?.textStories?.starred;
                           flavorType = 'OBS';
                           break;
                         case 'audioTranslation':
@@ -209,50 +195,26 @@ function useProjectsSort() {
                           isArchived = _project.project
                             ?.audioTranslation
                             ?.isArchived;
+                            starred = _project.project?.audioTranslation?.starred;
                           flavorType = 'Audio';
                           break;
                         default:
                           break;
                       }
-                      if (
-                        _project.project
-                          ?.textTranslation
-                          ?.starred === true
-                        || _project.project?.textStories
-                          ?.starred === true
-                        || _project.project
-                          ?.audioTranslation
-                          ?.starred === true
-                      ) {
-                        // FetchStarred(projectName,language, createdAt, updatedAt);
-                        FetchStarred(
-                          _project.identification.name
-                            .en,
-                          _project.languages[0].name
-                            .en,
-                          // _project.identification.primary.scribe[created].timestamp,
-                          _project.meta.dateCreated,
-                          lastSeen,
-                          description,
-                          created,
-                          flavorType,
-                          isArchived,
-                        );
-                      } else {
-                        FetchUnstarred(
-                          _project.identification.name
-                            .en,
-                          _project.languages[0].name
-                            .en,
-                          // _project.identification.primary.scribe[created].timestamp,
-                          _project.meta.dateCreated,
-                          lastSeen,
-                          description,
-                          created,
-                          flavorType,
-                          isArchived,
-                        );
-                      }
+                      fetchAllProjects(
+                        _project.identification.name
+                          .en,
+                        _project.languages[0].name
+                          .en,
+                        // _project.identification.primary.scribe[created].timestamp,
+                        _project.meta.dateCreated,
+                        lastSeen,
+                        description,
+                        created,
+                        flavorType,
+                        isArchived,
+                        starred,
+                      );
                     });
                   }
                 })
@@ -261,6 +223,7 @@ function useProjectsSort() {
                   setStarredProjets(starrtedData);
                   setUnStarredRow(unstarrtedData);
                   setUnStarredProjets(unstarrtedData);
+                  setProjects(allProjects);
                 });
             })
             .catch((err) => {
@@ -382,6 +345,8 @@ function useProjectsSort() {
     state: {
       starredrow,
       unstarredrow,
+      projects,
+      callEditProject,
       orderUnstarred,
       orderByUnstarred,
       starredProjects,
@@ -394,11 +359,13 @@ function useProjectsSort() {
     actions: {
       handleClickStarred,
       // handleWebClickStarred,
+      setCallEditProject,
       handleDelete,
       handleRequestSortUnstarred,
       archiveProject,
       // archiveWebProject,
       setStarredRow,
+      setProjects,
       setLoading,
       setUnStarredRow,
       settemparray,

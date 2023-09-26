@@ -3,7 +3,7 @@ import AuthenticationContextProvider from '@/components/Login/AuthenticationCont
 import AutographaContextProvider from '@/components/context/AutographaContext';
 import ProjectContextProvider from '@/components/context/ProjectContext';
 
-const Projects = async () => (
+const Projects = () => (
   <AuthenticationContextProvider>
     <AutographaContextProvider>
       <ProjectContextProvider>

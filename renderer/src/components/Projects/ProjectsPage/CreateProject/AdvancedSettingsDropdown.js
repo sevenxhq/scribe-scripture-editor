@@ -6,13 +6,13 @@ import localforage from 'localforage';
 import { useTranslation } from 'react-i18next';
 import { isElectron } from '@/core/handleElectron';
 import CustomList from '@/components/Projects/CustomList';
-import { OT, NT } from '../../../lib/CanonSpecification';
-import { ProjectContext } from '../../context/ProjectContext';
+import { OT, NT } from '../../../../lib/CanonSpecification';
+import { ProjectContext } from '../../../context/ProjectContext';
 import CustomCanonSpecification from './CustomCanonSpecification';
 import LicencePopover from './LicencePopover';
-import * as logger from '../../../logger';
-import packageInfo from '../../../../../package.json';
-import { newPath, sbStorageDownload } from '../../../../../supabase';
+import * as logger from '../../../../logger';
+import packageInfo from '../../../../../../package.json';
+import { newPath, sbStorageDownload } from '../../../../../../supabase';
 
 function BookNumberTag(props) {
   const { children } = props;
@@ -115,7 +115,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
                 myLicence.licence = data;
               });
             } else {
-              const licensefile = require('../../../lib/license/Custom.md');
+              const licensefile = require('../../../../lib/license/Custom.md');
               // console.log(myLicence, licensefile.default);
               myLicence.licence = licensefile.default;
             }
@@ -130,7 +130,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
         }
         myLicence = licenceList.find((item) => item.title === title);
         // eslint-disable-next-line import/no-dynamic-require
-        const licensefile = require(`../../../lib/license/${title}.md`);
+        const licensefile = require(`../../../../lib/license/${title}.md`);
         myLicence.licence = licensefile.default;
       }
       setCopyRight(myLicence);
@@ -156,7 +156,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
             if (data) {
               myLicence.licence = data;
             } else {
-              const licensefile = require('../../../lib/license/Custom.md');
+              const licensefile = require('../../../../lib/license/Custom.md');
               // console.log(myLicence, licensefile.default);
               myLicence.licence = licensefile.default;
             }
@@ -171,7 +171,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
         }
         myLicence = licenceList.find((item) => item.title === title);
         // eslint-disable-next-line import/no-dynamic-require
-        const licensefile = require(`../../../lib/license/${title}.md`);
+        const licensefile = require(`../../../../lib/license/${title}.md`);
         myLicence.licence = licensefile.default;
       }
       setCopyRight(myLicence);

@@ -6,23 +6,23 @@ const SearchData = () => {
   const filterList = ['name', 'language', 'date', 'view'];
   const {
     states: {
-      starredProjects,
-      unstarredProjects,
+      // starredProjects,
+      // unstarredProjects,
+      projects,
     },
     action: {
-      setStarredRow,
-      setUnStarredRow,
+      setProjects,
     },
   } = React.useContext(AutographaContext);
 
   return (
     <div>
       <SearchForm
-        contentList1={starredProjects}
-        contentList2={unstarredProjects}
+        contentList1={projects}
+        contentList2={projects}
         filterList={filterList}
-        onfilerRequest1={setStarredRow}
-        onfilerRequest2={setUnStarredRow}
+        onfilerRequest={setProjects}
+        onfilerRequest2={setProjects}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import { useState, useContext } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import ProjectsLayout from '@/layouts/projects/Layout';
-import EnhancedTableHead from '@/components/ProjectsPage/Projects/EnhancedTableHead';
+import EnhancedTableHead from '@/components/Projects/ProjectsPage/Projects/EnhancedTableHead';
 import { AutographaContext } from '@/components/context/AutographaContext';
 
 import ExportProjectPopUp from '@/layouts/projects/Export/ExportProjectPopUp';
@@ -56,6 +56,7 @@ export default function ProjectList() {
     setCallEditProject(false);
     await FetchProjects();
   };
+  console.log('projects', projects);
   return (
     <>
       {!callEditProject ? (
@@ -68,10 +69,10 @@ export default function ProjectList() {
           header={(
             <SearchTags
               contentList1={projects}
-              // contentList2={projects}
+              contentList2={projects}
               filterList={filterList}
               onfilerRequest1={setProjects}
-              // onfilerRequest2={setProjects}
+              onfilerRequest2={setProjects}
             />
           )}
         >

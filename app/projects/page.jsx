@@ -1,6 +1,6 @@
 'use client';
 
-import ProjectList from '@/modules/projects/ProjectList';
+import ProjectList from '@/components/Projects/ProjectList';
 import ProtectedRoute from '@/components/Protected';
 
 const projects = () => (

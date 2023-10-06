@@ -4,27 +4,14 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "paths": {
-      "@/icons/*": [
-        "public/icons/*"
-      ],
-      "@/illustrations/*": [
-        "public/illustrations/*"
-      ],
-      "@/components/*": [
-        "renderer/src/components/*"
-      ],
-      "@/layouts/*": [
-        "renderer/src/layouts/*"
-      ],
-      "@/modules/*": [
-        "renderer/src/modules/*"
-      ],
-      "@/core/*": [
-        "renderer/src/core/*"
-      ],
-      "@/util/*": [
-        "renderer/src/util/*"
-      ],
+      "@/icons/*": ["public/icons/*"],
+      "@/illustrations/*": ["public/illustrations/*"],
+      "@/components/*": ["renderer/src/components/*"],
+      "@/layouts/*": ["renderer/src/layouts/*"],
+      "@/modules/*": ["renderer/src/modules/*"],
+      "@/core/*": ["renderer/src/core/*"],
+      "@/util/*": ["renderer/src/util/*"],
+      "@lib/*": ["renderer/src/lib/*"]
     }
   }
 }

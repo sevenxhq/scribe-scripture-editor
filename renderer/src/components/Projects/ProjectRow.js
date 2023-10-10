@@ -5,7 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import moment from 'moment';
-import { getComparator, stableSort } from '@/components/Projects/ProjectsPage/Projects/SortingHelper';
+import { getComparator, stableSort } from '@/components/Projects/utils/SortingHelper';
 import { AutographaContext } from '@/components/context/AutographaContext';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';

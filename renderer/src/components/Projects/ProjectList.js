@@ -3,7 +3,7 @@ import { useState, useContext } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import ProjectsLayout from '@/layouts/projects/Layout';
-import EnhancedTableHead from '@/components/Projects/ProjectsPage/Projects/EnhancedTableHead';
+import EnhancedTableHead from '@/components/Projects/EnhancedTableHead';
 import { AutographaContext } from '@/components/context/AutographaContext';
 
 import ExportProjectPopUp from '@/layouts/projects/Export/ExportProjectPopUp';

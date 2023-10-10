@@ -8,9 +8,9 @@ import moment from 'moment';
 import { checkLangNameAndCodeExist } from '@/core/projects/languageUtil';
 import useValidator from '@/components/hooks/useValidator';
 import { PlusIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
-import * as logger from '../../../../logger';
-import { ProjectContext } from '../../../context/ProjectContext';
-import { environment } from '../../../../../environment';
+import * as logger from '../../../logger';
+import { ProjectContext } from '../../context/ProjectContext';
+import { environment } from '../../../../environment';
 
 export default function TargetLanguagePopover({ projectType }) {
   const [id, setId] = React.useState();

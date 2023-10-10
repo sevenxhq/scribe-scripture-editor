@@ -7,7 +7,7 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 import { BlockEditable } from 'markdown-translatable/dist/components';
 import { useTranslation } from 'react-i18next';
-import { ProjectContext } from '../../../context/ProjectContext';
+import { ProjectContext } from '../../context/ProjectContext';
 
 export default function LicencePopover({ call }) {
   const [name, setName] = React.useState();
@@ -36,13 +36,13 @@ export default function LicencePopover({ call }) {
     setEdit(!copyright.locked);
     if (call === 'new') {
       // eslint-disable-next-line import/no-dynamic-require
-      const licensefile = require(`../../../../lib/license/${copyright.title}.md`);
+      const licensefile = require(`../../../lib/license/${copyright.title}.md`);
       setContent(licensefile.default);
     } else if (copyright.licence) {
       setContent(copyright.licence);
     } else {
       // eslint-disable-next-line import/no-dynamic-require
-      const licensefile = require(`../../../../lib/license/${copyright.title}.md`);
+      const licensefile = require(`../../../lib/license/${copyright.title}.md`);
       setContent(licensefile.default);
     }
   };

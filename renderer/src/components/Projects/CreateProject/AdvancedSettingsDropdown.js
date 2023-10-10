@@ -13,7 +13,6 @@ import LicencePopover from './LicencePopover';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
 import { newPath, sbStorageDownload } from '../../../../../supabase';
-import {} from '../../../lib/license/Custom.md';
 
 function BookNumberTag(props) {
   const { children } = props;

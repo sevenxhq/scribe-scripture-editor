@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 export default function SearchTags({
   defaultQuery,
   contentList1,
-  // contentList2,
   filterList,
   onfilerRequest1,
+  // contentList2,
   // onfilerRequest2,
 }) {
   const { t } = useTranslation();

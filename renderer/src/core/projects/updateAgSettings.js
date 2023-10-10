@@ -1,4 +1,4 @@
-import localforage from 'localforage';
+import * as localforage from 'localforage';
 import { splitStringByLastOccurance } from '@/util/splitStringByLastMarker';
 import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../logger';

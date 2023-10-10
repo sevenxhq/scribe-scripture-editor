@@ -13,6 +13,7 @@ import LicencePopover from './LicencePopover';
 import * as logger from '../../../logger';
 import packageInfo from '../../../../../package.json';
 import { newPath, sbStorageDownload } from '../../../../../supabase';
+import {} from '../../../lib/license/Custom.md';
 
 function BookNumberTag(props) {
   const { children } = props;
@@ -302,7 +303,6 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
                       onClick={() => selectCanon(canonList[3])}
                       role="button"
                       tabIndex="0"
-                      aria-label="custom-book"
                     >
                       {t('label-custom')}
                     </div>
@@ -351,7 +351,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
           projectType === 'OBS' && (
             <>
               <h4 className="text-xs font-base mt-4 text-primary  tracking-wide leading-4  font-light">
-                {t('modal-title-license')}
+                Licence
                 <span className="text-error">*</span>
               </h4>
               <div className="flex gap-3 mt-2">

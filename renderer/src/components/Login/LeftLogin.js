@@ -5,147 +5,39 @@ import React, {
 import * as localForage from 'localforage';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { Restore } from '@material-ui/icons';
-import { createUser, handleLogin, writeToFile } from '../../core/Login/handleLogin';
-import { isElectron } from '../../core/handleElectron';
-import * as logger from '../../logger';
+import { writeToFile } from '../../core/Login/handleLogin';
 import { AuthenticationContext } from './AuthenticationContextProvider';
 
 const LeftLogin = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [values, setValues] = useState({});
-  const [text, setText] = useState('');
-  const [newOpen, setNewOpen] = useState(false);
-  const [users, setUsers] = useState([]);
   const {
-    action: { generateToken },
+    states: {
+      isOpen, open, values, text, newOpen, users, showArchived, userNameError,
+    },
+    action: {
+      handleSubmit, handleChange, checkUsers, formSubmit, setUsers, openModal, closeModal, openAccountModal, closeAccountModal, setShowArchived,
+    },
   } = useContext(AuthenticationContext);
   // eslint-disable-next-line no-unused-vars
   const [valid, setValid] = useState({
     username: false,
     password: false,
   });
-  const [showArchived, setShowArchived] = useState(false);
-  const [userNameError, setUserNameError] = useState(false);
 
-  /* Checking if the users array is empty, if it is, it is getting the users from localForage and
-  setting the users array to the users from localForage. */
   useEffect(() => {
-    const checkUsers = async () => {
-      if (users.length === 0) {
-        const user = await localForage.getItem('users');
-        if (user) {
-          setUsers(user);
-        }
-      }
-    };
-    checkUsers();
-  }, [users]);
+    checkUsers().then((users) => {
+      setUsers(users);
+    });
+  }, [checkUsers, setUsers]);
 
-  function closeModal() {
-    setIsOpen(false);
-    setShowArchived(false);
-  }
-  function openModal() {
-    setIsOpen(true);
-  }
-  function closeAccountModal() {
-    setOpen(false);
-    setValues({});
-  }
-  function openAccountModal() {
-    setOpen(true);
-  }
-  const handleChange = (event) => {
-    setValues({ ...values, username: event.target.value });
-    setUserNameError(false);
-  };
-
-  /**
-   * If the username is not empty, set the username error to false. If the username is empty, set the
-   * username error to true.
-   * @param values - the values of the form
-   * @returns The return value is a boolean.
-   */
-  const handleValidation = (values) => {
-    let user;
-    if (values.username) {
-      user = true;
-      setUserNameError(false);
-      setNewOpen(false);
-    } else if (values.username === '') {
-      user = false;
-      setUserNameError(true);
-    } else {
-      user = false;
-      setUserNameError(true);
-    }
-    return user;
-  };
   /* Sorting the users array by the lastSeen property. */
-  const sortedUsers = [...users].sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
-  /**
-   * Checks if the user is existing or not, if not then it creates a new user and generates a token
-   * for the user.
-   * @param values - {
-   */
-  const handleSubmit = async (values) => {
-    localForage.setItem('appMode', 'offline');
-    logger.debug('Login.js', 'In handleSubmit');
-    if (isElectron()) {
-      // router.push('/main');
-      // The below code is commented for UI dev purpose.
-      if (handleValidation(values)) {
-        const fs = window.require('fs');
-        logger.debug(
-          'LeftLogin.js',
-          'Triggers handleLogin to check whether the user is existing or not',
-        );
-        const user = await handleLogin(users, values);
-        if (user) {
-          logger.debug(
-            'LeftLogin.js',
-            'Triggers generateToken to generate a Token for the user',
-          );
-          generateToken(user);
-        } else {
-          logger.debug(
-            'LeftLogin.js',
-            'Triggers createUser for creating a new user',
-          );
-          const user = await createUser(values, fs);
-          logger.debug(
-            'LeftLogin.js',
-            'Triggers generateToken to generate a Token for the user',
-          );
-          generateToken(user);
-        }
-      }
+  const sortUsers = () => {
+    if (users?.length > 0) {
+      const sortedUsers = users.sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
+      return sortedUsers;
     }
+    return [];
   };
-  /**
-   * When the form is submitted, prevent the default action, then call the handleSubmit function with
-   * the values from the form, then reset the form values.
-   * @param event - the event object
-   */
-  const displayError = (errorText) => {
-    setNewOpen(true);
-    setTimeout(() => {
-      setNewOpen(false);
-    }, 2000);
-    setText(errorText);
-  };
-  function formSubmit(event) {
-    event.preventDefault();
-    if (values.username.length < 3 || values.username.length > 15) {
-      displayError('The input has to be between 3 and 15 characters long');
-    } else if (users.length > 0 && users.find((item) => (item.username.toLowerCase() === values.username.toLowerCase().trim()))) {
-      displayError('User exists, Check archived and active tab by click on view more.');
-    } else {
-      handleSubmit(values);
-      setValues({});
-    }
-  }
+
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
   }
@@ -187,7 +79,7 @@ const LeftLogin = () => {
       </p>
       <div className="p-5">
         <div id="users" className="relative border-gray-200 rounded-t-[10px] lg:w-72 w-44 sm:w-52 overflow-hidden">
-          {sortedUsers?.filter(filterUsers).slice(0, 5).map((user) => (
+          {sortUsers().filter(filterUsers).slice(0, 5).map((user) => (
             <div
               key={user.username}
               id={user.username}
@@ -202,7 +94,7 @@ const LeftLogin = () => {
             </div>
           ))}
         </div>
-        {sortedUsers.length === 0 ? (<div />) : (
+        {sortUsers().length === 0 ? (<div />) : (
           <div className="">
             <button
               type="button"
@@ -210,12 +102,12 @@ const LeftLogin = () => {
               id="view-more"
               className={`
                                      ${isOpen ? '' : 'text-opacity-90'
-              } text-white bg-black w-48 text-xs lg:w-72 sm:w-52 py-[12px] flex items-center justify-center text-md font-bold rounded-b-[10px] sm:text-sm`}
+                } text-white bg-black w-48 text-xs lg:w-72 sm:w-52 py-[12px] flex items-center justify-center text-md font-bold rounded-b-[10px] sm:text-sm`}
             >
               View More
             </button>
           </div>
-)}
+        )}
         <Transition
           appear
           show={isOpen}
@@ -262,8 +154,8 @@ const LeftLogin = () => {
                         <Tab
                           id="archived-tab"
                           className={({ selected }) => classNames(
-                          'w-full text-md items-center justify-center outline-none font-bold py-4 leading-5 rounded-t-lg',
-                          selected
+                            'w-full text-md items-center justify-center outline-none font-bold py-4 leading-5 rounded-t-lg',
+                            selected
                               ? ' text-error  bg-gray-200 '
                               : 'text-gray-400 hover:text-gray-500 border-b bg-white ',
                           )}
@@ -275,7 +167,7 @@ const LeftLogin = () => {
                       <Tab.Panels>
                         <Tab.Panel className="relative overflow-y-auto h-[60vh] p-5">
                           <div className="grid grid-cols-2" id="active-tab-content">
-                            {sortedUsers.filter(filterUsers).map((user) => (
+                            {sortUsers().filter(filterUsers).map((user) => (
                               <div className="flex items-center" key={user.username}>
                                 <div
                                   role="button"
@@ -289,16 +181,16 @@ const LeftLogin = () => {
                                     {user.username}
                                   </p>
                                 </div>
-                                <button type="button" className="mx-3" onClick={() => archiveUser(sortedUsers, user)}>
+                                <button type="button" className="mx-3" onClick={() => archiveUser(sortUsers(), user)}>
                                   <TrashIcon className="text-gray-500 h-5 w-5" />
                                 </button>
                               </div>
-                          ))}
+                            ))}
                           </div>
                         </Tab.Panel>
                         <Tab.Panel className="relative overflow-y-auto h-[60vh] p-5 ">
                           <div className="grid grid-cols-2" id="archive-tab-content">
-                            {sortedUsers.filter(filterUsers).map((user) => (
+                            {sortUsers()?.filter(filterUsers).map((user) => (
                               <div className="flex items-center" key={user.username}>
                                 <div
                                   role="button"
@@ -309,12 +201,12 @@ const LeftLogin = () => {
                                     {user.username}
                                   </p>
                                 </div>
-                                <button type="button" className="mx-3 " onClick={() => restoreUser(sortedUsers, user)}>
+                                <button type="button" className="mx-3 " onClick={() => restoreUser(sortUsers(), user)}>
                                   <Restore className="text-gray-500 text-sm" />
                                 </button>
 
                               </div>
-                          ))}
+                            ))}
                           </div>
                         </Tab.Panel>
                       </Tab.Panels>
@@ -387,7 +279,7 @@ const LeftLogin = () => {
                       </div>
                       {newOpen && (
                         <span id="show-error" className="text-red-500">{text}</span>
-                        )}
+                      )}
                       <div className="mt-8 flex gap-8 justify-end">
                         <button
                           type="button"

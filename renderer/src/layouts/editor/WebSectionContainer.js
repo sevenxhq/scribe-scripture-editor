@@ -11,10 +11,6 @@ import Scribex from '@/components/EditorPage/Scribex/Scribex'; // eslint-disable
 import SectionPlaceholder1 from './WebSectionPlaceholder1';
 import SectionPlaceholder2 from './WebSectionPlaceholder2';
 import { newPath, sbStorageDownload } from '../../../../supabase';
-// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-//   const supabaseStorage = require('../../../../../supabase').supabaseStorage
-//   const newPath = require('../../../../supabase').newPath
-// }
 
 const MainPlayer = dynamic(
   () => import('@/components/EditorPage/AudioEditor/MainPlayer'),

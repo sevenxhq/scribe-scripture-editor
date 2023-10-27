@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
 import React from 'react';
 import PropTypes from 'prop-types';
-import useProjectsSort from '../hooks/projects/useProjectsSort';
+import useProjectsSort from '../components/hooks/projects/useProjectsSort';
 // import useScribexState from '../hooks/scribex/useScribexState';
+// /home/samueljohn/projects/scribe-scripture-editor/renderer/src/components/hooks/projects/useProjectsSort.js
 
 export const AutographaContext = React.createContext();
 

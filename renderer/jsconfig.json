@@ -23,8 +23,11 @@
       "@/illustrations/*": [
         "public/illustrations/*"
       ],
-      "@/hooks/*":[
+      "@/hooks/*": [
         "src/components/hooks/*"
+      ],
+      "@/context": [
+        "src/context/*"
       ]
     }
   }

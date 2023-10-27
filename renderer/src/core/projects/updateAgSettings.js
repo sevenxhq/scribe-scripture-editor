@@ -7,10 +7,6 @@ import packageInfo from '../../../../package.json';
 import {
  newPath, sbStorageDownload, sbStorageUpload,
 } from '../../../../supabase';
-// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-//   const supabaseStorage = require('../../../../supabase').supabaseStorage
-//   const newPath = require('../../../../supabase').newPath
-// }
 
 export const updateAgSettings = async (username, projectName, data) => {
   logger.debug('updateAgSettings.js', 'In updateAgSettings');

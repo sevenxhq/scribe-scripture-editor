@@ -7,10 +7,6 @@ import packageInfo from '../../../../package.json';
 import {
   newPath, sbStorageList, sbStorageDownload, sbStorageUpload,
 } from '../../../../supabase';
-// if (!process.env.NEXT_PUBLIC_IS_ELECTRON) {
-//   const supabaseStorage = require('../../../../supabase').supabaseStorage
-//   const newPath = require('../../../../supabase').newPath
-// }
 
 export const getorPutAppLangage = async (method, currentUser, appLang) => {
   if (isElectron()) {

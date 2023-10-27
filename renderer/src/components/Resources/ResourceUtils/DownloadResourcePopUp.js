@@ -24,7 +24,7 @@ import { environment } from '../../../../environment';
 const subjectTypeArray = {
   bible: [
     { id: 2, name: 'Bible' },
-    // { id: 1, name: 'Aligned Bible' },
+    { id: 1, name: 'Aligned Bible' },
     // { id: 3, name: 'Hebrew Old Testament' },
     // { id: 4, name: 'Greek New Testament' },
   ],

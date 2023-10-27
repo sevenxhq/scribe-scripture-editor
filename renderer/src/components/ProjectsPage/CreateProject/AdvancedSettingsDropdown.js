@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import localforage from 'localforage';
@@ -39,8 +39,10 @@ function BookNumberTag(props) {
   );
 }
 export default function AdvancedSettingsDropdown({ call, project, projectType }) {
+  console.log({ call, project });
   const {
     states: {
+      languages,
       canonSpecification,
       canonList,
       licenceList,
@@ -53,7 +55,8 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
       setcanonSpecification,
       setCopyRight,
     },
-  } = React.useContext(ProjectContext);
+  } = useContext(ProjectContext);
+  console.log('KKK', { canonSpecification, languages, canonList });
   const [isShow, setIsShow] = React.useState(true);
   const [bibleNav, setBibleNav] = React.useState(false);
   const [handleNav, setHandleNav] = React.useState();
@@ -193,6 +196,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
     }
   };
   const selectCanon = (val) => {
+    console.log({ val });
     const value = val;
     if (call === 'edit' && value.title === 'Other') {
       if (canonSpecification.title === 'Other') {
@@ -273,7 +277,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
 
                   <div className="py-5 flex gap-3 uppercase text-sm font-medium">
                     <div
-                      className={canonSpecification.title === 'All Books' ? 'bg-primary hover:bg-secondary text-white px-3 py-1 rounded-full cursor-pointer whitespace-nowrap' : 'bg-gray-200 hover:bg-primary hover:text-white px-3 py-1 rounded-full cursor-pointer whitespace-nowrap'}
+                      className={canonSpecification?.title === 'All Books' ? 'bg-primary hover:bg-secondary text-white px-3 py-1 rounded-full cursor-pointer whitespace-nowrap' : 'bg-gray-200 hover:bg-primary hover:text-white px-3 py-1 rounded-full cursor-pointer whitespace-nowrap'}
                       onClick={() => selectCanon(canonList[0])}
                       role="button"
                       tabIndex="0"

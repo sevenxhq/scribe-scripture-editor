@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ import { classNames } from '../../util/classNames';
 import * as logger from '../../logger';
 import ImportPopUp from './ImportPopUp';
 import burrito from '../../lib/BurritoTemplete.json';
+import createProject from '../context/hooks/createProject';
 // eslint-disable-next-line no-unused-vars
 const solutions = [
   {
@@ -57,52 +58,66 @@ function TargetLanguageTag(props) {
 function BibleHeaderTagDropDown(headerDropDown, handleDropDown, call) {
   return (
     call === 'new'
-    ? (
-      <PopoverProjectType
-        items={solutions}
-        handleDropDown={handleDropDown}
-      >
+      ? (
+        <PopoverProjectType
+          items={solutions}
+          handleDropDown={handleDropDown}
+        >
+          <button
+            type="button"
+            aria-label="open-popover"
+            className="flex justify-center items-center px-3 py-2 text-white ml-5
+          font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
+          >
+            {/* <div className="">{headerDropDown}</div> */}
+            <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
+            <ChevronDownIcon
+              className="w-5 h-5 ml-2"
+              aria-hidden="true"
+            />
+          </button>
+        </PopoverProjectType>
+      )
+      : (
         <button
           type="button"
-          aria-label="open-popover"
           className="flex justify-center items-center px-3 py-2 text-white ml-5
           font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
         >
-          {/* <div className="">{headerDropDown}</div> */}
           <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
-          <ChevronDownIcon
-            className="w-5 h-5 ml-2"
-            aria-hidden="true"
-          />
         </button>
-      </PopoverProjectType>
-    )
-    : (
-      <button
-        type="button"
-        className="flex justify-center items-center px-3 py-2 text-white ml-5
-          font-bold text-xs rounded-full leading-3 tracking-wider uppercase bg-primary"
-      >
-        <div className="">{headerDropDown === 'Translation' ? `Bible ${headerDropDown}` : headerDropDown}</div>
-      </button>
-    )
+      )
 
   );
 }
 
 export default function NewProject({ call, project, closeEdit }) {
+  console.log({ call });
   const {
     states: {
-      newProjectFields,
-      languages,
       language,
+      languages,
+      customLanguages,
+      copyright,
+      licenceList,
+      newProjectFields,
+      importedFiles,
+      versificationScheme,
+      canonSpecification,
     },
     actions: {
       setLanguage,
-      createProject,
       setNewProjectFields,
+      setCopyRight,
+      setUsername,
+      setLicenseList,
+      setCanonList,
+      setLanguages,
+      setCustomLanguages,
     },
-  } = React.useContext(ProjectContext);
+  } = useContext(ProjectContext);
+
+  console.log('>>>', { language, canonSpecification, languages });
   const { t } = useTranslation();
   const { action: { validateField, isLengthValidated, isTextValidated } } = useValidator();
   const router = useRouter();
@@ -118,7 +133,6 @@ export default function NewProject({ call, project, closeEdit }) {
     abbr: {},
     description: {},
   });
-
   const [headerDropDown, setHeaderDropDown] = React.useState(solutions[0].name);
   const handleDropDown = (currentSelection) => {
     setHeaderDropDown(currentSelection);
@@ -165,7 +179,25 @@ export default function NewProject({ call, project, closeEdit }) {
 
   const createTheProject = (update) => {
     logger.debug('NewProject.js', 'Creating new project.');
-    const value = createProject(call, metadata, update, headerDropDown);
+    const value = createProject({
+      call,
+      project,
+      update,
+      newProjectFields,
+      language,
+      customLanguages,
+      copyright,
+      licenceList,
+      importedFiles,
+      versificationScheme,
+      canonSpecification,
+      setCopyRight,
+      setUsername,
+      setLicenseList,
+      setCanonList,
+      setLanguages,
+      setCustomLanguages,
+    });
     value.then((status) => {
       logger.debug('NewProject.js', status[0].value);
       setLoading(false);
@@ -280,7 +312,7 @@ export default function NewProject({ call, project, closeEdit }) {
   };
   useEffect(() => {
     setEditLanguage(projectLangData);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [languages.length, projectLangData]);
 
   useEffect(() => {
@@ -291,7 +323,7 @@ export default function NewProject({ call, project, closeEdit }) {
       const defaulLang = languages.filter((lang) => lang.lc === 'en');
       setLanguage(defaulLang[0]);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call]);
   return (
     <ProjectsLayout
@@ -306,7 +338,7 @@ export default function NewProject({ call, project, closeEdit }) {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
           </div>
-          )
+        )
         : (
           <div className=" rounded-md border shadow-sm mt-4 ml-5 mr-5 mb-5">
             <div className="grid grid-cols-1 lg:grid-cols-3 m-10 gap-5">
@@ -366,12 +398,12 @@ export default function NewProject({ call, project, closeEdit }) {
                   <div>
                     {headerDropDown !== 'Audio'
                       && (
-                      <div className="absolute">
-                        <TargetLanguageTag>
-                          {language.ld ? language.ld : 'LTR'}
-                        </TargetLanguageTag>
-                      </div>
-                    )}
+                        <div className="absolute">
+                          <TargetLanguageTag>
+                            {language.ld ? language.ld : 'LTR'}
+                          </TargetLanguageTag>
+                        </div>
+                      )}
                     <h4 className="text-xs font-base mb-3 text-primary  tracking-wide leading-4  font-light">
                       {t('label-target-language')}
                       <span className="text-error">*</span>
@@ -446,7 +478,7 @@ export default function NewProject({ call, project, closeEdit }) {
               </div>
             </div>
           </div>
-      )}
+        )}
       <SnackBar
         openSnackBar={snackBar}
         snackText={snackText}

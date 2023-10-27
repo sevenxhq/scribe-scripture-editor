@@ -27,6 +27,9 @@
       "@/app/*": [
         "app/*"
       ],
+      "@/context/*": [
+        "renderer/src/context/*"
+      ]
     }
   }
 }

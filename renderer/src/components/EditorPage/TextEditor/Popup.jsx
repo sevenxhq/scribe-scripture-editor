@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ScribexContext } from '@/components/context/ScribexContext';
 
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { usePopup } from '../../Popup/PopupContext';
 import PopUpTemplate from '../../Popup';
 import { functionMapping } from './utils/insertFunctionMap';
@@ -39,12 +40,18 @@ const Popup = ({ action, setTriggerVerseInsert }) => {
 
   return (
     <PopUpTemplate
-      buttonStyle="button gap-2 text-gray-200 bg-primary-500 hover:bg-primary-500/90 text-highlight-300 gap-1"
+      buttonStyle="relative button gap-2 text-gray-200 bg-primary-500 hover:bg-primary-500/90 text-highlight-300 gap-1"
       buttonText={functionMapping[action].icon}
       isSmall
       maxWidth="max-w-xl"
     >
-      <div className="inline-block w-full max-w-md p-6 ">
+      <div className="absolute flex text-white justify-between items-center w-full bg-black h-8 rounded-t-md">
+        <h2 className="text-sm pl-2">Insert Verse</h2>
+        <div className="h-full flex items-center px-2 bg-primary rounded-tr-md">
+          <XMarkIcon className="h-5 w-5 text-white " />
+        </div>
+      </div>
+      <div className="inline-block w-full max-w-md p-6 mt-5">
         <div className="mt-2">
           <div
             as="h3"

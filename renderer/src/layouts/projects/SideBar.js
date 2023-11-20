@@ -50,7 +50,7 @@ export default function SideBar() {
           >
 
             <ProjectsIcon
-              className="h-7 w-7 stroke-black"
+              className="h-5 w-5 lg:h-7 lg:w-7 text-dark group-hover:text-white"
             />
             <div className="text-xs mt-3 uppercase">{t('projects-page')}</div>
 
@@ -67,7 +67,7 @@ export default function SideBar() {
 
             <NewProjectIcon
               strokecurrent="black"
-              className="h-7 w-7 stroke-dark"
+              className="h-5 w-5 lg:h-7 lg:w-7 text-dark group-hover:text-white stroke-dark"
             />
             <div className="text-xs mt-3 uppercase">{t('btn-new')}</div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ArchiveBoxIcon,
@@ -7,6 +7,7 @@ import {
 
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import { ProjectContext } from '@/components/context/ProjectContext';
 import SideBar from './SideBar';
 import TopMenuBar from './TopMenuBar';
 import ImportProjectPopUp from './ImportProjectPopUp';
@@ -26,7 +27,7 @@ export default function ProjectsLayout(props) {
     setShowArchived,
   } = props;
 
-  const [openPopUp, setOpenPopUp] = useState(false);
+  const { states: { openImportPopUp }, actions: { setOpenImportPopUp } } = useContext(ProjectContext);
 
   const [conflictPopup, setConflictPopup] = useState({
     open: false,
@@ -34,12 +35,12 @@ export default function ProjectsLayout(props) {
   });
 
   const { t } = useTranslation();
-  function openImportPopUp() {
-    setOpenPopUp(true);
+  function handleOpenImportPopUp() {
+    setOpenImportPopUp(true);
   }
 
   function closeImportPopUp() {
-    setOpenPopUp(false);
+    setOpenImportPopUp(false);
   }
   function toggleArchive() {
     setShowArchived((value) => !value);
@@ -74,12 +75,12 @@ export default function ProjectsLayout(props) {
                             type="button"
                             className="flex text-white ml-5 font-bold text-xs px-3 py-2 rounded-full
                                     leading-3 tracking-wider uppercase bg-primary items-center"
-                            onClick={openImportPopUp}
+                            onClick={handleOpenImportPopUp}
                           >
                             <ArrowDownTrayIcon className="h-4 mr-2 text-white" />
                             {t('btn-import')}
                           </button>
-                          <ImportProjectPopUp open={openPopUp} closePopUp={closeImportPopUp} setConflictPopup={setConflictPopup} />
+                          <ImportProjectPopUp open={openImportPopUp} closePopUp={closeImportPopUp} setConflictPopup={setConflictPopup} />
                         </>
                       )}
 

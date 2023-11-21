@@ -1,7 +1,7 @@
 import React, { Fragment, useContext } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import {
-  StarIcon, EllipsisVerticalIcon,
+  StarIcon, EllipsisVerticalIcon, ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import moment from 'moment';
@@ -9,8 +9,11 @@ import { getComparator, stableSort } from '@/components/ProjectsPage/Projects/So
 import { AutographaContext } from '@/components/context/AutographaContext';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 import useEditProject from './hooks/useEditProject';
 import useHandleSelectProject from './hooks/useSelectProject';
+import NewProjectIcon from '@/icons/new.svg';
+import { ProjectContext } from '../context/ProjectContext';
 
 const ProjectRow = ({
   projects, order, orderBy, showArchived, openExportPopUp, handleClickStarred, setCurrentProject,
@@ -19,6 +22,7 @@ const ProjectRow = ({
   const { t } = useTranslation();
   const { editProject } = useEditProject();
   const { handleSelectProject } = useHandleSelectProject();
+  const { actions: { setOpenImportPopUp } } = useContext(ProjectContext);
 
   const {
     states: {
@@ -55,6 +59,31 @@ const ProjectRow = ({
   }
   return (
     <tbody className="bg-white divide-y divide-gray-200" id="projects-list-body">
+      {projects?.length === 0 && (
+        <tr>
+          <td colSpan="7" className="space-y-7 px-6 py-28 whitespace-nowrap text-center">
+            <h2 className="font-medium text-gray-500 tracking-wide">You don&apos;t have any projects yet</h2>
+            <button type="button" className="font-bold leading-3 tracking-wider text-sm m-auto bg-primary rounded-full py-2 px-5">
+              <Link href="/newproject" className="flex items-center gap-2">
+                <NewProjectIcon
+                  className="h-5 w-5 stroke-white"
+                />
+                <span className="text-white uppercase">Create project</span>
+              </Link>
+            </button>
+            <button
+              aria-label="import"
+              type="button"
+              className="flex m-auto text-white font-bold text-sm px-5 py-2 rounded-full
+                                    leading-3 tracking-wider uppercase bg-primary items-center"
+              onClick={() => setOpenImportPopUp(true)}
+            >
+              <ArrowDownTrayIcon className="h-5 w-5 mr-2 text-white" />
+              {t('btn-import')}
+            </button>
+          </td>
+        </tr>
+      )}
       {projects && (stableSort(
         projects,
         getComparator(order, orderBy),

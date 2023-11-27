@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-no-useless-fragment */
 import dynamic from 'next/dynamic';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import localforage from 'localforage';
 import PropTypes from 'prop-types';
 import { ReferenceContext } from '@/components/context/ReferenceContext';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getorPutAppLangage } from './core/projects/handleProfile';
 import i18n from './translations/i18n';

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { BookmarkIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { ReferenceContext } from '@/components/context/ReferenceContext';

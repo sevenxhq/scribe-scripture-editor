@@ -28,9 +28,10 @@ export default function ResourcesSidebar({
   const handleClick = (id) => {
     setSelectResource(id);
   };
+  console.log({ selectedProjectMeta });
 
   useEffect(() => {
-    if (!selectResource) {
+    if (!selectResource && selectedProjectMeta) {
       switch (selectedProjectMeta.type.flavorType.flavor.name) {
         case 'textTranslation':
           setSelectResource('bible');

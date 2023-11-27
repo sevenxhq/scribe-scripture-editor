@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import localforage from 'localforage';
+import { isElectron } from '@/core/handleElectron';
 import * as logger from '../../logger';
 import { supabase } from '../../../../supabase';
-
-const IsElectron = process.env.NEXT_PUBLIC_IS_ELECTRON;
 
 // custom hook to fetch username from localforage
 export const useGetUserName = () => {
@@ -11,13 +10,13 @@ export const useGetUserName = () => {
     useEffect(() => {
         const fetchUserName = async () => {
             try {
-                if (IsElectron) {
+                if (isElectron()) {
                     const value = await localforage.getItem('userProfile');
                     setUsername(value?.username);
-                } else if (!IsElectron) {
+                } else if (!isElectron()) {
                     const { data: { session }, error } = await supabase.auth.getSession();
                     if (error) {
-                         // eslint-disable-next-line no-console
+                        // eslint-disable-next-line no-console
                         console.error(error);
                     }
                     if (session) {

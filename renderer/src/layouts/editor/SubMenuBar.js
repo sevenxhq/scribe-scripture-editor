@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
-import { useState, useContext, useEffect } from 'react';
-// import { BookmarkIcon } from '@heroicons/react/24/solid';
+import React, { useState, useContext, useEffect } from 'react';
+import { BookmarkIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { ReferenceContext } from '@/components/context/ReferenceContext';
 // import MenuBar from '@/components/Menubar/MenuBar';

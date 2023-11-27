@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { useState } from 'react';
+import React, { useState } from 'react';
 // import * as localForage from 'localforage';
 import { useTranslation } from 'react-i18next';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import LogoIcon from '@/icons/logo.svg';
 import ProjectsIcon from '@/icons/projects.svg';
 import NewProjectIcon from '@/icons/new.svg';

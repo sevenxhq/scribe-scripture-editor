@@ -1,4 +1,4 @@
-import {
+import React, {
   useState, useEffect, useContext, useCallback,
 } from 'react';
 import localforage from 'localforage';

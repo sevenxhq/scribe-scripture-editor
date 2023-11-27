@@ -1,3 +1,4 @@
+import React from 'react';
 import { Providers } from './providers';
 import '../styles/nprogress.css';
 import '../styles/globals.css';

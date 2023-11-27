@@ -1,3 +1,4 @@
+import React from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 

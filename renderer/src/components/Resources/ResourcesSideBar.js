@@ -26,6 +26,7 @@ export default function ResourcesSidebar({
   const handleClick = (id) => {
     setSelectResource(id);
   };
+  console.log({ selectedProjectMeta });
 
   useEffect(() => {
     if (!selectResource) {

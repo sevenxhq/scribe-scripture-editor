@@ -1,3 +1,4 @@
+import React from 'react';
 import Slider from '../ImageSlider/Slider';
 import AudioEditorIcon from '@/illustrations/AudioEditor.svg';
 import BibleEditorIcon from '@/illustrations/BibleEditor.svg';

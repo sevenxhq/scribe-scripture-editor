@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import {
+import React, {
     useState, useEffect,
 } from 'react';
 import localForage from 'localforage';

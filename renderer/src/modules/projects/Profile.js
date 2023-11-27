@@ -94,7 +94,7 @@ export default function UserProfile() {
   // const [enabled, setEnabled] = React.useState(false);
 
   React.useEffect(() => {
-    if (!username && isElectron()) {
+    if (!username) {
       localForage.getItem('userProfile')
         .then(async (value) => {
           setUsername(value.username);
@@ -249,12 +249,13 @@ export default function UserProfile() {
                   type="text"
                   name="email"
                   id="email"
+                  disabled={!isElectron()}
                   autoComplete="email"
                   defaultValue={values?.email}
                   onChange={(e) => {
                     setValues({ ...values, email: e.target.value });
                   }}
-                  className="w-96 block rounded shadow-sm sm:text-sm focus:ring-gray-500 focus:border-primary border-gray-200 h-10 font-light"
+                  className="w-96 block rounded shadow-sm sm:text-sm disabled:bg-red-50 disabled:cursor-not-allowed focus:ring-gray-500 focus:border-primary border-gray-200 h-10 font-light"
                 />
                 <span className="text-red-500 ml-2 text-sm" aria-label="email-error">{errors?.email}</span>
               </div>

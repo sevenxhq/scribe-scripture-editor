@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useContext, useEffect } from 'react';
-// import { BookmarkIcon } from '@heroicons/react/24/solid';
+import React, { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReferenceContext } from '@/components/context/ReferenceContext';
 // import MenuBar from '@/components/Menubar/MenuBar';
@@ -13,14 +12,9 @@ import EditorSync from '@/components/Sync/Gitea/EditorSync/EditorSync';
 import { isElectron } from '@/core/handleElectron';
 // import Font from '@/icons/font.svg';
 import ColumnsIcon from '@/icons/basil/Outline/Interface/Columns.svg';
-import MenuDropdown from '../../components/MenuDropdown/MenuDropdown';
 import menuStyles from './MenuBar.module.css';
 import packageInfo from '../../../../package.json';
 import { newPath, sbStorageDownload } from '../../../../supabase';
-
-const activate = () => {
-  // console.log('rename');
-};
 
 // const EditorTools = [
 //   {
@@ -50,14 +44,11 @@ export default function SubMenuBar() {
       editorSave,
       selectedProject,
     },
-    actions: {
-      setOpenSideBar,
-    },
+    // actions: {
+      // setOpenSideBar,
+    // },
   } = useContext(ProjectContext);
 
-  const openBookMarks = () => {
-    setOpenSideBar(true);
-  };
   const { t } = useTranslation();
   // const networkState = useNetwork();
   // const FileMenuItems = [

@@ -62,7 +62,6 @@ export default function EditorSection({
   function removeResource() {
     setOpenModal(true);
   }
-
   const removeSection = () => {
     setRemovingSection(row);
     switch (row) {
@@ -301,8 +300,8 @@ export default function EditorSection({
               fontFamily: 'sans-serif',
               fontSize: `${fontSize}rem`,
               direction: `${projectScriptureDir?.toUpperCase() === 'RTL'
-                  ? 'rtl'
-                  : 'ltr'
+                ? 'rtl'
+                : 'ltr'
                 }`,
             }}
             className="prose-sm p-1 text-xl h-full overflow-auto scrollbars-width"

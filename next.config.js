@@ -52,6 +52,10 @@ const nextConfig = {
     // minimumCacheTTL is in seconds, must be integer 0 or more
     minimumCacheTTL: 60,
   },
+  i18n: {
+    locales: ['en', 'fr', 'hi', 'ne', 'ru', 'fa'],
+    defaultLocale: 'en',
+  },
   // webpack5: true, available as default from v11
   // externals: [nodeExternals()],
 };

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import ScribexContextProvider from '@/components/context/ScribexContext';
 import SyncContextProvider from '@/components/context/SyncContext';
 import ProjectContextProvider from '../renderer/src/components/context/ProjectContext';

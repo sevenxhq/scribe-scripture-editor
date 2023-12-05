@@ -1,6 +1,7 @@
 // const nodeExternals = require('webpack-node-externals');
 const path = require('path');
 const colors = require('tailwindcss/colors');
+const { i18n } = require('./next-i18next.config');
 
 const nextConfig = {
   webpack: (config, { isServer }) => {
@@ -52,10 +53,7 @@ const nextConfig = {
     // minimumCacheTTL is in seconds, must be integer 0 or more
     minimumCacheTTL: 60,
   },
-  i18n: {
-    locales: ['en', 'fr', 'hi', 'ne', 'ru', 'fa'],
-    defaultLocale: 'en',
-  },
+  i18n,
   // webpack5: true, available as default from v11
   // externals: [nodeExternals()],
 };

@@ -1,14 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
+// import { createClient } from '@supabase/supabase-js';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import 'dotenv/config';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const IsElectron = process.env.NEXT_PUBLIC_IS_ELECTRON === 'true';
 
-const supabase = !IsElectron ? createClient(supabaseUrl, supabaseAnonKey) : {};
+const supabase = !IsElectron ? createClientComponentClient() : {};
 // const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const supabaseStorage = !IsElectron ? createClient(supabaseUrl, supabaseAnonKey).storage.from('scribe') : {};
+const supabaseStorage = !IsElectron ? supabase.storage.from('scribe') : {};
 
 const sbStorageUpload = (file, payload, settings = {}) => {
   const data = supabaseStorage.upload(file, payload, settings);
@@ -57,6 +58,9 @@ const supabaseSignup = async ({ email, password }) => {
     const response = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
     });
     return response;
   }

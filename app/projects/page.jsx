@@ -5,9 +5,9 @@ import ProjectList from '@/components/Projects/ProjectList';
 import ProtectedRoute from '@/components/Protected';
 
 const projects = () => (
-	<ProtectedRoute>
-		<ProjectList />
-	</ProtectedRoute>
+  <ProtectedRoute>
+    <ProjectList />
+  </ProtectedRoute>
 );
 
 export default projects;

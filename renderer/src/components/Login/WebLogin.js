@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import SignIn from './Signin';
 import RightLogin from './RightLogin';

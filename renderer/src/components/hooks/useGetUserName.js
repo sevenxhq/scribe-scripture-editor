@@ -1,7 +1,8 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import localforage from 'localforage';
-import * as logger from '../../logger';
-import { supabase } from '../../../../supabase';
+// import { supabase } from '../../../../supabase';
 
 const IsElectron = process.env.NEXT_PUBLIC_IS_ELECTRON;
 
@@ -10,22 +11,11 @@ export const useGetUserName = () => {
     const [username, setUsername] = useState('');
     useEffect(() => {
         const fetchUserName = async () => {
-            try {
-                if (IsElectron) {
-                    const value = await localforage.getItem('userProfile');
-                    setUsername(value?.username);
-                } else if (!IsElectron) {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    if (error) {
-                         // eslint-disable-next-line no-console
-                        console.error(error);
-                    }
-                    if (session) {
-                        setUsername(session?.user?.email);
-                    }
-                }
-            } catch (error) {
-                logger.error('useGetUserName.js', error);
+            const value = await localforage.getItem('userProfile');
+            if (IsElectron) {
+                setUsername(value?.username);
+            } else if (!IsElectron) {
+                setUsername(value?.user?.email);
             }
         };
         fetchUserName();

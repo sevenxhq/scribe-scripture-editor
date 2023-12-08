@@ -89,7 +89,7 @@ export default function ProjectList() {
                           orderBy={orderBy}
                           onRequestSort={handleRequestSort}
                         />
-                        <ProjectRow projects={projects} filteredProjects={filteredProjects} order={order} orderBy={orderBy} showArchived={showArchived} openExportPopUp={handleExportPopUp} setCurrentProject={setCurrentProject} handleClickStarred={handleClickStarred} />
+                        <ProjectRow projects={[]} filteredProjects={filteredProjects} order={order} orderBy={orderBy} showArchived={showArchived} openExportPopUp={handleExportPopUp} setCurrentProject={setCurrentProject} handleClickStarred={handleClickStarred} />
                       </table>
                       {(!projects) && <div><LoadingScreen /></div>}
                     </div>

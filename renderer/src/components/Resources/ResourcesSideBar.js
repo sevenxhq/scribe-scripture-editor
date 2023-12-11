@@ -29,7 +29,7 @@ export default function ResourcesSidebar({
   console.log({ selectedProjectMeta });
 
   useEffect(() => {
-    if (!selectResource) {
+    if (!selectResource && selectedProjectMeta) {
       switch (selectedProjectMeta.type.flavorType.flavor.name) {
         case 'textTranslation':
           setSelectResource('bible');

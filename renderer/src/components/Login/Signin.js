@@ -70,14 +70,19 @@ const SignIn = () => {
             Sign In
           </button>
         </form>
-        <span className="text-gray-600 text-sm mt-4">
-          Don&apos;t have an account?
-          {' '}
-          <Link href="/signup" className="text-blue-500 hover:text-blue-400 underline">
-            Sign Up
-          </Link>
-        </span>
+        <div className="flex flex-col justify-center gap-1 pt-2">
 
+          <Link href="/forgotpassword" className="text-sm text-gray-600 hover:text-blue-500 hover:underline">
+            Forgot Password?
+          </Link>
+          <div className="text-gray-600 text-sm mt-4">
+            Don&apos;t have an account?
+            {' '}
+            <Link href="/signup" className="text-blue-500 hover:text-blue-400 underline">
+              Sign Up
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

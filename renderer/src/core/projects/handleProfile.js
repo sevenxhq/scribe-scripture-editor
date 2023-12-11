@@ -94,6 +94,34 @@ const updateJson = async (userdata) => {
   }
   return status[0];
 };
+
+const updateWebJson = async (userdata) => {
+  logger.debug('handleProfile.js', 'In updateWebJson, for updating the current user details');
+  const file = `${newPath}/users.json`;
+  const status = [];
+  try {
+    const { data } = await sbStorageDownload(file);
+    const json = JSON.parse(await data.text());
+    json.forEach((user) => {
+      if (user.email === userdata.email) {
+        const keys = Object.keys(user);
+        keys.forEach((key) => {
+          user[key] = userdata[key];
+        });
+      }
+    });
+    logger.debug('handleProfile.js', 'Updating the user details in existing file');
+    await sbStorageUpload(file, JSON.stringify(json), {
+      upsert: true,
+    });
+    status.push({ type: 'success', value: 'Updated the Profile.' });
+  } catch {
+    logger.error('handleProfile.js', 'Failed to read the data from file');
+    status.push({ type: 'error', value: 'Failed to read the data from file.' });
+  }
+  console.log({ status });
+  return status[0];
+};
 const updateOffline = async (data, appLang) => {
   logger.debug('handleProfile.js', 'In updateOffline');
   const status = [];
@@ -108,22 +136,29 @@ const updateOffline = async (data, appLang) => {
       // call app lang update in user json
       await getorPutAppLangage('put', userdata?.username, appLang);
       // update user details in users list
-      const value = updateJson(userdata);
+      const value = isElectron() ? updateJson(userdata) : updateWebJson(userdata);
       value.then((val) => {
         status.push(val);
       });
     });
+  console.log({ data, appLang, status });
   return status;
 };
 export const saveProfile = async (values, appLang) => {
   logger.debug('handleProfile.js', 'In saveProfile');
   const status = [];
-  await localForage.getItem('appMode')
-    .then(async (mode) => {
-      if (mode === 'offline') {
-        const value = await updateOffline(values, appLang);
-        status.push(value[0]);
-      }
-    });
+  if (isElectron()) {
+    await localForage.getItem('appMode')
+      .then(async (mode) => {
+        if (mode === 'offline') {
+          const value = await updateOffline(values, appLang);
+          status.push(value[0]);
+        }
+      });
+  } else {
+    const value = await updateOffline(values, appLang);
+    status.push(value[0]);
+  }
+  console.log({ status });
   return status;
 };

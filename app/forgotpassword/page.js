@@ -12,7 +12,6 @@ const ForgotPassword = () => {
     const { data } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/passwordReset`,
     });
-    console.log(data);
     if (data) {
       setStatus('Password reset link has been sent to your email');
     }

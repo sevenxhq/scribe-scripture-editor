@@ -1,3 +1,5 @@
+/* eslint-disable no-tabs */
+
 'use client';
 
 import React from 'react';
@@ -6,8 +8,8 @@ import ProtectedRoute from '@/components/Protected';
 
 export default function page() {
 	return (
-		<ProtectedRoute>
-			<SectionContainer />
-		</ProtectedRoute>
+  <ProtectedRoute>
+    <SectionContainer />
+  </ProtectedRoute>
 	);
 }

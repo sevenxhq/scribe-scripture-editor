@@ -91,7 +91,7 @@ const UpdatePassword = () => {
   useEffect(() => {
     setHash(window.location.hash);
   }, []);
-  console.log({ hash });
+
   return (
     <div className="flex min-h-screen flex-col items-center">
       <h2 className="mb-8 text-2xl font-bold text-gray-800">Update Password</h2>

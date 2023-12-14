@@ -224,7 +224,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
         {projectType !== 'OBS'
           && (
             <button
-              className="min-w-max flex justify-between items-center pt-3 shadow tracking-wider leading-none h-10 px-4 py-2 w-96 text-sm font-medium text-black bg-gray-100 rounded-sm hover:bg-gray-200 focus:outline-none"
+              className=" flex justify-between items-center pt-3 shadow tracking-wider leading-none h-10 px-4 py-2 w-full text-sm font-medium text-black bg-gray-100 rounded-sm hover:bg-gray-200 focus:outline-none"
               onClick={handleClick}
               type="button"
               id="open-advancesettings"
@@ -250,7 +250,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
             <div>
               <div className="mt-8">
                 <div className="flex gap-4">
-                  <h4 className="text-xs font-base mb-2 text-primary  tracking-wide leading-4  font-light">
+                  <h4 className="text-sm font-base mb-2 text-primary  tracking-wide leading-4  font-light">
                     {t('label-scope')}
                     <span className="text-error">*</span>
                   </h4>
@@ -322,7 +322,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
                 </div>
               </div>
 
-              <h4 className="text-xs font-base mt-4 text-primary  tracking-wide leading-4  font-light">
+              <h4 className="text-sm font-base mt-4 text-primary  tracking-wide leading-4  font-light">
                 {t('label-versification-scheme')}
                 <span className="text-error">*</span>
               </h4>
@@ -330,7 +330,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
                 <CustomList selected={versificationScheme} setSelected={setVersificationScheme} options={versification} show={call === 'new'} />
               </div>
 
-              <h4 className="text-xs font-base mt-4 text-primary  tracking-wide leading-4  font-light">
+              <h4 className="text-sm font-base mt-4 text-primary  tracking-wide leading-4  font-light">
                 {t('label-license')}
                 <span className="text-error">*</span>
               </h4>
@@ -350,7 +350,7 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
         {
           projectType === 'OBS' && (
             <>
-              <h4 className="text-xs font-base mt-4 text-primary  tracking-wide leading-4  font-light">
+              <h4 className="text-sm font-base mt-4 text-primary  tracking-wide leading-4  font-light">
                 {t('modal-title-license')}
                 <span className="text-error">*</span>
               </h4>

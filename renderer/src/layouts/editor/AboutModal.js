@@ -246,12 +246,12 @@ export default function AboutModal(props) {
                                   </button>
                                 </div>
                                 <div className="border border-gray-300 p-2 rounded-md  break-words flex flex-col justify-center items-center">
-                                  <GithubIcon className="w-10 h-10 fill-primary" />
+                                  <GithubIcon className="w-12 h-12 fill-primary" />
                                   <a
                                     type="button"
                                     href="https://github.com/bible-technology/scribe-scripture-editor/issues"
                                     target="_blank"
-                                    className="no-underline my-2 mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-3 py-2 bg-white text-base font-medium text-gray-700
+                                    className="no-underline my-2 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-3 py-2 bg-white text-base font-medium text-gray-700
                                       hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500  sm:w-auto sm:text-xs"
                                     rel="noreferrer"
                                   >

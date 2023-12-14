@@ -77,13 +77,13 @@ export default function ProjectList() {
           )}
         >
           <div className="mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-4 py-4 sm:px-0">
+            <div className="px-4 py-4 sm:px-">
 
               <div className="flex flex-col">
-                <div className="-my-2 sm:-mx-6 lg:-mx-8">
-                  <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div className="shadow border-b border-gray-200 sm:rounded-lg">
-                      <table data-testid="tablelayout" id="projects-list" className="min-w-full divide-y divide-gray-200 mb-9">
+                <div className="-my-2 sm:-mx-6 lg:-mx-8 ">
+                  <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8 ">
+                    <div className="shadow border-b border-gray-200 sm:rounded-lg ">
+                      <table data-testid="tablelayout" id="projects-list" className="min-w-full divide-y divide-gray-200 mb-9 ">
                         <EnhancedTableHead
                           order={order}
                           orderBy={orderBy}

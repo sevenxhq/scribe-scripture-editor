@@ -12,6 +12,7 @@ import {
   useDetectFonts,
   fontList as fontsArray,
 } from 'font-detect-rhl';
+import { useTranslation } from 'react-i18next';
 
 export default function MenuDropdown({
  selectedFont, setSelectedFont, buttonStyle,
@@ -19,6 +20,7 @@ export default function MenuDropdown({
   const detectedFonts = useDetectFonts({ fonts: fontsArray });
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   function handleFontClick(font) {
     setSelectedFont(font);
@@ -36,7 +38,9 @@ export default function MenuDropdown({
     <>
       <button
         type="button"
+        aria-label="font-selector"
         onClick={() => setIsOpen(true)}
+        title={t('font-selector')}
         className={buttonStyle || 'cursor-pointer py-2 px-2 text-left sm:text-sm'}
       >
         <TextAa

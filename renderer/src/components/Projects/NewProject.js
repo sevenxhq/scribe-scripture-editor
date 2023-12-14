@@ -319,12 +319,12 @@ export default function NewProject({ call, project, closeEdit }) {
         : (
           <div className="rounded-md border shadow-sm mt-4 ml-5 mr-5 mb-5">
             <div className="space-y-2 m-10">
-              <span className="text-xs font-base mb-2 text-primary leading-4 tracking-wide  font-light">Project Type</span>
+              <span className="text-sm font-base mb-2 text-primary leading-4 tracking-wide  font-light">Project Type</span>
               {BibleHeaderTagDropDown(headerDropDown, handleDropDown, call)}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 m-10 gap-5">
               <div className="lg:col-span-1">
-                <h4 className="text-xs font-base mb-2 text-primary  tracking-wide leading-4  font-light">
+                <h4 className="text-sm font-base mb-2 text-primary  tracking-wide leading-4  font-light">
                   {t('label-project-name')}
                   <span className="text-error">*</span>
                 </h4>
@@ -340,7 +340,7 @@ export default function NewProject({ call, project, closeEdit }) {
                   className={classNames(call !== 'new' ? 'bg-gray-200' : '', 'w-48 lg:w-full rounded shadow-sm sm:text-sm focus:border-primary border-gray-300')}
                 />
                 <span className="text-error">{error.projectName[0]?.message || error.projectName[1]?.message}</span>
-                <h4 className="mt-5 text-xs font-base mb-2 text-primary leading-4 tracking-wide  font-light">{t('label-description')}</h4>
+                <h4 className="mt-5 text-sm font-base mb-2 text-primary leading-4 tracking-wide  font-light">{t('label-description')}</h4>
                 <textarea
                   type="text"
                   name="Description"
@@ -356,7 +356,7 @@ export default function NewProject({ call, project, closeEdit }) {
               <div className="lg:col-span-2">
                 <div className="flex gap-5">
                   <div>
-                    <h4 className="text-xs font-base mb-2 text-primary  tracking-wide leading-4  font-light">
+                    <h4 className="text-sm font-base mb-2 text-primary  tracking-wide leading-4  font-light">
                       {t('label-abbreviation')}
                       <span className="text-error">*</span>
                     </h4>
@@ -376,7 +376,7 @@ export default function NewProject({ call, project, closeEdit }) {
                 <div className="flex gap-5 mt-5 items-center">
                   <div>
                     <div className="flex gap-4 items-center mb-2">
-                      <h4 className="text-xs font-base  text-primary  tracking-wide leading-4  font-light">
+                      <h4 className="text-sm font-base  text-primary  tracking-wide leading-4  font-light">
                         {t('label-target-language')}
                         <span className="text-error">*</span>
                       </h4>
@@ -437,7 +437,7 @@ export default function NewProject({ call, project, closeEdit }) {
                     </div>
                   )
                   : (
-                    <div className="p-3 flex gap-5 justify-end">
+                    <div className="mt-5 flex gap-5">
                       <button
                         type="button"
                         aria-label="cancel-edit-project"

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
-import React, { useState } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as localforage from 'localforage';
 import { splitStringByLastOccurance } from '@/util/splitStringByLastMarker';
@@ -17,7 +17,7 @@ import {
 const path = require('path');
 const advanceSettings = require('../../lib/AdvanceSettings.json');
 
-export const ProjectContext = React.createContext();
+export const ProjectContext = createContext();
 
 const ProjectContextProvider = ({ children }) => {
   const [editorSave, setEditorSave] = useState('');
@@ -466,7 +466,7 @@ const ProjectContextProvider = ({ children }) => {
     setVersificationScheme('kjv');
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isElectron()) {
       loadSettings();
       localforage.getItem('userProfile').then((value) => {

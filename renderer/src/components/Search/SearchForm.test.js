@@ -57,7 +57,7 @@ function createData(name, language, date, view) {
 
   const filterList = ['name', 'language', 'date', 'view'];
   const mockSetLanguage = jest.fn();
-  React.useState = jest.fn(() => ['', mockSetLanguage]);
+  useState = jest.fn(() => ['', mockSetLanguage]);
 
 test('SearchForm renders without error', () => {
   render(

@@ -1,3 +1,4 @@
+import React from 'react';
 import ProtectedRoute from '@/components/Protected';
 import NewWebProject from '@/components/Projects/NewWebProject';
 

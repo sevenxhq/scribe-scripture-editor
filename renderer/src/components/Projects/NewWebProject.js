@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';

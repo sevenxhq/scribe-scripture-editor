@@ -1,5 +1,5 @@
 import { PropTypes } from 'prop-types';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import * as localForage from 'localforage';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { PencilIcon, CheckIcon } from '@heroicons/react/24/outline';
@@ -69,16 +69,16 @@ function InputBar({ title }) {
 }
 
 export default function UserProfile() {
-  const [username, setUsername] = React.useState();
-  const [appMode, setAppMode] = React.useState('online');
-  const [values, setValues] = React.useState({
+  const [username, setUsername] = useState();
+  const [appMode, setAppMode] = useState('online');
+  const [values, setValues] = useState({
     firstname: '',
     lastname: '',
     email: '',
     selectedregion: '',
     organization: '',
   });
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = useState({
     firstname: '',
     lastname: '',
     email: '',
@@ -86,14 +86,14 @@ export default function UserProfile() {
     organization: '',
   });
 
-  const [appLang, setAppLang] = React.useState();
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
+  const [appLang, setAppLang] = useState();
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
   const { t } = useTranslation();
-  // const [enabled, setEnabled] = React.useState(false);
+  // const [enabled, setEnabled] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!username) {
       localForage.getItem('userProfile')
         .then(async (value) => {
@@ -119,7 +119,7 @@ export default function UserProfile() {
     }
   }, [username, values, appMode]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const currentLang = languages.filter(
       (lang) => lang.code === i18n.language,
     );

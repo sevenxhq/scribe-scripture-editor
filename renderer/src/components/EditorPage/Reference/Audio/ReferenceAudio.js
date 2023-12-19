@@ -50,9 +50,9 @@ const ReferenceAudio = ({
   const [bookData, setBookData] = useState();
   const [mp3Path, setMp3Path] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
   const [displyScreen, setDisplayScreen] = useState(false);
   const { t } = useTranslation();
 

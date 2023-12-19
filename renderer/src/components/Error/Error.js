@@ -1,14 +1,14 @@
 /* eslint-disable */
 import { Configuration, PublicApi } from '@ory/kratos-client';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 // import configData from '../../config.json';
 
 // const kratos = new PublicApi(new Configuration({ basePath: configData.base_url }));
 
 const Error = () => {
   // This component is for the development purpose to get the errors from Kratos
-  const [error, setError] = React.useState('');
-    React.useEffect(() => {
+  const [error, setError] = useState('');
+    useEffect(() => {
         const url = window.location.href;
         const regex = /(.*)error\?error=/gm;
         kratos

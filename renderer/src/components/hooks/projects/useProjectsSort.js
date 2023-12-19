@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as localForage from 'localforage';
 import moment from 'moment';
 import {
@@ -10,20 +10,20 @@ import fetchProjectsMeta from '../../../core/projects/fetchProjectsMeta';
 import * as logger from '../../../logger';
 
 function useProjectsSort() {
-  const [starredrow, setStarredRow] = React.useState('');
-  const [unstarredrow, setUnStarredRow] = React.useState('');
-  const [temparray, settemparray] = React.useState(null);
-  const [active, setactive] = React.useState('');
-  const [orderUnstarred, setOrderUnstarred] = React.useState('asc');
-  const [orderByUnstarred, setOrderByUnstarred] = React.useState('name');
-  const [starredProjects, setStarredProjets] = React.useState();
-  const [unstarredProjects, setUnStarredProjets] = React.useState();
-  const [projects, setProjects] = React.useState();
-  const [selectedProject, setSelectedProject] = React.useState('');
-  const [notifications, setNotifications] = React.useState([]);
-  const [callEditProject, setCallEditProject] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [activeNotificationCount, setActiveNotificationCount] = React.useState(0);
+  const [starredrow, setStarredRow] = useState('');
+  const [unstarredrow, setUnStarredRow] = useState('');
+  const [temparray, settemparray] = useState(null);
+  const [active, setactive] = useState('');
+  const [orderUnstarred, setOrderUnstarred] = useState('asc');
+  const [orderByUnstarred, setOrderByUnstarred] = useState('name');
+  const [starredProjects, setStarredProjets] = useState();
+  const [unstarredProjects, setUnStarredProjets] = useState();
+  const [projects, setProjects] = useState();
+  const [selectedProject, setSelectedProject] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [callEditProject, setCallEditProject] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [activeNotificationCount, setActiveNotificationCount] = useState(0);
 
   const starrtedData = [];
   const unstarrtedData = [];
@@ -334,7 +334,7 @@ function useProjectsSort() {
     await FetchProjects();
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     FetchProjects();
     // eslint-disable-next-line
   }, []);

@@ -14,7 +14,7 @@ const EditorPanel = ({ obsStory, storyUpdate }) => {
       setSelectedStory,
     },
 } = useContext(ReferenceContext);
-  const { states: { scrollLock } } = useContext(ProjectContext);
+  const { states: { scrollLock ,} } = useContext(ProjectContext);
   const { t } = useTranslation();
   const handleChange = (e) => {
     const index = e.target.getAttribute('data-id');
@@ -69,7 +69,7 @@ const EditorPanel = ({ obsStory, storyUpdate }) => {
   const handleAutoHeight = (e) => {
     adjustTextareaHeight(e.target);
   };
-
+console.log({ obsStory });
   return (
     <>
       {obsStory.map((story, index) => (

@@ -60,7 +60,7 @@
 // });
 
 // const Main = () => {
-//   const [message, setmessage] = React.useState({});
+//   const [message, setmessage] = useState({});
 //   const getLocale = async () => {
 //     // logger.debug("main.js, started work for getLocale");
 //     try {

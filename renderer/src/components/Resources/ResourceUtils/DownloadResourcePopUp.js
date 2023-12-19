@@ -4,7 +4,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-key */
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import localForage from 'localforage';
@@ -58,7 +58,7 @@ function DownloadResourcePopUp({ selectResource, isOpenDonwloadPopUp, setIsOpenD
       setNotifications,
       // setResourceDownload,
     },
-  } = React.useContext(AutographaContext);
+  } = useContext(AutographaContext);
 
   const addNewNotification = async (title, text, type) => {
     localForage.getItem('notification').then((value) => {

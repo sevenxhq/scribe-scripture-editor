@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, createContext } from 'react';
 import PropTypes from 'prop-types';
 
-export const ScribexContext = React.createContext();
+export const ScribexContext = createContext();
 
 const ScribexContextProvider = ({
  children, editable = true, reference = false, font,

@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import React, {
-  useRef, Fragment,
+  useRef, Fragment, useState,
 } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
@@ -29,19 +29,19 @@ export default function ExportProjectPopUp(props) {
   } = props;
   const { t } = useTranslation();
   const cancelButtonRef = useRef(null);
-  const [folderPath, setFolderPath] = React.useState();
-  const [valid, setValid] = React.useState(false);
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
-  const [openModal, setOpenModal] = React.useState(false);
-  const [metadata, setMetadata] = React.useState({});
-  const [audioExport, setAudioExport] = React.useState('default');
-  const [checkText, setCheckText] = React.useState(false);
+  const [folderPath, setFolderPath] = useState();
+  const [valid, setValid] = useState(false);
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
+  const [openModal, setOpenModal] = useState(false);
+  const [metadata, setMetadata] = useState({});
+  const [audioExport, setAudioExport] = useState('default');
+  const [checkText, setCheckText] = useState(false);
 
-  const [totalExported, setTotalExported] = React.useState(0);
-  const [totalExports, setTotalExports] = React.useState(0);
-  const [exportStart, setExportstart] = React.useState(false);
+  const [totalExported, setTotalExported] = useState(0);
+  const [totalExports, setTotalExports] = useState(0);
+  const [exportStart, setExportstart] = useState(false);
 
   // const { pushNotification } = useSystemNotification();
 

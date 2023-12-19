@@ -19,7 +19,7 @@ function ConflictResolverUI({ conflictData, setConflictPopup }) {
   const [resolvedFileNames, setResolvedFileNames] = useState([]);
   const [enableSave, setEnableSave] = useState();
   const [finishingMerge, setFinishingMerge] = useState(false);
-  const [model, setModel] = React.useState({
+  const [model, setModel] = useState({
     openModel: false,
     title: '',
     confirmMessage: '',
@@ -188,14 +188,14 @@ function ConflictResolverUI({ conflictData, setConflictPopup }) {
                       onClick={() => removeSection()}
                     >
                       {finishingMerge
-                    ? (
-                      <div
-                        className="px-4 py-1 bg-success text-sm rounded-md m-2 text-white"
-                        // className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-neutral-100 motion-reduce:animate-[spin_1.5s_linear_infinite]"
-                        role="status"
-                      />
-                    )
-                    : <>{t('label-done')}</>}
+                        ? (
+                          <div
+                            className="px-4 py-1 bg-success text-sm rounded-md m-2 text-white"
+                            // className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-neutral-100 motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                            role="status"
+                          />
+                        )
+                        : <>{t('label-done')}</>}
                     </div>
                   )}
 

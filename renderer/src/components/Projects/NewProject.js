@@ -103,24 +103,24 @@ export default function NewProject({ call, project, closeEdit }) {
       createProject,
       setNewProjectFields,
     },
-  } = React.useContext(ProjectContext);
+  } = useContext(ProjectContext);
   const { t } = useTranslation();
   const { action: { validateField, isLengthValidated, isTextValidated } } = useValidator();
   const router = useRouter();
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
-  const [loading, setLoading] = React.useState(false);
-  const [metadata, setMetadata] = React.useState();
-  const [openModal, setOpenModal] = React.useState(false);
-  const [projectLangData, setProjectLangData] = React.useState({});
-  const [error, setError] = React.useState({
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
+  const [loading, setLoading] = useState(false);
+  const [metadata, setMetadata] = useState();
+  const [openModal, setOpenModal] = useState(false);
+  const [projectLangData, setProjectLangData] = useState({});
+  const [error, setError] = useState({
     projectName: {},
     abbr: {},
     description: {},
   });
 
-  const [headerDropDown, setHeaderDropDown] = React.useState(solutions[0].name);
+  const [headerDropDown, setHeaderDropDown] = useState(solutions[0].name);
   const handleDropDown = (currentSelection) => {
     setHeaderDropDown(currentSelection);
   };
@@ -241,8 +241,8 @@ export default function NewProject({ call, project, closeEdit }) {
     logger.warn('NewProject.js', 'Calling createTheProject function with burrito update');
     createTheProject(true);
   };
-  const [openPopUp, setOpenPopUp] = React.useState(false);
-  const [replaceWarning, setReplaceWarning] = React.useState(false);
+  const [openPopUp, setOpenPopUp] = useState(false);
+  const [replaceWarning, setReplaceWarning] = useState(false);
 
   function openImportPopUp() {
     setOpenPopUp(true);

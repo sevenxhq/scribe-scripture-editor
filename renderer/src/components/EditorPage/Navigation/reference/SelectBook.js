@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Disclosure, Transition } from '@headlessui/react';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +53,7 @@ export default function SelectBook({
       setSelectedBooks(_selectedBooks);
     }
   }
-  React.useEffect(() => {
+  useEffect(() => {
     if (scope === 'Old Testament (OT)') {
       toggleOT();
     } else if (scope === 'New Testament (NT)') {

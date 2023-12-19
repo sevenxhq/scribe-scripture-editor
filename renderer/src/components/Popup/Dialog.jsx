@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { forwardRef } from 'react';
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 // import { IconX } from '@tabler/icons';
@@ -22,7 +22,7 @@ const DialogPortal = ({
 );
 DialogPortal.displayName = DialogPrimitive.Portal.displayName;
 
-const DialogOverlay = React.forwardRef(
+const DialogOverlay = forwardRef(
   ({
     className,
     ...props
@@ -39,7 +39,7 @@ const DialogOverlay = React.forwardRef(
 );
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-const DialogContent = React.forwardRef(
+const DialogContent = forwardRef(
   ({
     className,
     children,
@@ -90,7 +90,7 @@ const DialogFooter = ({
 );
 DialogFooter.displayName = 'DialogFooter';
 
-const DialogTitle = React.forwardRef(
+const DialogTitle = forwardRef(
   ({
     className,
     ...props
@@ -107,7 +107,7 @@ const DialogTitle = React.forwardRef(
 );
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-const DialogDescription = React.forwardRef(
+const DialogDescription = forwardRef(
   ({
     className,
     ...props

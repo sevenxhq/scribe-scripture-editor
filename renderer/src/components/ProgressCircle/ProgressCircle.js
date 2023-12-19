@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
  Box, CircularProgress, Typography,
@@ -62,8 +62,8 @@ CircularProgressWithLabel.propTypes = {
 };
 
 export default function CircularWithValueLabel({ currentValue, totalValue, circleSize = '2.2rem' }) {
-  const [progress, setProgress] = React.useState(0);
-  React.useEffect(() => {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
     // console.log(currentValue, totalValue);
     const calculated = ((currentValue * 100) / totalValue);
     setProgress(calculated);

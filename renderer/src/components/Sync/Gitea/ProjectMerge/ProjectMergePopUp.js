@@ -26,10 +26,10 @@ export default function ProjectMergePop({ selectedGiteaProject, setSelectedGitea
   const [mergeConflict, setMergeConflict] = useState(false);
   const [mergeDone, setMergeDone] = useState(false);
   const [conflictHtml, setConflictHtml] = useState('<div></div>');
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
-  const [backupName, setBackupName] = React.useState('');
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
+  const [backupName, setBackupName] = useState('');
 
   const path = require('path');
   const ignoreFilesPaths = [path.join('ingredients', environment.PROJECT_SETTING_FILE), 'metadata.json'];

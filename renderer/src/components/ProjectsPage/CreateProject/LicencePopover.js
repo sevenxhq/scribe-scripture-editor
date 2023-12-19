@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import { Dialog, Transition, Switch } from '@headlessui/react';
@@ -10,10 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { ProjectContext } from '../../context/ProjectContext';
 
 export default function LicencePopover({ call }) {
-  const [name, setName] = React.useState();
-  const [content, setContent] = React.useState();
+  const [name, setName] = useState();
+  const [content, setContent] = useState();
   const [isOpen, setIsOpen] = useState(false);
-  const [edit, setEdit] = React.useState(false);
+  const [edit, setEdit] = useState(false);
   const [preview, setPreview] = useState(true);
   const { t } = useTranslation();
 
@@ -30,7 +30,7 @@ export default function LicencePopover({ call }) {
     states: {
       copyright,
     }, actions: { setCopyRight },
-  } = React.useContext(ProjectContext);
+  } = useContext(ProjectContext);
   const openlicenceNav = () => {
     setName(copyright.id);
     setEdit(!copyright.locked);

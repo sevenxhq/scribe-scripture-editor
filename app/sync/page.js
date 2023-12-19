@@ -1,3 +1,4 @@
+import React from 'react';
 import ProtectedRoute from '@/components/Protected';
 // import Sync from '@/modules/projects/Sync';
 

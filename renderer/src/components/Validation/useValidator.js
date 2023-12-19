@@ -2,9 +2,9 @@ import React from 'react';
 import { countErrors, validateForm, validEmailRegex } from './helper';
 
 export default function useValidator() {
-  const [formValid, setFormValid] = React.useState(false);
-  const [errorCount, setErrorCount] = React.useState(null);
-  const [errors, setErrors] = React.useState({
+  const [formValid, setFormValid] = useState(false);
+  const [errorCount, setErrorCount] = useState(null);
+  const [errors, setErrors] = useState({
     namefield: '',
     lastname: '',
     password: '',

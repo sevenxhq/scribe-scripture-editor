@@ -22,20 +22,20 @@ export default function Signup() {
     },
     viewForgot: false,
   };
-  React.useEffect(() => {
+  useEffect(() => {
     if (router?.query?.flow) {
       getFlow(router.query.flow);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router?.query]);
 
-  const [token, setToken] = React.useState();
-  const [valid, setValid] = React.useState({
+  const [token, setToken] = useState();
+  const [valid, setValid] = useState({
     username: false,
     email:false,
     password: false,
   });
-  const [error, setError] = React.useState({
+  const [error, setError] = useState({
     identifier: '',
     password: '',
     msg: '',
@@ -63,7 +63,7 @@ export default function Signup() {
   //   logger.debug('Singup.js', 'End handleValidation');
   //   return validation;
   // };
-  React.useEffect(() => {
+  useEffect(() => {
     if (config) {
       // eslint-disable-next-line prefer-const
       let err = {};

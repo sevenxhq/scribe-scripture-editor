@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
-import React from 'react';
+import React, { createContext } from 'react';
 import PropTypes from 'prop-types';
 import useAuthentication from './useAuthentication';
 
-export const AuthenticationContext = React.createContext();
+export const AuthenticationContext = createContext();
 
 const AuthenticationContextProvider = ({ children }) => {
   const { state, actions } = useAuthentication();

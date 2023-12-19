@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+ useEffect, useState, useContext, Fragment,
+} from 'react';
 import PropTypes from 'prop-types';
 import { Transition, Listbox } from '@headlessui/react';
 import { useTranslation } from 'react-i18next';
@@ -185,7 +187,7 @@ function EditorSync({ selectedProject }) {
                           </span>
                         </Listbox.Button>
                         <Transition
-                          as={React.Fragment}
+                          as={Fragment}
                           leave="transition ease-in duration-100"
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"

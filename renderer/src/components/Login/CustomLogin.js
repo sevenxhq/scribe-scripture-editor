@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { TextField, Typography } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -8,7 +8,7 @@ import 'tailwindcss/tailwind.css';
 const CustomLogin = ({
  ui, error, login, userlist, validation, buttonname,
 }) => {
-  const [values, setValue] = React.useState({});
+  const [values, setValue] = useState({});
   const handleChange = (prop) => (event) => {
     setValue({ ...values, [prop]: event.target.value });
   };

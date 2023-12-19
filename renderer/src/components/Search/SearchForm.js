@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import {
@@ -40,7 +40,7 @@ function SearchForm({
     setQuery(value);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (query) {
       onfilerRequest1(onQuery(query, contentList1));
       onfilerRequest2(onQuery(query, contentList2));

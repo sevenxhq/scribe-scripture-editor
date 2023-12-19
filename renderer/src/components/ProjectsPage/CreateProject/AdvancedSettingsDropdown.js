@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import localforage from 'localforage';
@@ -53,11 +53,11 @@ export default function AdvancedSettingsDropdown({ call, project, projectType })
       setcanonSpecification,
       setCopyRight,
     },
-  } = React.useContext(ProjectContext);
-  const [isShow, setIsShow] = React.useState(true);
-  const [bibleNav, setBibleNav] = React.useState(false);
-  const [handleNav, setHandleNav] = React.useState();
-  const [currentScope, setCurrentScope] = React.useState();
+  } = useContext(ProjectContext);
+  const [isShow, setIsShow] = useState(true);
+  const [bibleNav, setBibleNav] = useState(false);
+  const [handleNav, setHandleNav] = useState();
+  const [currentScope, setCurrentScope] = useState();
   const { t } = useTranslation();
   const handleClick = () => {
     setIsShow(!isShow);

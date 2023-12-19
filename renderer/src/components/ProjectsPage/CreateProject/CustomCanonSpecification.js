@@ -1,4 +1,6 @@
-import React, { Fragment } from 'react';
+import React, {
+ Fragment, useState, useContext, useEffect,
+} from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { useBibleReference } from 'bible-reference-rcl';
@@ -14,15 +16,15 @@ const CustomCanonSpecification = ({
   const initialBook = 'mat';
   const initialChapter = '1';
   const initialVerse = '1';
-  const [name, setName] = React.useState();
+  const [name, setName] = useState();
   const { t } = useTranslation();
   const {
     states: { canonSpecification, canonList },
     actions: { setcanonSpecification },
-  } = React.useContext(ProjectContext);
+  } = useContext(ProjectContext);
 
-  const [selectedBooks, setSelectedBooks] = React.useState([]);
-  const [lock, setLock] = React.useState();
+  const [selectedBooks, setSelectedBooks] = useState([]);
+  const [lock, setLock] = useState();
   const {
     state: { bookList },
   } = useBibleReference({ initialBook, initialChapter, initialVerse });
@@ -40,7 +42,7 @@ const CustomCanonSpecification = ({
     closeBibleNav();
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (handleNav === 'edit') {
       setLock(canonSpecification.locked);
       setName(canonSpecification.title);

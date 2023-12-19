@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 // import localforage, * as localForage from 'localforage';
 import { useTranslation } from 'react-i18next';
@@ -96,13 +96,13 @@ function RemoveResource({
 }) {
     logger.warn('removeResource.js', 'inside remove resource');
     const { t } = useTranslation();
-    const [snackBar, setOpenSnackBar] = React.useState(false);
-    const [snackText, setSnackText] = React.useState('');
+    const [snackBar, setOpenSnackBar] = useState(false);
+    const [snackText, setSnackText] = useState('');
     // eslint-disable-next-line no-unused-vars
-    const [notify, setNotify] = React.useState();
-    const [openModal, setOpenModal] = React.useState(false);
+    const [notify, setNotify] = useState();
+    const [openModal, setOpenModal] = useState(false);
 
-    // React.useEffect(() => {
+    // useEffect(() => {
     // }, []);
 
     const {

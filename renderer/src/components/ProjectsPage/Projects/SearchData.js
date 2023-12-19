@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import SearchForm from '../../Search/SearchForm';
 import { AutographaContext } from '../../context/AutographaContext';
 
@@ -13,7 +13,7 @@ const SearchData = () => {
       setStarredRow,
       setUnStarredRow,
     },
-  } = React.useContext(AutographaContext);
+  } = useContext(AutographaContext);
 
   return (
     <div>

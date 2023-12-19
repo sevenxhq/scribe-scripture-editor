@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import {
@@ -6,9 +6,9 @@ import {
 } from '@material-ui/core';
 
 export function VerticalLinearStepper({ stepCount, steps, successMsg }) {
-    const [activeStep, setActiveStep] = React.useState(0);
+    const [activeStep, setActiveStep] = useState(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }, [stepCount]);
 
@@ -20,7 +20,7 @@ export function VerticalLinearStepper({ stepCount, steps, successMsg }) {
     //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     // };
 
-    React.useEffect(() => {
+    useEffect(() => {
         handleReset();
     }, []);
 
@@ -71,8 +71,8 @@ VerticalLinearStepper.propTypes = {
 };
 
 // export default function VerticalStepperProgress() {
-// //   const [progress, setProgress] = React.useState(0);
-// //   React.useEffect(() => {
+// //   const [progress, setProgress] = useState(0);
+// //   useEffect(() => {
 // //     // console.log(currentValue, totalValue);
 // //     const calculated = ((currentValue * 100) / totalValue);
 // //     setProgress(calculated);

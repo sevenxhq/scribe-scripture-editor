@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   AuthenticationContext,
   RepositoryContext,
@@ -24,16 +24,16 @@ const GiteaFileBrowser = ({ changeRepo }) => {
   } = useContext(SyncContext);
 
   // eslint-disable-next-line no-unused-vars
-  const [advacnedOption, setAdvacnedOption] = React.useState(false);
-  const [projects, setProjects] = React.useState([]);
-  const [files, setFiles] = React.useState([]);
+  const [advacnedOption, setAdvacnedOption] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [files, setFiles] = useState([]);
   // active step is used in adavacned sync option future
   // eslint-disable-next-line no-unused-vars
-  const [activeStep, setActiveStep] = React.useState();
+  const [activeStep, setActiveStep] = useState();
 
-  const [pullBranchNames, setPullBranchNames] = React.useState([]);
+  const [pullBranchNames, setPullBranchNames] = useState([]);
 
-  const [steps, setSteps] = React.useState([]);
+  const [steps, setSteps] = useState([]);
   const { state: auth, component: authComponent } = useContext(
     AuthenticationContext,
   );

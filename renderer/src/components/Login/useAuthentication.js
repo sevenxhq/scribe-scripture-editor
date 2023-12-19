@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { useState } from 'react';
 import * as localForage from 'localforage';
 import React from 'react';
 import { Configuration, PublicApi } from '@ory/kratos-client';
@@ -10,9 +11,9 @@ import { useRouter } from 'next/navigation';
 const CryptoJS = require("crypto-js");
 
 function useAuthentication() {
-  const [accessToken, setaccessToken] = React.useState();
-  const [currentUser, setCurrentUser] = React.useState();
-  const [config, setConfig] = React.useState();
+  const [accessToken, setaccessToken] = useState();
+  const [currentUser, setCurrentUser] = useState();
+  const [config, setConfig] = useState();
   const router = useRouter();
   
   const handleUser = (token) => {
@@ -73,7 +74,7 @@ function useAuthentication() {
       });
   };
   // Below code is of Online app
-  // React.useEffect(() => {
+  // useEffect(() => {
   //   if (isElectron()) {
   //     kratos.initializeSelfServiceLoginViaAPIFlow().then(({ data: flow }) => {
   //       logger.debug('useAuthentication.js', 'Calling getConfig using flowID');

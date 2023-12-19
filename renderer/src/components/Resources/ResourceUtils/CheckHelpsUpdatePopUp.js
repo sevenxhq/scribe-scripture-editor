@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
 // import localforage, * as localForage from 'localforage';
 import { Dialog, Transition } from '@headlessui/react';
@@ -79,15 +79,15 @@ const checkHelpsVersionUpdate = async (reference, selectResource) => {
 };
 
 function CheckHelpsUpdatePopUp({ resource, selectResource }) {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [isloading, setIsLoading] = React.useState(false);
-    const [versions, setVersions] = React.useState({});
-    const [updateStatus, setUpdateStatus] = React.useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isloading, setIsLoading] = useState(false);
+    const [versions, setVersions] = useState({});
+    const [updateStatus, setUpdateStatus] = useState(null);
     const { t } = useTranslation();
-    const [snackBar, setOpenSnackBar] = React.useState(false);
-    const [snackText, setSnackText] = React.useState('');
+    const [snackBar, setOpenSnackBar] = useState(false);
+    const [snackText, setSnackText] = useState('');
     // eslint-disable-next-line no-unused-vars
-    const [notify, setNotify] = React.useState();
+    const [notify, setNotify] = useState();
 
     const modalClose = () => {
         if (!isloading) {
@@ -129,7 +129,7 @@ function CheckHelpsUpdatePopUp({ resource, selectResource }) {
       }
     };
 
-    // React.useEffect(() => {
+    // useEffect(() => {
     // }, []);
 
     const handleCheckUpdateHelpsResources = async (event, resource) => {
@@ -156,11 +156,11 @@ function CheckHelpsUpdatePopUp({ resource, selectResource }) {
             className="w-4 h-4"
           />
         </div>
-        <Transition appear show={isOpen} as={React.Fragment}>
+        <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-50" onClose={modalClose}>
             <div className="min-h-screen px-4 text-center">
               <Transition.Child
-                as={React.Fragment}
+                as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"
                 enterTo="opacity-100"
@@ -174,7 +174,7 @@ function CheckHelpsUpdatePopUp({ resource, selectResource }) {
               <div className="fixed inset-0 overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center">
                   <Transition.Child
-                    as={React.Fragment}
+                    as={Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0 scale-95"
                     enterTo="opacity-100 scale-100"

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ export default function SearchTags({
   // onfilerRequest2,
 }) {
   const { t } = useTranslation();
-  const [query, setQuery] = React.useState(defaultQuery);
+  const [query, setQuery] = useState(defaultQuery);
   const excludeColumns = filterList.splice(filterList.indexOf(), 1);
   const onQuery = useCallback((_query, content) => {
     let filteredData;
@@ -37,7 +37,7 @@ export default function SearchTags({
     setQuery(value);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (query) {
       onfilerRequest1(onQuery(query, contentList1));
       // onfilerRequest2(onQuery(query, contentList2));

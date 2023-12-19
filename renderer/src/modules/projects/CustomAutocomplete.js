@@ -119,7 +119,7 @@ export default function CustomizedHook({
     options: list,
     getOptionLabel: (option) => option.title,
   });
-  React.useEffect(() => {
+  useEffect(() => {
     setValue({ label, data: getInputProps().value });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getInputProps().value]);

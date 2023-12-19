@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, {
-  useRef, Fragment, useState, useContext
+  useRef, Fragment, useState, useContext, useEffect
 } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import {
@@ -29,17 +29,17 @@ export default function ImportProjectPopUp(props) {
   const router = useRouter();
   const { t } = useTranslation();
   const cancelButtonRef = useRef(null);
-  const [folderPath, setFolderPath] = React.useState();
-  const [valid, setValid] = React.useState(false);
-  const [snackBar, setOpenSnackBar] = React.useState(false);
-  const [snackText, setSnackText] = React.useState('');
-  const [notify, setNotify] = React.useState();
-  const [show, setShow] = React.useState(false);
-  const [merge, setMerge] = React.useState(false);
-  const [processMerge, setProcessMerge] = React.useState(false);
-  const [currentUser, setCurrentUser] = React.useState();
-  const [sbData, setSbData] = React.useState({});
-  const [model, setModel] = React.useState({
+  const [folderPath, setFolderPath] = useState();
+  const [valid, setValid] = useState(false);
+  const [snackBar, setOpenSnackBar] = useState(false);
+  const [snackText, setSnackText] = useState('');
+  const [notify, setNotify] = useState();
+  const [show, setShow] = useState(false);
+  const [merge, setMerge] = useState(false);
+  const [processMerge, setProcessMerge] = useState(false);
+  const [currentUser, setCurrentUser] = useState();
+  const [sbData, setSbData] = useState({});
+  const [model, setModel] = useState({
     openModel: false,
     title: '',
     confirmMessage: '',
@@ -185,7 +185,7 @@ export default function ImportProjectPopUp(props) {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       setImportProgress((prev)=>({...prev, importStarted:false, completedSteps: 0, totalSteps: 4}))
       openFileDialogSettingData();

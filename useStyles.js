@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { forwardRef } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -79,7 +79,7 @@ export const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-export const Transition = React.forwardRef((props, ref) => (
+export const Transition = forwardRef((props, ref) => (
   <Zoom
     style={{ transitionDelay: '50ms' }}
     direction="up"

@@ -6,8 +6,6 @@ import { LockClosedIcon, BookmarkIcon, LockOpenIcon } from '@heroicons/react/24/
 // import BibleNavigationX from '@/components/EditorPage/TextEditor/BibleNavigationX';
 import { useTranslation } from 'react-i18next';
 import BibleNavigationX from './BibleNavigationX';
-import Buttons from './Buttons';
-import InsertMenu from './InsertMenu';
 
 export default function EditorMenuBar(props) {
   const {
@@ -17,9 +15,11 @@ export default function EditorMenuBar(props) {
     verseNumber,
     setVerseNumber,
     handleSelectedFont,
-    setTriggerVerseInsert,
     handleEditorFontSize,
     editorFontSize,
+    book,
+    setBook,
+    loading,
   } = props;
 
   const { t } = useTranslation();
@@ -39,13 +39,16 @@ export default function EditorMenuBar(props) {
   };
 
   return (
-    <div className="relative min-h-[66px] flex flex-col bg-secondary rounded-t-md overflow-hidden">
+    <div className="relative min-h-[33px] flex flex-col bg-secondary rounded-t-md overflow-hidden">
       <div className="flex min-h-[33px] items-center justify-between gap-2">
         <BibleNavigationX
           chapterNumber={chapterNumber}
           setChapterNumber={setChapterNumber}
           verseNumber={verseNumber}
           setVerseNumber={setVerseNumber}
+          book={book}
+          setBook={setBook}
+          loading={loading}
         />
         <div
           aria-label="editor-pane"
@@ -115,15 +118,7 @@ export default function EditorMenuBar(props) {
               aria-hidden="true"
             />
           </div>
-        </div>
-      </div>
-      <div className="mx-2.5 min-h-[33px] flex items-center justify-center">
-        <div className="flex items-center">
-          <Buttons {...props} />
-        </div>
-        <div className="flex ml-auto">
           <MenuDropdown selectedFont={selectedFont || 'sans-serif'} setSelectedFont={handleSelectedFont} buttonStyle="button text-gray-200 bg-primary-500 hover:bg-primary-500/90 text-highlight-300 gap-1" />
-          <InsertMenu setTriggerVerseInsert={setTriggerVerseInsert} />
         </div>
       </div>
     </div>

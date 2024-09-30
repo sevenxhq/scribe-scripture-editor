@@ -20884,10 +20884,10 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-sj-usfm-grammar@^3.0.0, sj-usfm-grammar@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/sj-usfm-grammar/-/sj-usfm-grammar-3.0.2.tgz#855ee3a439b582bfae93a71c3aa93cd9beb6bfdc"
-  integrity sha512-LBOx33vtU0gnUi/pAVxAqVMoGxD57c5itW650BaYGGD3Di2wweNHcQBD+XlQyGFXSoXoi3bn3gxfnNQG0oNGtg==
+sj-usfm-grammar@^3.0.0, sj-usfm-grammar@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/sj-usfm-grammar/-/sj-usfm-grammar-3.0.3.tgz#3e62d05a386bdca2946b54fb910635fb1685b6d7"
+  integrity sha512-5c915LAa09Y5XYI3F+iLxRdVym+/YS+6zS7nerKzgm88l3koUEC+DLkwO7MTTRjInurU6gT8L0S/094wZ/Uphg==
   dependencies:
     sj-usfm-grammar "^3.0.0"
 

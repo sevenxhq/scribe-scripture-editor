@@ -34,7 +34,7 @@ export default function TextEditor() {
   const [book, setBook] = useState(defaultBookId);
 
   const {
-    bookId, cachedData, loading,
+    cachedData, loading,
   } = useReadUsfmFile(book);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function TextEditor() {
     if (!usj && usj?.entries(usj).length === 0) { return; }
     console.log(usj);
     setUsjInput(usj);
-  }, [bookId, cachedData]);
+  }, [book, cachedData]);
 
   useEffect(() => {
     console.log('bookchange', { book, chapterNumber, verseNumber });
@@ -74,7 +74,7 @@ export default function TextEditor() {
       updateCacheNSaveFile(updatedUsj, book);
       console.log('usj updated', updatedUsj);
     }, 1000),
-    [bookId],
+    [book],
   );
   useEffect(() => {
     console.log({ selectedFont, editorFontSize });
@@ -91,7 +91,7 @@ export default function TextEditor() {
     handleSelectedFont,
     scrRef,
     setScrRef,
-    bookId,
+    bookId: book,
     loading,
     editorFontSize,
     handleEditorFontSize,
@@ -106,7 +106,7 @@ export default function TextEditor() {
     setNavRef,
     scrRef,
     setScrRef,
-    bookId,
+    bookId: book,
 
   };
   return (

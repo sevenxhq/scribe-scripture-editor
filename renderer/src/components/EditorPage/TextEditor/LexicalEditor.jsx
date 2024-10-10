@@ -50,15 +50,8 @@ export default function LexicalEditor({
   }, [scrRef, setNavRef]);
 
   return (
-    <div
-      className="flex flex-col h-screen"
-    // style={{
-    //   fontFamily: selectedFont || 'sans-serif',
-    //   fontSize: `${fontSize}rem`,
-    //   lineHeight: (fontSize > 1.3) ? 1.5 : '',
-    // }}
-    >
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex-grow flex flex-col overflow-hidden">
+      <div className="flex-grow flex flex-col bg-gray-100 overflow-hidden">
         <Editor
           usjInput={usj}
           ref={editorRef}

@@ -9,6 +9,7 @@ import { useReadUsfmFile } from './hooks/useReadUsfmFile';
 import EditorMenuBar from './EditorMenuBar';
 import LexicalEditor from './LexicalEditor';
 import { updateCacheNSaveFile } from './updateAndSave';
+import EmptyScreen from './EmptyScreen';
 
 const defaultScrRef = {
   bookCode: 'PSA',
@@ -34,7 +35,7 @@ export default function TextEditor() {
   const [book, setBook] = useState(defaultBookId);
 
   const {
-    cachedData, loading,
+    cachedData, loading, bookAvailable, booksInProject
   } = useReadUsfmFile(book);
 
   useEffect(() => {
@@ -89,12 +90,12 @@ export default function TextEditor() {
     book,
     setBook,
     handleSelectedFont,
-    scrRef,
-    setScrRef,
     bookId: book,
     loading,
     editorFontSize,
     handleEditorFontSize,
+    bookAvailable,
+    booksInProject,
   };
 
   const props = {
@@ -110,9 +111,16 @@ export default function TextEditor() {
 
   };
   return (
-    <div className="flex flex-col bg-white  border-secondary h-editor rounded-md shadow scrollbar-width overflow-hidden">
+    <div className="flex flex-col h-editor rounded-md shadow overflow-hidden">
       <EditorMenuBar {..._props} />
-      {(!usjInput || loading) ? <LoadingSpinner /> : <LexicalEditor {...props} />}
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {!bookAvailable && <EmptyScreen />}
+          {bookAvailable && usjInput && <LexicalEditor {...props} />}
+        </>
+      )}
     </div>
   );
 }

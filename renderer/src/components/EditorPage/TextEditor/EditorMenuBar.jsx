@@ -20,6 +20,8 @@ export default function EditorMenuBar(props) {
     book,
     setBook,
     loading,
+    bookAvailable,
+    booksInProject,
   } = props;
 
   const { t } = useTranslation();
@@ -39,7 +41,7 @@ export default function EditorMenuBar(props) {
   };
 
   return (
-    <div className="relative min-h-[33px] flex flex-col bg-secondary rounded-t-md overflow-hidden">
+    <div className="h-[33px] flex flex-col bg-secondary rounded-t-md sticky top-0 z-10">
       <div className="flex min-h-[33px] items-center justify-between gap-2">
         <BibleNavigationX
           chapterNumber={chapterNumber}
@@ -49,6 +51,8 @@ export default function EditorMenuBar(props) {
           book={book}
           setBook={setBook}
           loading={loading}
+          bookAvailable={bookAvailable}
+          booksInProject={booksInProject}
         />
         <div
           aria-label="editor-pane"

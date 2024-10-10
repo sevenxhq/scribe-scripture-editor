@@ -11,9 +11,8 @@ import SelectChapter from './SelectChapter';
 
 export default function BibleNavigationX(props) {
   const {
-    chapterNumber, setChapterNumber, setBook, loading,
+    chapterNumber, setChapterNumber, setBook, loading, bookAvailable, booksInProject
   } = props;
-  const supportedBooks = null;
 
   const {
     state: {
@@ -30,10 +29,6 @@ export default function BibleNavigationX(props) {
       setCloseNavigation,
     },
   } = useContext(ReferenceContext);
-
-  useEffect(() => {
-    applyBooksFilter(supportedBooks);
-  }, [applyBooksFilter, supportedBooks]);
 
   const [openBook, setOpenBook] = useState(false);
   const [openChapter, setOpenChapter] = useState(false);
@@ -59,26 +54,6 @@ export default function BibleNavigationX(props) {
     setOpenBook(false);
     setOpenChapter(true);
   }
-
-  useEffect(() => {
-    const getSupportedBooks = async () => {
-      const refs = await localforage.getItem('refBibleBurrito');
-      refs?.forEach((ref) => {
-        if (languageId !== null) {
-          if (ref.value.languages[0].tag === languageId) {
-            const supportedBooks = [];
-            Object.entries((ref.value.type.flavorType.currentScope)).forEach(
-              ([key]) => {
-                supportedBooks.push(key.toLowerCase());
-              },
-            );
-            applyBooksFilter(supportedBooks);
-          }
-        }
-      });
-    };
-    getSupportedBooks();
-  }, [languageId, applyBooksFilter]);
 
   useEffect(() => {
     async function setReference() {
@@ -153,6 +128,7 @@ export default function BibleNavigationX(props) {
                   setSelectedBooks={setSelectedBooks}
                   setBook={setBook}
                   scope="Other"
+                  booksInProject={booksInProject}
                 >
                   <button
                     type="button"
@@ -168,7 +144,7 @@ export default function BibleNavigationX(props) {
         </Transition>
 
         <Transition
-          show={openChapter}
+          show={openChapter && bookAvailable}
           as={Fragment}
           enter="transition duration-100 ease-out"
           enterFrom="transform scale-95 opacity-0"
@@ -211,7 +187,6 @@ export default function BibleNavigationX(props) {
           </Dialog>
         </Transition>
       </>
-      {/* )} */}
     </>
   );
 }
@@ -221,4 +196,5 @@ BibleNavigationX.propTypes = {
   setChapterNumber: PropTypes.func,
   setBook: PropTypes.func,
   loading: PropTypes.bool,
+  bookAvailable: PropTypes.bool,
 };
